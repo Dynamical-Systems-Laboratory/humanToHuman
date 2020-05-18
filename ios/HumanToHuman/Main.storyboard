@@ -11,44 +11,12 @@
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="HumanToHuman" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                    <view key="view" contentMode="scaleToFill" id="odj-oO-cTX">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wzs-pr-T0e">
-                                <rect key="frame" x="144" y="807" width="127" height="30"/>
-                                <state key="normal" title="Connect to Device"/>
-                                <connections>
-                                    <action selector="buttonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="e8q-pQ-kd0"/>
-                                    <action selector="buttonReleased:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kvh-3F-KNl"/>
-                                </connections>
-                            </button>
-                            <slider opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" preservesSuperviewLayoutMargins="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="1oI-5C-LPz">
-                                <rect key="frame" x="170" y="744" width="174" height="31"/>
-                                <connections>
-                                    <action selector="sliderChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="E0z-oR-jWQ"/>
-                                </connections>
-                            </slider>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hgz-c4-9tD">
-                                <rect key="frame" x="96" y="749" width="49" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="1oI-5C-LPz" firstAttribute="leading" secondItem="Hgz-c4-9tD" secondAttribute="trailing" constant="20" id="PeZ-pX-QDa"/>
-                            <constraint firstItem="1oI-5C-LPz" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="VrI-1U-GIs"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wzs-pr-T0e" secondAttribute="bottom" constant="331" id="n3d-ip-xfX"/>
-                            <constraint firstItem="wzs-pr-T0e" firstAttribute="top" secondItem="1oI-5C-LPz" secondAttribute="bottom" constant="39" id="xTn-b1-zIy"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="5jY-Pd-tTZ"/>
                     </view>
-                    <connections>
-                        <outlet property="connectButton" destination="wzs-pr-T0e" id="dEk-xA-ITT"/>
-                        <outlet property="redSlider" destination="1oI-5C-LPz" id="Uh9-XE-c5K"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

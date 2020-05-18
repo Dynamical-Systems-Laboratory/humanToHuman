@@ -1,6 +1,6 @@
 import UIKit
+import Foundation
 import CoreBluetooth
-import MultipeerConnectivity
 import SystemConfiguration.CaptiveNetwork
 
 func getConnectedWifiMacAdrees() -> [String:String] {
@@ -18,52 +18,34 @@ func getConnectedWifiMacAdrees() -> [String:String] {
     return informationDictionary
 }
 
-// https://developer.apple.com/documentation/multipeerconnectivity
-class ViewController: UIViewController, MCNearbyServiceBrowserDelegate {
+class ViewController: UIViewController {
     
-    // PROTOCOL: MCNearbyServiceBrowserDelegate
-    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        print("Discovered Peer ID:", peerID)
-        print("    Discovery Info:", info ?? [String:String]())
-        print()
-    }
-    
-    // PROTOCOL: MCNearbyServiceBrowserDelegate
-    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        print("Lost Peer ID:", peerID)
-        print()
-    }
-    
-
-    // Outlet for sliders
-    @IBOutlet weak var redSlider: UISlider!
-    @IBOutlet weak var connectButton: UIButton!
-    
-    var peerId : MCPeerID!
-    var serviceBrowser : MCNearbyServiceBrowser!
-    
-    // Properties
-//    private var centralManager: CBCentralManager!
-//    private var peripheral: CBPeripheral!
+    var centralManager : CBCentralManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("View loaded")
-        self.peerId = MCPeerID(displayName: UIDevice.current.name)
-        self.serviceBrowser = MCNearbyServiceBrowser(peer: self.peerId, serviceType: "humantohuman")
-        self.redSlider.isEnabled = true
+        self.centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
-    @IBAction func buttonPressed(_ sender: Any) {
-        print("button pressed")
+    override func viewDidAppear(_ animated: Bool) {
+        
     }
     
-    @IBAction func buttonReleased(_ sender: Any) {
-        print("button released outsidee")
+    override func viewDidDisappear(_ animated: Bool) {
     }
     
-    @IBAction func sliderChanged(_ sender: Any) {
-        print("red:",redSlider.value);
-    }
+    
 }
 
+extension ViewController : CBCentralManagerDelegate {
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        central.scanForPeripherals(withServices: nil, options: nil)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
+                        advertisementData: [String : Any], rssi: NSNumber) {
+        let localname: String = peripheral.name ?? ""
+        
+        print("Discovered \(localname) with rssi \(rssi)")
+    }
+}
