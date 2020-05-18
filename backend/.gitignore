@@ -1,0 +1,17 @@
+api_env/
+
+*.pyc
+__pycache__/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+dist/
+build/
+*.egg-info/
+
+*python_project_key.json
+*.log
