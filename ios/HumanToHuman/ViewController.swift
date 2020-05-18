@@ -19,16 +19,14 @@ func getConnectedWifiMacAdrees() -> [String: String] {
 }
 
 class BluetoothCell: UITableViewCell {
-    @IBOutlet weak var name : UILabel!
-    @IBOutlet weak var rssi : UILabel!
-    
-    
+    @IBOutlet var name: UILabel!
+    @IBOutlet var rssi: UILabel!
 }
 
 class ViewController: UIViewController {
     var manager: CBCentralManager!
     @IBOutlet var table: UITableView!
-    var rows : [(name: String, mac: String?, rssi: Float)]!
+    var rows: [(name: String, mac: String?, rssi: Float)]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,27 +46,26 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BluetoothCell")! as! BluetoothCell
-        let row = self.rows[indexPath.row]
+        let row = rows[indexPath.row]
         cell.name.text = "\(row.name)"
         cell.rssi.text = "\(row.rssi)"
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.rows.count
+
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        return rows.count
     }
 }
 
 extension ViewController: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_: CBCentralManager) {}
 
-    func centralManager(_ manager: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
-        
-        var firstIndex : Int?
-        let uidOptional = advertisementData["kCBAdvDataManufacturerData"].map({ (value) in "" })
+    func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+        var firstIndex: Int?
+        let uidOptional = advertisementData["kCBAdvDataManufacturerData"].map { _ in "" }
         let peripheralName = peripheral.name ?? "UNNAMED"
         if let uid = uidOptional {
-            firstIndex = self.rows.firstIndex(where: { (per) in
+            firstIndex = rows.firstIndex(where: { per in
                 if let perUid = per.mac {
                     return perUid == uid
                 } else {
@@ -76,20 +73,20 @@ extension ViewController: CBCentralManagerDelegate {
                 }
             })
         } else if let name = peripheral.name {
-            firstIndex = self.rows.firstIndex(where: { (per) in per.name == name })
+            firstIndex = rows.firstIndex(where: { per in per.name == name })
         } else { // We don't track of unidentifiable objects
             return
         }
-        
+
         if let idx = firstIndex {
-            self.rows[idx].name = peripheralName
-            self.rows[idx].mac = uidOptional
-            self.rows[idx].rssi = rssi.floatValue
+            rows[idx].name = peripheralName
+            rows[idx].mac = uidOptional
+            rows[idx].rssi = rssi.floatValue
         } else {
-            self.rows.append((name: peripheralName, mac: uidOptional, rssi: rssi.floatValue))
+            rows.append((name: peripheralName, mac: uidOptional, rssi: rssi.floatValue))
         }
 
-        self.table.reloadData()
+        table.reloadData()
         print("Discovered \(peripheralName) with rssi \(rssi)")
     }
 }
