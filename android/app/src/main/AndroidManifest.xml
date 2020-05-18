@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.polito.humantohuman">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Activities.PolicyActivity"></activity>
+        <activity android:name=".Activities.StartActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.PermissionActivity"></activity>
+        <activity android:name=".Activities.AuthenticationActivity" />
+
+        <service
+            android:name=".Services.BGScanService"
+            android:enabled="true"
+            android:exported="false"
+            android:isolatedProcess="false"
+            android:label="scan"
+            android:permission="android.permission.ACCESS_COARSE_LOCATION" /> <!-- android:permission="android.permission.WAKE_LOCK" -->
+        <service
+            android:name=".Services.UploadService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.WAKE_LOCK" />
+
+        <receiver
+            android:name=".Receivers.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".Receivers.WifiReceiver"
+            android:permission="android.permission.WAKE_LOCK" />
+        <receiver
+            android:name=".Receivers.BtReceiver"
+            android:permission="android.permission.WAKE_LOCK">
+            <intent-filter>
+                <action android:name="BluetoothDevice.ACTION_FOUND" />
+                <action android:name="BluetoothAdapter.ACTION_DISCOVERY_FINISHED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".Receivers.UploadReceiver"
+            android:exported="false"
+            android:permission="android.permission.WAKE_LOCK">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".Receivers.RestartServiceReceiver"
+            android:exported="false"
+            android:permission="android.permission.WAKE_LOCK" />
+        <receiver
+            android:name=".Receivers.StopScanReceiver"
+            android:exported="false"
+            android:permission="android.permission.WAKE_LOCK" />
+
+        <service
+            android:name=".Services.UploadJobService"
+            android:exported="true"
+            android:label="upload_job"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <activity android:name=".Activities.ScanActivity" />
+    </application>
+
+</manifest>
