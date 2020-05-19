@@ -12,7 +12,6 @@
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
 		4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6D92472176E002B0A6B /* Main.storyboard */; };
 		4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */; };
-		4BEAE6DE24721AB6002B0A6B /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6DD24721AB6002B0A6B /* Assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +22,6 @@
 		4BEAE6D324721702002B0A6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BEAE6D92472176E002B0A6B /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		4BEAE6DD24721AB6002B0A6B /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +54,6 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
-				4BEAE6DD24721AB6002B0A6B /* Assets */,
 				4BEAE6C524721700002B0A6B /* AppDelegate.swift */,
 				4BEAE6C724721700002B0A6B /* ViewController.swift */,
 				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
@@ -125,7 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BEAE6DE24721AB6002B0A6B /* Assets in Resources */,
 				4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */,
 				4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */,
 				4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */,

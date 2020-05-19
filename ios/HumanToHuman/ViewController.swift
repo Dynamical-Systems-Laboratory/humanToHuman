@@ -3,19 +3,39 @@ import Foundation
 import SystemConfiguration.CaptiveNetwork
 import UIKit
 
-func getConnectedWifiMacAdrees() -> [String: String] {
-    var informationDictionary = [String: String]()
-    let informationArray: NSArray? = CNCopySupportedInterfaces()
-    if let information = informationArray {
-        let dict: NSDictionary? = CNCopyCurrentNetworkInfo(information[0] as! CFString)
-        if let temp = dict {
-            informationDictionary["SSID"] = String(temp["SSID"] as! String)
-            informationDictionary["BSSID"] = String(temp["BSSID"] as! String)
-            return informationDictionary
+// Return IP address of WiFi interface (en0) as a String, or `nil`
+func getWiFiAddress() -> String? {
+    var address : String?
+
+    // Get list of all interfaces on the local machine:
+    var ifaddr : UnsafeMutablePointer<ifaddrs>?
+    guard getifaddrs(&ifaddr) == 0 else { return nil }
+    guard let firstAddr = ifaddr else { return nil }
+
+    // For each interface ...
+    for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
+        let interface = ifptr.pointee
+
+        // Check for IPv4 or IPv6 interface:
+        let addrFamily = interface.ifa_addr.pointee.sa_family
+        if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
+
+            // Check interface name:
+            let name = String(cString: interface.ifa_name)
+            if  name == "en0" {
+
+                // Convert interface address to a human readable string:
+                var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                getnameinfo(interface.ifa_addr, socklen_t(interface.ifa_addr.pointee.sa_len),
+                            &hostname, socklen_t(hostname.count),
+                            nil, socklen_t(0), NI_NUMERICHOST)
+                address = String(cString: hostname)
+            }
         }
     }
+    freeifaddrs(ifaddr)
 
-    return informationDictionary
+    return address
 }
 
 class BluetoothCell: UITableViewCell {
@@ -24,14 +44,19 @@ class BluetoothCell: UITableViewCell {
 }
 
 class ViewController: UIViewController {
-    var manager: CBCentralManager!
     @IBOutlet var table: UITableView!
+    @IBOutlet var wifiLabel: UILabel!
+    
+    var manager: CBCentralManager!
     var rows: [(name: String, mac: String?, rssi: Float)]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         manager = CBCentralManager(delegate: self, queue: nil)
         rows = []
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
+            self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
+        })
     }
 
     override func viewDidAppear(_: Bool) {
@@ -87,6 +112,6 @@ extension ViewController: CBCentralManagerDelegate {
         }
 
         table.reloadData()
-        print("Discovered \(peripheralName) with rssi \(rssi)")
+//        print("Discovered \(peripheralName) with rssi \(rssi)")
     }
 }

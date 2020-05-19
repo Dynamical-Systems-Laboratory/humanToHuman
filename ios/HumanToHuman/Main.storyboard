@@ -16,7 +16,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7N8-5b-ou9">
-                                <rect key="frame" x="20" y="44" width="374" height="818"/>
+                                <rect key="frame" x="20" y="64" width="374" height="628"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="BluetoothCell" id="arg-OL-sgu" customClass="BluetoothCell" customModule="HumanToHuman" customModuleProvider="target">
@@ -57,20 +57,27 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="KaT-o0-3x8"/>
                                 </connections>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8sa-Yh-kYT">
+                                <rect key="frame" x="171" y="752" width="72" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="9rJ-ue-R0R"/>
-                            <constraint firstItem="7N8-5b-ou9" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="cdF-TZ-ueI"/>
-                            <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" id="iG7-ma-6up"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="7N8-5b-ou9" secondAttribute="trailing" constant="20" id="pHD-JZ-E4S"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" id="pJK-qi-kjo"/>
-                            <constraint firstItem="7N8-5b-ou9" firstAttribute="centerY" secondItem="I9s-FX-c6U" secondAttribute="centerY" id="sZf-uf-VSe"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="8sa-Yh-kYT" secondAttribute="bottom" constant="89" id="0yp-1b-aCm"/>
+                            <constraint firstItem="8sa-Yh-kYT" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="BU6-fs-M5a"/>
+                            <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="20" id="Hc3-VA-gh7"/>
+                            <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="KpK-BK-Uj2"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="7N8-5b-ou9" secondAttribute="trailing" constant="20" id="VTL-br-Ouu"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" constant="170" id="VZd-fQ-ReQ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="I9s-FX-c6U"/>
                     </view>
                     <connections>
                         <outlet property="table" destination="7N8-5b-ou9" id="TTQ-bc-RZG"/>
+                        <outlet property="wifiLabel" destination="8sa-Yh-kYT" id="hd0-bc-0Oe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
