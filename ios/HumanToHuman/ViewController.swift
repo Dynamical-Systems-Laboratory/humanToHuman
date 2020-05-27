@@ -23,7 +23,6 @@ func getWiFiAddress() -> String? {
             // Check interface name:
             let name = String(cString: interface.ifa_name)
             if  name == "en0" {
-
                 // Convert interface address to a human readable string:
                 var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
                 getnameinfo(interface.ifa_addr, socklen_t(interface.ifa_addr.pointee.sa_len),
@@ -82,6 +81,12 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension ViewController: CBPeripheralManagerDelegate {
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        peripheral.startAdvertising(["kCBAdvDataLocalName":"Hello"])
+    }
+}
+
 extension ViewController: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_: CBCentralManager) {}
 
@@ -112,6 +117,5 @@ extension ViewController: CBCentralManagerDelegate {
         }
 
         table.reloadData()
-//        print("Discovered \(peripheralName) with rssi \(rssi)")
     }
 }
