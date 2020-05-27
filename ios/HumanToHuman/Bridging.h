@@ -9,6 +9,6 @@
 #ifndef Bridging_h
 #define Bridging_h
 
-#import "AltBeacon/AltBeacon.h"
+#import "AltBeacon.h"
 
 #endif /* Bridging_h */

@@ -3,10 +3,6 @@ import Foundation
 import SystemConfiguration.CaptiveNetwork
 import UIKit
 
-func hello() {
-    
-}
-
 // Return IP address of WiFi interface (en0) as a String, or `nil`
 func getWiFiAddress() -> String? {
     var address : String?
@@ -50,12 +46,15 @@ class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
     
+    var beacon: AltBeacon!
     var manager: CBCentralManager!
     var rows: [(name: String, mac: String?, rssi: Float)]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         manager = CBCentralManager(delegate: self, queue: nil)
+        beacon = AltBeacon.init()
+        beacon.add(self)
         rows = []
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
             self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
@@ -64,11 +63,16 @@ class ViewController: UIViewController {
 
     override func viewDidAppear(_: Bool) {
         manager.scanForPeripherals(withServices: nil, options: nil)
+        beacon.startBroadcasting()
     }
 
     override func viewDidDisappear(_: Bool) {
         manager.stopScan()
     }
+}
+
+extension ViewController: AltBeaconDelegate {
+    
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {

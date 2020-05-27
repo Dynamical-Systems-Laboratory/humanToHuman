@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4B683DF0247E0CA400661AC9 /* AltBeacon in Resources */ = {isa = PBXBuildFile; fileRef = 4B683DEF247E0CA400661AC9 /* AltBeacon */; };
+		4B282F52247E128700114132 /* AltBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B282F31247E128700114132 /* AltBeacon.m */; };
 		4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C524721700002B0A6B /* AppDelegate.swift */; };
 		4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* ViewController.swift */; };
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
@@ -17,7 +17,50 @@
 
 /* Begin PBXFileReference section */
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
-		4B683DEF247E0CA400661AC9 /* AltBeacon */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AltBeacon; sourceTree = "<group>"; };
+		4B282F24247E128700114132 /* INWeightedAverage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = INWeightedAverage.h; sourceTree = "<group>"; };
+		4B282F25247E128700114132 /* GCDSingleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDSingleton.h; sourceTree = "<group>"; };
+		4B282F26247E128700114132 /* EasedValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EasedValue.m; sourceTree = "<group>"; };
+		4B282F27247E128700114132 /* GCDUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDUtilities.h; sourceTree = "<group>"; };
+		4B282F28247E128700114132 /* ReachabilityService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReachabilityService.h; sourceTree = "<group>"; };
+		4B282F29247E128700114132 /* INWeightedAverage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = INWeightedAverage.m; sourceTree = "<group>"; };
+		4B282F2A247E128700114132 /* EasedValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasedValue.h; sourceTree = "<group>"; };
+		4B282F2B247E128700114132 /* GCDUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDUtilities.m; sourceTree = "<group>"; };
+		4B282F2C247E128700114132 /* ReachabilityService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReachabilityService.m; sourceTree = "<group>"; };
+		4B282F2D247E128700114132 /* AltBeacon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AltBeacon.h; sourceTree = "<group>"; };
+		4B282F2F247E128700114132 /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		4B282F30247E128700114132 /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		4B282F31247E128700114132 /* AltBeacon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AltBeacon.m; sourceTree = "<group>"; };
+		4B282F33247E128700114132 /* NSSet+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSSet+Ext.m"; sourceTree = "<group>"; };
+		4B282F34247E128700114132 /* NSMutableDictionary+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+Ext.h"; sourceTree = "<group>"; };
+		4B282F35247E128700114132 /* NSObject+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Ext.m"; sourceTree = "<group>"; };
+		4B282F36247E128700114132 /* CBCentralManager+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBCentralManager+Ext.h"; sourceTree = "<group>"; };
+		4B282F37247E128700114132 /* NSMutableArray+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+Ext.m"; sourceTree = "<group>"; };
+		4B282F38247E128700114132 /* NSArray+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+Ext.h"; sourceTree = "<group>"; };
+		4B282F39247E128700114132 /* CBUUID+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBUUID+Ext.m"; sourceTree = "<group>"; };
+		4B282F3A247E128700114132 /* NSString+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Ext.m"; sourceTree = "<group>"; };
+		4B282F3B247E128700114132 /* NSMutableSet+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableSet+Ext.m"; sourceTree = "<group>"; };
+		4B282F3C247E128700114132 /* CustomExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomExtensions.h; sourceTree = "<group>"; };
+		4B282F3D247E128700114132 /* CLBeacon+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CLBeacon+Ext.h"; sourceTree = "<group>"; };
+		4B282F3E247E128700114132 /* NSRangeExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSRangeExt.m; sourceTree = "<group>"; };
+		4B282F3F247E128700114132 /* NSDictionary+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Ext.m"; sourceTree = "<group>"; };
+		4B282F40247E128700114132 /* CBPeripheralManager+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBPeripheralManager+Ext.h"; sourceTree = "<group>"; };
+		4B282F41247E128700114132 /* NSFileManager+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Ext.m"; sourceTree = "<group>"; };
+		4B282F42247E128700114132 /* NSDate+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Ext.h"; sourceTree = "<group>"; };
+		4B282F43247E128700114132 /* NSMutableDictionary+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+Ext.m"; sourceTree = "<group>"; };
+		4B282F44247E128700114132 /* NSSet+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSSet+Ext.h"; sourceTree = "<group>"; };
+		4B282F45247E128700114132 /* CBUUID+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBUUID+Ext.h"; sourceTree = "<group>"; };
+		4B282F46247E128700114132 /* NSArray+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Ext.m"; sourceTree = "<group>"; };
+		4B282F47247E128700114132 /* NSMutableArray+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+Ext.h"; sourceTree = "<group>"; };
+		4B282F48247E128700114132 /* CBCentralManager+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBCentralManager+Ext.m"; sourceTree = "<group>"; };
+		4B282F49247E128700114132 /* NSObject+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Ext.h"; sourceTree = "<group>"; };
+		4B282F4A247E128700114132 /* NSDictionary+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Ext.h"; sourceTree = "<group>"; };
+		4B282F4B247E128700114132 /* CLBeacon+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CLBeacon+Ext.m"; sourceTree = "<group>"; };
+		4B282F4C247E128700114132 /* NSRangeExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSRangeExt.h; sourceTree = "<group>"; };
+		4B282F4D247E128700114132 /* NSMutableSet+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableSet+Ext.h"; sourceTree = "<group>"; };
+		4B282F4E247E128700114132 /* NSString+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Ext.h"; sourceTree = "<group>"; };
+		4B282F4F247E128700114132 /* NSDate+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Ext.m"; sourceTree = "<group>"; };
+		4B282F50247E128700114132 /* NSFileManager+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Ext.h"; sourceTree = "<group>"; };
+		4B282F51247E128700114132 /* CBPeripheralManager+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheralManager+Ext.m"; sourceTree = "<group>"; };
 		4BEAE6C224721700002B0A6B /* HumanToHuman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanToHuman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEAE6C524721700002B0A6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4BEAE6C724721700002B0A6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -38,6 +81,69 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B282F23247E128700114132 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				4B282F24247E128700114132 /* INWeightedAverage.h */,
+				4B282F25247E128700114132 /* GCDSingleton.h */,
+				4B282F26247E128700114132 /* EasedValue.m */,
+				4B282F27247E128700114132 /* GCDUtilities.h */,
+				4B282F28247E128700114132 /* ReachabilityService.h */,
+				4B282F29247E128700114132 /* INWeightedAverage.m */,
+				4B282F2A247E128700114132 /* EasedValue.h */,
+				4B282F2B247E128700114132 /* GCDUtilities.m */,
+				4B282F2C247E128700114132 /* ReachabilityService.m */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		4B282F2E247E128700114132 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				4B282F2F247E128700114132 /* Reachability.m */,
+				4B282F30247E128700114132 /* Reachability.h */,
+			);
+			path = 3rdParty;
+			sourceTree = "<group>";
+		};
+		4B282F32247E128700114132 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				4B282F33247E128700114132 /* NSSet+Ext.m */,
+				4B282F34247E128700114132 /* NSMutableDictionary+Ext.h */,
+				4B282F35247E128700114132 /* NSObject+Ext.m */,
+				4B282F36247E128700114132 /* CBCentralManager+Ext.h */,
+				4B282F37247E128700114132 /* NSMutableArray+Ext.m */,
+				4B282F38247E128700114132 /* NSArray+Ext.h */,
+				4B282F39247E128700114132 /* CBUUID+Ext.m */,
+				4B282F3A247E128700114132 /* NSString+Ext.m */,
+				4B282F3B247E128700114132 /* NSMutableSet+Ext.m */,
+				4B282F3C247E128700114132 /* CustomExtensions.h */,
+				4B282F3D247E128700114132 /* CLBeacon+Ext.h */,
+				4B282F3E247E128700114132 /* NSRangeExt.m */,
+				4B282F3F247E128700114132 /* NSDictionary+Ext.m */,
+				4B282F40247E128700114132 /* CBPeripheralManager+Ext.h */,
+				4B282F41247E128700114132 /* NSFileManager+Ext.m */,
+				4B282F42247E128700114132 /* NSDate+Ext.h */,
+				4B282F43247E128700114132 /* NSMutableDictionary+Ext.m */,
+				4B282F44247E128700114132 /* NSSet+Ext.h */,
+				4B282F45247E128700114132 /* CBUUID+Ext.h */,
+				4B282F46247E128700114132 /* NSArray+Ext.m */,
+				4B282F47247E128700114132 /* NSMutableArray+Ext.h */,
+				4B282F48247E128700114132 /* CBCentralManager+Ext.m */,
+				4B282F49247E128700114132 /* NSObject+Ext.h */,
+				4B282F4A247E128700114132 /* NSDictionary+Ext.h */,
+				4B282F4B247E128700114132 /* CLBeacon+Ext.m */,
+				4B282F4C247E128700114132 /* NSRangeExt.h */,
+				4B282F4D247E128700114132 /* NSMutableSet+Ext.h */,
+				4B282F4E247E128700114132 /* NSString+Ext.h */,
+				4B282F4F247E128700114132 /* NSDate+Ext.m */,
+				4B282F50247E128700114132 /* NSFileManager+Ext.h */,
+				4B282F51247E128700114132 /* CBPeripheralManager+Ext.m */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		4BEAE6B924721700002B0A6B = {
 			isa = PBXGroup;
 			children = (
@@ -57,7 +163,11 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
-				4B683DEF247E0CA400661AC9 /* AltBeacon */,
+				4B282F2E247E128700114132 /* 3rdParty */,
+				4B282F2D247E128700114132 /* AltBeacon.h */,
+				4B282F31247E128700114132 /* AltBeacon.m */,
+				4B282F32247E128700114132 /* Extension */,
+				4B282F23247E128700114132 /* Util */,
 				4BEAE6C524721700002B0A6B /* AppDelegate.swift */,
 				4BEAE6C724721700002B0A6B /* ViewController.swift */,
 				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
@@ -131,7 +241,6 @@
 				4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */,
 				4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */,
 				4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */,
-				4B683DF0247E0CA400661AC9 /* AltBeacon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +253,7 @@
 			files = (
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
 				4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */,
+				4B282F52247E128700114132 /* AltBeacon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
