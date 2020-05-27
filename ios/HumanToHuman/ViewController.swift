@@ -3,6 +3,10 @@ import Foundation
 import SystemConfiguration.CaptiveNetwork
 import UIKit
 
+func hello() {
+    
+}
+
 // Return IP address of WiFi interface (en0) as a String, or `nil`
 func getWiFiAddress() -> String? {
     var address : String?

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B683DF0247E0CA400661AC9 /* AltBeacon in Resources */ = {isa = PBXBuildFile; fileRef = 4B683DEF247E0CA400661AC9 /* AltBeacon */; };
 		4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C524721700002B0A6B /* AppDelegate.swift */; };
 		4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* ViewController.swift */; };
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
@@ -15,6 +16,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
+		4B683DEF247E0CA400661AC9 /* AltBeacon */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AltBeacon; sourceTree = "<group>"; };
 		4BEAE6C224721700002B0A6B /* HumanToHuman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanToHuman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEAE6C524721700002B0A6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4BEAE6C724721700002B0A6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -54,12 +57,14 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
+				4B683DEF247E0CA400661AC9 /* AltBeacon */,
 				4BEAE6C524721700002B0A6B /* AppDelegate.swift */,
 				4BEAE6C724721700002B0A6B /* ViewController.swift */,
 				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
 				4BEAE6CB24721702002B0A6B /* Assets.xcassets */,
 				4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */,
 				4BEAE6D324721702002B0A6B /* Info.plist */,
+				4B282F22247E0F0C00114132 /* Bridging.h */,
 			);
 			path = HumanToHuman;
 			sourceTree = "<group>";
@@ -126,6 +131,7 @@
 				4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */,
 				4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */,
 				4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */,
+				4B683DF0247E0CA400661AC9 /* AltBeacon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +280,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = aliu.HumanToHuman;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = HumanToHuman/Bridging.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -296,6 +303,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = aliu.HumanToHuman;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = HumanToHuman/Bridging.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
