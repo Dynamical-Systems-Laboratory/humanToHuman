@@ -30,9 +30,7 @@
 
 #import "AltBeacon.h"
 #import <CoreBluetooth/CoreBluetooth.h>
-#import "CLBeacon+Ext.h"
 #import "CBPeripheralManager+Ext.h"
-#import "CBCentralManager+Ext.h"
 #import "CBUUID+Ext.h"
 
 
@@ -71,16 +69,12 @@
 
 - (void)stopBroadcasting {
     _isBroadcasting = NO;
-
-    // stop advertising beacon data.
     [peripheralManager stopAdvertising];
     peripheralManager = nil;
 }
 
 - (void)startBluetoothBroadcast {
-    // start broadcasting if it's stopped
     if (!peripheralManager) {
-//        peripheralManager.delegate = self;
         peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
 
     }
@@ -115,7 +109,7 @@
         if (error)
             NSLog(@"error starting advertising: %@", [error localizedDescription]);
         else
-            NSLog(@"did start advertising");
+            NSLog(@"started advertising");
     }
 }
 
