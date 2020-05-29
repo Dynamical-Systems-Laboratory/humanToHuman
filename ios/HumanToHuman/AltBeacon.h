@@ -29,7 +29,7 @@
 
 
 #import <Foundation/Foundation.h>
-
+#define ALT_BEACON_SERVICE @"00000000-0000-0000-0000-00000000007C"
 typedef enum {
     INDetectorRangeUnknown = 0,
     INDetectorRangeFar,

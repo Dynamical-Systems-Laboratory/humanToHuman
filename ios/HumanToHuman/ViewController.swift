@@ -50,7 +50,7 @@ class ViewController: UIViewController {
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
-        beacon = Bluetooth(delegate: self, ident: UIDevice.current.name)
+        beacon = Bluetooth(delegate: self, id: 32)
         rows = []
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
             let currentTime = Date()
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
-        let firstIndex = self.rows.firstIndex(where: { row in row.device.name == device.name })
+        let firstIndex = self.rows.firstIndex(where: { row in row.device.uuid == device.uuid })
 
         if let idx = firstIndex {
             self.rows[idx].device.rssi = device.rssi
@@ -87,7 +87,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BluetoothCell")! as! BluetoothCell
         let row = rows[indexPath.row]
-        cell.name.text = "\(row.device.name)"
+        cell.name.text = "\(row.device.uuid)"
         cell.rssi.text = "\(row.device.rssi)"
         return cell
     }

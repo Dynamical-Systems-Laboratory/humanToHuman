@@ -6,11 +6,12 @@
 //  Copyright © 2020 Albert Liu. All rights reserved.
 //
 
-import Foundation
 import CoreBluetooth
+import Foundation
+import UIKit
 
 struct Device {
-    let name: String
+    let uuid: UInt64
     var rssi: Float
     var measuredPower: Int?
 }
@@ -21,51 +22,98 @@ protocol BTDelegate {
 
 class Bluetooth: NSObject {
     var delegate: BTDelegate
-    var beacon: AltBeacon!
+    let id: UInt64
+    var peripheral: CBPeripheralManager!
     var central: CBCentralManager!
     var running: Bool = false
-    
-    init(delegate: BTDelegate, ident: String) {
+
+    init(delegate: BTDelegate, id: UInt64) {
         self.delegate = delegate
-        self.beacon = AltBeacon(identifier:  ident)
+        self.id = id
+    }
+
+    private func scan() {
+        central.scanForPeripherals(
+            withServices: OverflowAreaUtils.allOverflowServiceUuids(),
+            options: [CBCentralManagerScanOptionAllowDuplicatesKey: true]
+        )
     }
     
-    private func scan() {
-        self.central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+    private func advertise() {
+        peripheral.startAdvertising([
+            CBAdvertisementDataLocalNameKey: UIDevice.current.name,
+            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id)
+        ])
     }
 
     func start() {
-        if self.running { return }
-        
-        if self.central == nil {
-            self.central = CBCentralManager(delegate: self, queue: nil)
+        if running { return }
+
+        if central == nil {
+            central = CBCentralManager(delegate: self, queue: nil)
         }
-        
-        self.running = true
-        if self.central.state == .poweredOn { self.scan() }
-        self.beacon.startBroadcasting()
+
+        if peripheral == nil {
+            peripheral = CBPeripheralManager(delegate: self, queue: nil)
+        }
+
+        running = true
+        if central.state == .poweredOn { scan() }
+        if peripheral.state == .poweredOn { advertise() }
     }
-    
+
     func stop() {
-        if !self.running { return }
-        self.running = false
-        self.central.stopScan()
-        self.beacon.stopBroadcasting()
+        if !running { return }
+        running = false
+        central.stopScan()
+        peripheral.stopAdvertising()
+    }
+}
+
+extension Bluetooth: CBPeripheralManagerDelegate {
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        if peripheral.state == .poweredOn, running { advertise() }
     }
 }
 
 extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if central.state == .poweredOn && self.running { self.scan() }
+        if central.state == .poweredOn, running { scan() }
     }
 
     func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
-        if peripheral.name == nil { return }
-        self.delegate.discoveredDevice(Device(
-            name: peripheral.name!,
-            rssi: rssi.floatValue,
-            measuredPower: advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-        ))
+        let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
+        if let overflowIds = overflow as? [CBUUID] {
+            if let uuid = overflowServiceUuidsToUint64(cbUuids: overflowIds) {
+                delegate.discoveredDevice(Device(
+                    uuid: uuid,
+                    rssi: rssi.floatValue,
+                    measuredPower: advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
+                ))
+            }
+        }
     }
 }
 
+public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
+    var uint64: UInt64 = 0
+    for cbUuid in cbUuids {
+        let index = UInt64(OverflowAreaUtils.BitPostitionForOverflowServiceUuid[cbUuid]!)
+        if index == 0 { continue }
+        if index < 8 || index > 0 { return nil }
+        if index - 8 >= 64 { return nil }
+        
+        uint64 = uint64 | (1 << (index - 8))
+    }
+    return uint64
+}
+
+public func uint64ToOverflowServiceUuids(uint64: UInt64) -> [CBUUID] {
+    var cbUuids: [CBUUID] = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
+    for index in 0...63 {
+        if (1 << index) & uint64 != 0 {
+            cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index + 8])
+        }
+    }
+    return cbUuids
+}
