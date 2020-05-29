@@ -46,14 +46,11 @@ class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
     
-    var beacon: AltBeacon!
-    var manager: CBCentralManager!
-    var rows: [(name: String, rssi: Float, lastSeen: Date)] = []
+    var beacon: Bluetooth!
+    var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
-        manager = CBCentralManager(delegate: self, queue: nil)
-        beacon = AltBeacon(identifier: UIDevice.current.name)
-        beacon.add(self)
+        beacon = Bluetooth(delegate: self, ident: UIDevice.current.name)
         rows = []
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
             let currentTime = Date()
@@ -66,52 +63,36 @@ class ViewController: UIViewController {
     }
 
     override func viewDidAppear(_: Bool) {
-        beacon.startBroadcasting()
+        beacon.start()
     }
 
-    override func viewDidDisappear(_: Bool) {
-        manager.stopScan()
-    }
+    override func viewDidDisappear(_: Bool) {}
 }
 
-extension ViewController: AltBeaconDelegate {
-    func service(_ service: AltBeacon!, foundDevices devices: NSMutableDictionary!) {}
+extension ViewController: BTDelegate {
+    func discoveredDevice(_ device: Device) {
+        let firstIndex = self.rows.firstIndex(where: { row in row.device.name == device.name })
+
+        if let idx = firstIndex {
+            self.rows[idx].device.rssi = device.rssi
+            self.rows[idx].device.measuredPower = device.measuredPower
+            self.rows[idx].lastSeen = Date()
+        } else {
+            self.rows.append((device: device, lastSeen: Date()))
+        }
+    }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BluetoothCell")! as! BluetoothCell
         let row = rows[indexPath.row]
-        cell.name.text = "\(row.name)"
-        cell.rssi.text = "\(row.rssi)"
+        cell.name.text = "\(row.device.name)"
+        cell.rssi.text = "\(row.device.rssi)"
         return cell
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return rows.count
-    }
-}
-
-extension ViewController: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if central.state == .poweredOn {
-            print("bluetooth on")
-            central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
-        }
-    }
-
-    func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
-        if peripheral.name == nil { return }
-        print(advertisementData)
-        let firstIndex = rows.firstIndex(where: { per in per.name == peripheral.name! })
-
-        if let idx = firstIndex {
-            rows[idx].rssi = rssi.floatValue
-            rows[idx].lastSeen = Date()
-        } else {
-            rows.append((name: peripheral.name!, rssi: rssi.floatValue, lastSeen: Date()))
-        }
-
-        table.reloadData()
     }
 }

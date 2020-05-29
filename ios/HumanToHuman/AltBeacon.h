@@ -39,27 +39,12 @@ typedef enum {
 
 
 @class AltBeacon;
-@protocol AltBeaconDelegate <NSObject>
-@optional
-- (void)service:(AltBeacon *)service foundDevices:(NSMutableDictionary *)devices;
-- (void)service:(AltBeacon *)service bluetoothAvailable:(BOOL)enabled;
-@end
-
 @interface AltBeacon : NSObject
 
-- (id)initWithIdentifier:(NSString *)theIdentifier;
+- (id)initWithIdentifier:(NSString *)ident;
 
-- (void)addDelegate:(id<AltBeaconDelegate>)delegate;
-- (void)removeDelegate:(id<AltBeaconDelegate>)delegate;
-
-@property (nonatomic, readonly) BOOL isDetecting;
 @property (nonatomic, readonly) BOOL isBroadcasting;
-
-- (void)startDetecting;
-- (void)stopDetecting;
 
 - (void)startBroadcasting;
 - (void)stopBroadcasting;
-
-- (BOOL)hasBluetooth;
 @end

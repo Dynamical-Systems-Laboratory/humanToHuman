@@ -13,6 +13,7 @@
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
 		4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6D92472176E002B0A6B /* Main.storyboard */; };
 		4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */; };
+		4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFCDF5E2481538700C44E19 /* Bluetooth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		4BEAE6D324721702002B0A6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BEAE6D92472176E002B0A6B /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4BFCDF5E2481538700C44E19 /* Bluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				4B282F2A247E128700114132 /* EasedValue.h */,
 				4B282F2B247E128700114132 /* GCDUtilities.m */,
 				4B282F2C247E128700114132 /* ReachabilityService.m */,
+				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -251,6 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */,
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
 				4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */,
 				4B282F52247E128700114132 /* AltBeacon.m in Sources */,
