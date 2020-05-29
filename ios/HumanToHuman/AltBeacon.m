@@ -281,7 +281,7 @@ didDiscoverCharacteristicsForService:(CBService *)service
 - (void)startBluetoothBroadcast {
     // start broadcasting if it's stopped
     if (!peripheralManager) {
-        peripheralManager.delegate = self;
+//        peripheralManager.delegate = self;
         peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
 
     }
@@ -304,25 +304,25 @@ didDiscoverCharacteristicsForService:(CBService *)service
 }
 
 - (void)startAdvertising {
-    NSDictionary *advertisingData = @{CBAdvertisementDataLocalNameKey : @"AltBeacon",
+    NSDictionary *advertisingData = @{CBAdvertisementDataLocalNameKey : identifier,
             CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:ALT_BEACON_SERVICE]]};
 
-    // Start advertising over BLE
-    CBUUID *altBeaconServiceUUID =
-            [CBUUID UUIDWithString:ALT_BEACON_SERVICE];
-    CBUUID *altBeaconCharacteristicUUID =
-            [CBUUID UUIDWithString:ALT_BEACON_CHARACTERISTIC];
-
-    CBMutableService *service = [[CBMutableService alloc] initWithType:altBeaconServiceUUID primary:YES];
-    NSString *strUUID = identifier;
-    NSData *dataUUID = [strUUID dataUsingEncoding:NSUTF8StringEncoding];
-
-    characteristic =
-            [[CBMutableCharacteristic alloc] initWithType:altBeaconCharacteristicUUID
-                                               properties:CBCharacteristicPropertyRead
-                                                    value:dataUUID permissions:CBAttributePermissionsReadable];
-    service.characteristics = @[characteristic];
-    [peripheralManager addService:service];
+//    // Start advertising over BLE
+//    CBUUID *altBeaconServiceUUID =
+//            [CBUUID UUIDWithString:ALT_BEACON_SERVICE];
+//    CBUUID *altBeaconCharacteristicUUID =
+//            [CBUUID UUIDWithString:ALT_BEACON_CHARACTERISTIC];
+//
+//    CBMutableService *service = [[CBMutableService alloc] initWithType:altBeaconServiceUUID primary:YES];
+//    NSString *strUUID = identifier;
+//    NSData *dataUUID = [identifier dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    characteristic =
+//            [[CBMutableCharacteristic alloc] initWithType:altBeaconCharacteristicUUID
+//                                               properties:CBCharacteristicPropertyRead
+//                                                    value:dataUUID permissions:CBAttributePermissionsReadable];
+//    service.characteristics = @[characteristic];
+//    [peripheralManager addService:service];
     [peripheralManager startAdvertising:advertisingData];
 
     _isBroadcasting = YES;
@@ -471,7 +471,7 @@ didDiscoverCharacteristicsForService:(CBService *)service
     if (DEBUG_PERIPHERAL)
         NSLog(@"-- peripheral state changed: %@", peripheral.stateString);
 
-    if (peripheral.state == CBPeripheralManagerStatePoweredOn) {
+    if (peripheral.state == CBManagerStatePoweredOn) {
         [self startAdvertising];
     }
 }

@@ -48,21 +48,24 @@ class ViewController: UIViewController {
     
     var beacon: AltBeacon!
     var manager: CBCentralManager!
-    var rows: [(name: String, mac: String?, rssi: Float)]!
+    var rows: [(name: String, rssi: Float, lastSeen: Date)] = []
 
     override func viewDidLoad() {
-        super.viewDidLoad()
         manager = CBCentralManager(delegate: self, queue: nil)
-        beacon = AltBeacon.init()
+        beacon = AltBeacon(identifier: UIDevice.current.name)
         beacon.add(self)
         rows = []
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
+            let currentTime = Date()
+            self.rows = self.rows.filter({ row in
+                row.lastSeen.addingTimeInterval(1.0).compare(currentTime) != .orderedAscending
+            })
             self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
+            self.table.reloadData()
         })
     }
 
     override func viewDidAppear(_: Bool) {
-        manager.scanForPeripherals(withServices: nil, options: nil)
         beacon.startBroadcasting()
     }
 
@@ -72,7 +75,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: AltBeaconDelegate {
-    
+    func service(_ service: AltBeacon!, foundDevices devices: NSMutableDictionary!) {}
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -89,39 +92,24 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-extension ViewController: CBPeripheralManagerDelegate {
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        peripheral.startAdvertising(["kCBAdvDataLocalName":"Hello"])
-    }
-}
-
 extension ViewController: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_: CBCentralManager) {}
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if central.state == .poweredOn {
+            print("bluetooth on")
+            central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+        }
+    }
 
     func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
-        var firstIndex: Int?
-        let uidOptional = advertisementData["kCBAdvDataManufacturerData"].map { _ in "" }
-        let peripheralName = peripheral.name ?? "UNNAMED"
-        if let uid = uidOptional {
-            firstIndex = rows.firstIndex(where: { per in
-                if let perUid = per.mac {
-                    return perUid == uid
-                } else {
-                    return false
-                }
-            })
-        } else if let name = peripheral.name {
-            firstIndex = rows.firstIndex(where: { per in per.name == name })
-        } else { // We don't track of unidentifiable objects
-            return
-        }
+        if peripheral.name == nil { return }
+        print(advertisementData)
+        let firstIndex = rows.firstIndex(where: { per in per.name == peripheral.name! })
 
         if let idx = firstIndex {
-            rows[idx].name = peripheralName
-            rows[idx].mac = uidOptional
             rows[idx].rssi = rssi.floatValue
+            rows[idx].lastSeen = Date()
         } else {
-            rows.append((name: peripheralName, mac: uidOptional, rssi: rssi.floatValue))
+            rows.append((name: peripheral.name!, rssi: rssi.floatValue, lastSeen: Date()))
         }
 
         table.reloadData()
