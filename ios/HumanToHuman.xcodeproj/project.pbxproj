@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4B282F52247E128700114132 /* AltBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B282F31247E128700114132 /* AltBeacon.m */; };
 		4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */; };
+		4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A022481C6D900FE73F0 /* Wifi.swift */; };
 		4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C524721700002B0A6B /* AppDelegate.swift */; };
 		4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* ViewController.swift */; };
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
@@ -26,6 +27,7 @@
 		4B282F45247E128700114132 /* CBUUID+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBUUID+Ext.h"; sourceTree = "<group>"; };
 		4B282F51247E128700114132 /* CBPeripheralManager+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheralManager+Ext.m"; sourceTree = "<group>"; };
 		4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverflowAreaUtils.swift; sourceTree = "<group>"; };
+		4BD70A022481C6D900FE73F0 /* Wifi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wifi.swift; sourceTree = "<group>"; };
 		4BEAE6C224721700002B0A6B /* HumanToHuman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanToHuman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEAE6C524721700002B0A6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4BEAE6C724721700002B0A6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 			children = (
 				4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */,
 				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
+				4BD70A022481C6D900FE73F0 /* Wifi.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -175,6 +178,7 @@
 			files = (
 				4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */,
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
+				4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */,
 				4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */,
 				4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */,
 				4B282F52247E128700114132 /* AltBeacon.m in Sources */,

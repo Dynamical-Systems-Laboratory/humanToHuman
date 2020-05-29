@@ -82,14 +82,16 @@ extension Bluetooth: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+        let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {
-            if let uuid = overflowServiceUuidsToUint64(cbUuids: overflowIds) {
+            if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 delegate.discoveredDevice(Device(
                     uuid: uuid,
                     rssi: rssi.floatValue,
                     measuredPower: advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
                 ))
+            } else {
             }
         }
     }
@@ -100,7 +102,7 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
     for cbUuid in cbUuids {
         let index = UInt64(OverflowAreaUtils.BitPostitionForOverflowServiceUuid[cbUuid]!)
         if index == 0 { continue }
-        if index < 8 || index > 0 { return nil }
+        if index < 8 && index > 0 { return nil }
         if index - 8 >= 64 { return nil }
         
         uint64 = uint64 | (1 << (index - 8))
