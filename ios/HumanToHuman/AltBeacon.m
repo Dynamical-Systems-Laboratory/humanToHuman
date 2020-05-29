@@ -35,8 +35,6 @@
 #import "CBCentralManager+Ext.h"
 #import "CBUUID+Ext.h"
 
-#import "GCDSingleton.h"
-#import "EasedValue.h"
 
 #define DEBUG_CENTRAL NO
 #define DEBUG_PERIPHERAL NO
@@ -107,9 +105,6 @@
 #pragma mark - CBPeripheralManagerDelegate
 
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
-    if (DEBUG_PERIPHERAL)
-        NSLog(@"-- peripheral state changed: %@", peripheral.stateString);
-
     if (peripheral.state == CBManagerStatePoweredOn) {
         [self startAdvertising];
     }

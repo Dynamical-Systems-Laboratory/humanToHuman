@@ -18,18 +18,7 @@
 
 /* Begin PBXFileReference section */
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
-		4B282F24247E128700114132 /* INWeightedAverage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = INWeightedAverage.h; sourceTree = "<group>"; };
-		4B282F25247E128700114132 /* GCDSingleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDSingleton.h; sourceTree = "<group>"; };
-		4B282F26247E128700114132 /* EasedValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EasedValue.m; sourceTree = "<group>"; };
-		4B282F27247E128700114132 /* GCDUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDUtilities.h; sourceTree = "<group>"; };
-		4B282F28247E128700114132 /* ReachabilityService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReachabilityService.h; sourceTree = "<group>"; };
-		4B282F29247E128700114132 /* INWeightedAverage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = INWeightedAverage.m; sourceTree = "<group>"; };
-		4B282F2A247E128700114132 /* EasedValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasedValue.h; sourceTree = "<group>"; };
-		4B282F2B247E128700114132 /* GCDUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDUtilities.m; sourceTree = "<group>"; };
-		4B282F2C247E128700114132 /* ReachabilityService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReachabilityService.m; sourceTree = "<group>"; };
 		4B282F2D247E128700114132 /* AltBeacon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AltBeacon.h; sourceTree = "<group>"; };
-		4B282F2F247E128700114132 /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		4B282F30247E128700114132 /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		4B282F31247E128700114132 /* AltBeacon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AltBeacon.m; sourceTree = "<group>"; };
 		4B282F33247E128700114132 /* NSSet+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSSet+Ext.m"; sourceTree = "<group>"; };
 		4B282F34247E128700114132 /* NSMutableDictionary+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+Ext.h"; sourceTree = "<group>"; };
@@ -86,27 +75,9 @@
 		4B282F23247E128700114132 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				4B282F24247E128700114132 /* INWeightedAverage.h */,
-				4B282F25247E128700114132 /* GCDSingleton.h */,
-				4B282F26247E128700114132 /* EasedValue.m */,
-				4B282F27247E128700114132 /* GCDUtilities.h */,
-				4B282F28247E128700114132 /* ReachabilityService.h */,
-				4B282F29247E128700114132 /* INWeightedAverage.m */,
-				4B282F2A247E128700114132 /* EasedValue.h */,
-				4B282F2B247E128700114132 /* GCDUtilities.m */,
-				4B282F2C247E128700114132 /* ReachabilityService.m */,
 				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
 			);
 			path = Util;
-			sourceTree = "<group>";
-		};
-		4B282F2E247E128700114132 /* 3rdParty */ = {
-			isa = PBXGroup;
-			children = (
-				4B282F2F247E128700114132 /* Reachability.m */,
-				4B282F30247E128700114132 /* Reachability.h */,
-			);
-			path = 3rdParty;
 			sourceTree = "<group>";
 		};
 		4B282F32247E128700114132 /* Extension */ = {
@@ -166,7 +137,6 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
-				4B282F2E247E128700114132 /* 3rdParty */,
 				4B282F2D247E128700114132 /* AltBeacon.h */,
 				4B282F31247E128700114132 /* AltBeacon.m */,
 				4B282F32247E128700114132 /* Extension */,
