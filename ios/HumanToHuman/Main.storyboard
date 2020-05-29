@@ -38,9 +38,17 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PWR" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="22j-QR-2v8">
+                                                    <rect key="frame" x="272" y="18.5" width="38" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="NBm-WF-qyN" firstAttribute="centerY" secondItem="l8M-sz-WfK" secondAttribute="centerY" id="CAY-Q4-zEB"/>
+                                                <constraint firstItem="22j-QR-2v8" firstAttribute="centerY" secondItem="l8M-sz-WfK" secondAttribute="centerY" id="Co4-uX-2K8"/>
+                                                <constraint firstItem="whp-xf-tv0" firstAttribute="leading" secondItem="22j-QR-2v8" secondAttribute="trailing" constant="8" id="GB0-7D-WNT"/>
                                                 <constraint firstItem="NBm-WF-qyN" firstAttribute="leading" secondItem="l8M-sz-WfK" secondAttribute="leading" constant="20" id="Jic-dK-hX1"/>
                                                 <constraint firstAttribute="trailing" secondItem="whp-xf-tv0" secondAttribute="trailing" constant="20" id="NrT-Az-HdY"/>
                                                 <constraint firstItem="whp-xf-tv0" firstAttribute="top" secondItem="l8M-sz-WfK" secondAttribute="top" constant="18.5" id="gL1-9P-FhB"/>
@@ -49,6 +57,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="name" destination="NBm-WF-qyN" id="cMG-F6-2iH"/>
+                                            <outlet property="power" destination="22j-QR-2v8" id="c2X-8E-5Rg"/>
                                             <outlet property="rssi" destination="whp-xf-tv0" id="dxi-oF-N10"/>
                                         </connections>
                                     </tableViewCell>

@@ -4,6 +4,7 @@ import UIKit
 
 class BluetoothCell: UITableViewCell {
     @IBOutlet var name: UILabel!
+    @IBOutlet var power: UILabel!
     @IBOutlet var rssi: UILabel!
 }
 
@@ -54,6 +55,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         let row = rows[indexPath.row]
         cell.name.text = "\(row.device.uuid)"
         cell.rssi.text = "\(row.device.rssi)"
+        cell.power.text = "\(row.device.measuredPower)";
         return cell
     }
 

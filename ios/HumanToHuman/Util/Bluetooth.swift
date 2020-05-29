@@ -13,7 +13,7 @@ import UIKit
 struct Device {
     let uuid: UInt64
     var rssi: Float
-    var measuredPower: Int?
+    var measuredPower: Int
 }
 
 protocol BTDelegate {
@@ -41,7 +41,6 @@ class Bluetooth: NSObject {
     
     private func advertise() {
         peripheral.startAdvertising([
-            CBAdvertisementDataLocalNameKey: UIDevice.current.name,
             CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id)
         ])
     }
@@ -86,10 +85,11 @@ extension Bluetooth: CBCentralManagerDelegate {
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
+                let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
                 delegate.discoveredDevice(Device(
                     uuid: uuid,
                     rssi: rssi.floatValue,
-                    measuredPower: advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
+                    measuredPower: measuredPower ?? -1
                 ))
             } else {
             }
