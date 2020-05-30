@@ -17,6 +17,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         beacon = Bluetooth(delegate: self, id: 32)
+        print(initDatabase())
         rows = []
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
@@ -33,10 +34,18 @@ class ViewController: UIViewController {
     }
 
     override func viewDidDisappear(_: Bool) {}
+    
+    @IBAction func printData() {
+        print(readRows())
+    }
 }
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
+        guard writeRow(device: device) else {
+            print("something went wrong with sql")
+            return
+        }
         let firstIndex = rows.firstIndex(where: { row in row.device.uuid == device.uuid })
 
         if let idx = firstIndex {

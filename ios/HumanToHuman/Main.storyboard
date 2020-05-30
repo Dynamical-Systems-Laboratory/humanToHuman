@@ -73,10 +73,19 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wHl-XZ-cl7">
+                                <rect key="frame" x="184" y="798" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="printData" destination="BYZ-38-t0r" eventType="touchUpInside" id="Z0g-9U-rac"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="8sa-Yh-kYT" secondAttribute="bottom" constant="89" id="0yp-1b-aCm"/>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="top" secondItem="8sa-Yh-kYT" secondAttribute="bottom" constant="25" id="4f6-rj-7Xa"/>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="centerX" secondItem="8sa-Yh-kYT" secondAttribute="centerX" id="5YG-Qm-8Hz"/>
                             <constraint firstItem="8sa-Yh-kYT" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="BU6-fs-M5a"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="20" id="Hc3-VA-gh7"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="KpK-BK-Uj2"/>
