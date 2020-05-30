@@ -6,8 +6,8 @@
 //  Licensed under Apache 2
 //
 
-import Foundation
 import CoreBluetooth
+import Foundation
 
 public class OverflowAreaUtils {
     public static let TableOfOverflowServiceUuidStringsByBitPosition = [
@@ -138,9 +138,9 @@ public class OverflowAreaUtils {
         "00000000-0000-0000-0000-000000000060",
         "00000000-0000-0000-0000-00000000002B",
         "00000000-0000-0000-0000-000000000072",
-        "00000000-0000-0000-0000-000000000039"
+        "00000000-0000-0000-0000-000000000039",
     ]
-    private static var _tableOfOverflowServiceUuidsByBitPosition: [CBUUID]? = nil
+    private static var _tableOfOverflowServiceUuidsByBitPosition: [CBUUID]?
     public static var TableOfOverflowServiceUuidsByBitPosition: [CBUUID] {
         if _tableOfOverflowServiceUuidsByBitPosition == nil {
             var table: [CBUUID] = []
@@ -151,12 +151,11 @@ public class OverflowAreaUtils {
         }
         return _tableOfOverflowServiceUuidsByBitPosition ?? []
     }
-    
-    
-    private static var _bitPostitionForOverflowServiceUuid: [CBUUID:Int]? = nil
-    public static var BitPostitionForOverflowServiceUuid: [CBUUID:Int] {
+
+    private static var _bitPostitionForOverflowServiceUuid: [CBUUID: Int]?
+    public static var BitPostitionForOverflowServiceUuid: [CBUUID: Int] {
         if _bitPostitionForOverflowServiceUuid == nil {
-            var dict: [CBUUID:Int] = [:]
+            var dict: [CBUUID: Int] = [:]
             var index = 0
             for uuid in TableOfOverflowServiceUuidsByBitPosition {
                 dict[uuid] = index
@@ -166,11 +165,11 @@ public class OverflowAreaUtils {
         }
         return _bitPostitionForOverflowServiceUuid ?? [:]
     }
-    
+
     public static func allOverflowServiceUuids() -> [CBUUID] {
         return TableOfOverflowServiceUuidsByBitPosition
     }
-    
+
     public static func overflowServiceUuidsToBinaryString(overflowUuids: [CBUUID]) -> String {
         var binaryString = ""
         var bitPositions: [Int] = []
@@ -179,20 +178,19 @@ public class OverflowAreaUtils {
                 bitPositions.append(index)
             }
         }
-        for index in 0...127 {
+        for index in 0 ... 127 {
             if bitPositions.contains(index) {
                 binaryString.append("1")
-            }
-            else {
+            } else {
                 binaryString.append("0")
             }
         }
         return binaryString
     }
-    
+
     // Returns nil if the advertisement is not an overflow area dvertisement.  Otherwise, returns a
     // byte arrray indicating which bits are set
-    public static func extractOverflowAreaBytes(advertisementData: [String : Any]) -> [UInt8]? {
+    public static func extractOverflowAreaBytes(advertisementData: [String: Any]) -> [UInt8]? {
         if let overflowUuids = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey] as? [CBUUID] {
             return overflowServiceUuidsToBytes(overflowUuids: overflowUuids)
         }
@@ -208,55 +206,53 @@ public class OverflowAreaUtils {
                 bitPositions.append(index)
             }
         }
-        for byteNumber in 0...15 {
+        for byteNumber in 0 ... 15 {
             var byte: UInt8 = 0
-            for bitNumber in 0...7 {
-                let bitPosition = byteNumber*8+bitNumber
+            for bitNumber in 0 ... 7 {
+                let bitPosition = byteNumber * 8 + bitNumber
                 if bitPositions.contains(bitPosition) {
-                    byte = byte | UInt8(2 << (bitNumber-1))
+                    byte = byte | UInt8(2 << (bitNumber - 1))
                 }
             }
             bytes.append(byte)
         }
         return bytes
     }
-    
+
     public static func bytesToOverflowServiceUuids(bytes: [UInt8]) -> [CBUUID] {
         var cbUuids: [CBUUID] = []
-        for byteNumber in 0...15 {
-            for bitNumber in 0...7 {
-                let bitPosition = byteNumber*8+bitNumber
-                if bytes[byteNumber] & UInt8(2 << (bitNumber-1)) != 0 {
+        for byteNumber in 0 ... 15 {
+            for bitNumber in 0 ... 7 {
+                let bitPosition = byteNumber * 8 + bitNumber
+                if bytes[byteNumber] & UInt8(2 << (bitNumber - 1)) != 0 {
                     cbUuids.append(TableOfOverflowServiceUuidsByBitPosition[bitPosition])
                 }
             }
         }
         return cbUuids
     }
-    
+
     public static func binaryStringToOverflowServiceUuids(binaryString: String) -> [CBUUID] {
         let binaryCharArray = Array(binaryString)
         var cbUuids: [CBUUID] = []
-        for index in 0...127 {
+        for index in 0 ... 127 {
             if binaryCharArray[index] == "1" {
                 cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index])
             }
         }
         return cbUuids
     }
-    
-    
-    
+
     public static func test() {
-        let pattern1: [UInt8] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-        let pattern2: [UInt8] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        let pattern3: [UInt8] = [255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255]
-        let pattern4: [UInt8] = [0,1,2,4,8,16,32,64,128,255,127,63,31,15,7,3]
+        let pattern1: [UInt8] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        let pattern2: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let pattern3: [UInt8] = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+        let pattern4: [UInt8] = [0, 1, 2, 4, 8, 16, 32, 64, 128, 255, 127, 63, 31, 15, 7, 3]
         let patterns = [pattern1, pattern2, pattern3, pattern4]
         for pattern in patterns {
             let uuids = bytesToOverflowServiceUuids(bytes: pattern)
             let bytes = overflowServiceUuidsToBytes(overflowUuids: uuids)
-            for i in 0...15 {
+            for i in 0 ... 15 {
                 if bytes[i] != pattern[i] {
                     NSLog("Failed on pattern \(pattern)")
                 }

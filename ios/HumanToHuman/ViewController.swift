@@ -11,18 +11,18 @@ class BluetoothCell: UITableViewCell {
 class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
-    
+
     var beacon: Bluetooth!
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
         beacon = Bluetooth(delegate: self, id: 32)
         rows = []
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
-            self.rows = self.rows.filter({ row in
+            self.rows = self.rows.filter { row in
                 row.lastSeen.addingTimeInterval(1.0).compare(currentTime) != .orderedAscending
-            })
+            }
             self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
             self.table.reloadData()
         })
@@ -37,14 +37,14 @@ class ViewController: UIViewController {
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
-        let firstIndex = self.rows.firstIndex(where: { row in row.device.uuid == device.uuid })
+        let firstIndex = rows.firstIndex(where: { row in row.device.uuid == device.uuid })
 
         if let idx = firstIndex {
-            self.rows[idx].device.rssi = device.rssi
-            self.rows[idx].device.measuredPower = device.measuredPower
-            self.rows[idx].lastSeen = Date()
+            rows[idx].device.rssi = device.rssi
+            rows[idx].device.measuredPower = device.measuredPower
+            rows[idx].lastSeen = Date()
         } else {
-            self.rows.append((device: device, lastSeen: Date()))
+            rows.append((device: device, lastSeen: Date()))
         }
     }
 }
@@ -55,7 +55,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         let row = rows[indexPath.row]
         cell.name.text = "\(row.device.uuid)"
         cell.rssi.text = "\(row.device.rssi)"
-        cell.power.text = "\(row.device.measuredPower)";
+        cell.power.text = "\(row.device.measuredPower)"
         return cell
     }
 

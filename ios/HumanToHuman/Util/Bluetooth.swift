@@ -38,10 +38,10 @@ class Bluetooth: NSObject {
             options: [CBCentralManagerScanOptionAllowDuplicatesKey: true]
         )
     }
-    
+
     private func advertise() {
         peripheral.startAdvertising([
-            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id)
+            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id),
         ])
     }
 
@@ -80,7 +80,7 @@ extension Bluetooth: CBCentralManagerDelegate {
         if central.state == .poweredOn, running { scan() }
     }
 
-    func centralManager(_: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+    func centralManager(_: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
         let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {
@@ -91,8 +91,7 @@ extension Bluetooth: CBCentralManagerDelegate {
                     rssi: rssi.floatValue,
                     measuredPower: measuredPower ?? -1
                 ))
-            } else {
-            }
+            } else {}
         }
     }
 }
@@ -102,9 +101,9 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
     for cbUuid in cbUuids {
         let index = UInt64(OverflowAreaUtils.BitPostitionForOverflowServiceUuid[cbUuid]!)
         if index == 0 { continue }
-        if index < 8 && index > 0 { return nil }
+        if index < 8, index > 0 { return nil }
         if index - 8 >= 64 { return nil }
-        
+
         uint64 = uint64 | (1 << (index - 8))
     }
     return uint64
@@ -112,7 +111,7 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
 
 public func uint64ToOverflowServiceUuids(uint64: UInt64) -> [CBUUID] {
     var cbUuids: [CBUUID] = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
-    for index in 0...63 {
+    for index in 0 ... 63 {
         if (1 << index) & uint64 != 0 {
             cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index + 8])
         }
