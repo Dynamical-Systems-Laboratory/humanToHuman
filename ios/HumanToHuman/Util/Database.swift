@@ -20,6 +20,10 @@ func initDatabase() -> Bool {
             value       TEXT            NOT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS experiment_member_ids (
+            key         INTEGER         PRIMARY KEY,
+        );
+
         CREATE TABLE IF NOT EXISTS sensor_data (
             id          INTEGER         PRIMARY KEY AUTOINCREMENT,
             time        TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
