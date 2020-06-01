@@ -66,7 +66,7 @@ func NewUser(c *gin.Context) {
 // AddConnections godoc
 // @Summary Adds a design
 // @Param id formData string true "id of current device"
-// @Param time formData time.Time true "time of connection: 2012-11-01T22:08:41+00:00"
+// @Param time formData string true "time of connection: 2012-11-01T22:08:41+00:00"
 // @Param other formData uint64 true "device connected to"
 // @Param power formData int32 true "power of the connection"
 // @Param rssi formData float64 true "rssi of the connection"
