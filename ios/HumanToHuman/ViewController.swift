@@ -2,6 +2,8 @@ import CoreBluetooth
 import Foundation
 import UIKit
 
+let API_URL = URL(string: "http://192.168.1.151")!
+
 class BluetoothCell: UITableViewCell {
     @IBOutlet var name: UILabel!
     @IBOutlet var power: UILabel!
@@ -13,12 +15,30 @@ class ViewController: UIViewController {
     @IBOutlet var wifiLabel: UILabel!
 
     var beacon: Bluetooth!
+    var queuedRows: [Row]?
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
         beacon = Bluetooth(delegate: self, id: 32)
-        print(initDatabase())
+        print(Database.initDatabase())
         rows = []
+        Timer.scheduledTimer(withTimeInterval: 60, repeats: true, block: { _ in
+            if self.queuedRows == nil {
+                self.queuedRows = Database.popRows()
+            }
+            
+            URLSession.shared.dataTask(with: API_URL) { (data, response, error) in
+                if let data = data {
+                    print(data)
+                }
+                
+            }
+            
+            
+            
+            // try sending queuedRows
+            
+        })
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
             self.rows = self.rows.filter { row in
@@ -36,13 +56,13 @@ class ViewController: UIViewController {
     override func viewDidDisappear(_: Bool) {}
     
     @IBAction func printData() {
-        print(readRows())
+        print(Database.readRows())
     }
 }
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
-        guard writeRow(device: device) else {
+        guard Database.writeRow(device: device) else {
             print("something went wrong with sql")
             return
         }

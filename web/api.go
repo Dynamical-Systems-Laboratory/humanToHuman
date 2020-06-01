@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
+	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -96,5 +97,9 @@ func AddConnection(c *gin.Context) {
 	}
 
 	err = database.InsertConnections(connections)
+	for _, conn := range connections {
+		utils.Log("%v", conn)
+	}
+
 	JsonInfer(c, len(connections), err)
 }
