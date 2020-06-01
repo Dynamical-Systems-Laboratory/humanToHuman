@@ -2,8 +2,22 @@ package web
 
 import (
 	"errors"
+	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/gin-gonic/gin"
+	"time"
 )
+
+type OneWayConnection struct {
+	Time  string  `json:"time"`
+	Other uint64  `json:"other"`
+	Power uint64  `json:"power"`
+	Rssi  float64 `json:"rssi"`
+}
+
+type ConnectionInfo struct {
+	Id          uint64             `json:"id"`
+	Connections []OneWayConnection `json:"connections"`
+}
 
 type ErrorApiMessage struct {
 	Status  uint64 `json:"status"`
@@ -37,4 +51,50 @@ func JsonFail(c *gin.Context, err error) bool {
 		return true
 	}
 	return false
+}
+
+// AddUser godoc
+// @Summary Adds a user
+// @Success 200 {object} uint64
+// @Failure 400 {object} web.ErrorApiMessage
+// @Router /addUser [post]
+func NewUser(c *gin.Context) {
+	id, err := database.InsertUser()
+	JsonInfer(c, id, err)
+}
+
+// AddConnections godoc
+// @Summary Adds a design
+// @Param id formData string true "id of current device"
+// @Param time formData time.Time true "time of connection: 2012-11-01T22:08:41+00:00"
+// @Param other formData uint64 true "device connected to"
+// @Param power formData int32 true "power of the connection"
+// @Param rssi formData float64 true "rssi of the connection"
+// @Success 200 {object} uint64
+// @Failure 400 {object} web.ErrorApiMessage
+// @Router /designs/add [post]
+func AddConnection(c *gin.Context) {
+	var userConns ConnectionInfo
+	err := c.BindJSON(&userConns)
+	if JsonFail(c, err) {
+		return
+	}
+
+	var conn database.Connection
+	conn.DeviceA = userConns.Id
+	connections := make([]database.Connection, 100)[:0]
+	for _, connection := range userConns.Connections {
+		conn.Time, err = time.Parse(database.TimeFormat, connection.Time)
+		if JsonFail(c, err) {
+			return
+		}
+
+		conn.DeviceB = connection.Other
+		conn.Power = connection.Power
+		conn.Rssi = connection.Rssi
+		connections = append(connections, conn)
+	}
+
+	err = database.InsertConnections(connections)
+	JsonInfer(c, len(connections), err)
 }

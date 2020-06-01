@@ -14,8 +14,6 @@ func main() {
 	router := gin.Default()
 
 	database.ConnectToDb(database.DefaultURL)
-
 	database.Clear()
-
 	router.Run(":8080")
 }
