@@ -2,9 +2,7 @@ package main
 
 import (
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
-	_ "github.com/Dynamical-Systems-Laboratory/humanToHuman/test"
-	_ "github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
-	_ "github.com/Dynamical-Systems-Laboratory/humanToHuman/web"
+	"github.com/Dynamical-Systems-Laboratory/humanToHuman/web"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -15,5 +13,7 @@ func main() {
 
 	database.ConnectToDb(database.DefaultURL)
 	database.Clear()
+	router.POST("/addUser", web.NewUser)
+	router.POST("/addConnections", web.AddConnections)
 	router.Run(":8080")
 }

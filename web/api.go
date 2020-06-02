@@ -40,6 +40,7 @@ var (
 
 func JsonInfer(c *gin.Context, object interface{}, err error) {
 	if err != nil {
+		utils.IError(err, "Error on path %v", c.Request.URL)
 		c.JSON(400, ErrorApiMessage{400, err.Error()})
 	} else {
 		c.JSON(200, object)
@@ -48,6 +49,7 @@ func JsonInfer(c *gin.Context, object interface{}, err error) {
 
 func JsonFail(c *gin.Context, err error) bool {
 	if err != nil {
+		utils.IError(err, "Error on path %v", c.Request.URL)
 		c.JSON(400, ErrorApiMessage{400, err.Error()})
 		return true
 	}
@@ -65,7 +67,7 @@ func NewUser(c *gin.Context) {
 }
 
 // AddConnections godoc
-// @Summary Adds a design
+// @Summary Adds a set of connection
 // @Param id formData string true "id of current device"
 // @Param time formData string true "time of connection: 2012-11-01T22:08:41+00:00"
 // @Param other formData uint64 true "device connected to"
@@ -73,8 +75,8 @@ func NewUser(c *gin.Context) {
 // @Param rssi formData float64 true "rssi of the connection"
 // @Success 200 {object} uint64
 // @Failure 400 {object} web.ErrorApiMessage
-// @Router /designs/add [post]
-func AddConnection(c *gin.Context) {
+// @Router /addConnections [post]
+func AddConnections(c *gin.Context) {
 	var userConns ConnectionInfo
 	err := c.BindJSON(&userConns)
 	if JsonFail(c, err) {
@@ -97,9 +99,5 @@ func AddConnection(c *gin.Context) {
 	}
 
 	err = database.InsertConnections(connections)
-	for _, conn := range connections {
-		utils.Log("%v", conn)
-	}
-
 	JsonInfer(c, len(connections), err)
 }

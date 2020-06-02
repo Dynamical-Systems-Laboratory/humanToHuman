@@ -40,6 +40,12 @@ func IFail(msg string, args ...interface{}) {
 	os.Exit(1)
 }
 
+func IError(err error, msg string, args ...interface{}) {
+	if err != nil {
+		skipFramesLog(2, fmt.Sprintf("ERROR: "+msg+" ("+err.Error()+")", args...))
+	}
+}
+
 func ISuccess(msg string, args ...interface{}) {
 	skipFramesLog(2, "SUCCESS: "+fmt.Sprintf(msg, args...))
 }

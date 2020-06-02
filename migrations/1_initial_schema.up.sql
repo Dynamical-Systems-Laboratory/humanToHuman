@@ -4,11 +4,11 @@ create table if not exists devices (
 );
 
 create table if not exists connections (
-  id                INTEGER                           NOT NULL,
+  id                SERIAL                            NOT NULL,
   time              TIMESTAMP                         NOT NULL,
   device_a          BIGINT REFERENCES devices (id)    NOT NULL,
   device_b          BIGINT REFERENCES devices (id)    NOT NULL,
-  meausured_power   INTEGER                           NOT NULL,
+  measured_power   INTEGER                            NOT NULL,
   rssi              FLOAT                             NOT NULL,
   PRIMARY KEY (id)
 );

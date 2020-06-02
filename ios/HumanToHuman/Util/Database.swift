@@ -11,6 +11,7 @@ let shared: FMDatabase = {
 }()
 
 struct Row {
+    let id: UInt64
     let time: Date
     let source: UInt64
     let power: Int
@@ -23,6 +24,7 @@ struct Database {
             print("failed to open database")
             return false
         }
+        
         guard shared.executeStatements(
             """
             CREATE TABLE IF NOT EXISTS metadata (
@@ -32,7 +34,7 @@ struct Database {
             );
 
             CREATE TABLE IF NOT EXISTS experiment_member_ids (
-                key         INTEGER         PRIMARY KEY,
+                key         INTEGER         PRIMARY KEY
             );
 
             CREATE TABLE IF NOT EXISTS sensor_data (
@@ -60,15 +62,20 @@ struct Database {
 
     static func popRows() -> [Row] {
         do {
-            var rs = try shared.executeQuery("SELECT max(id) AS max_id FROM sensor_data", values: nil)
+            var rs = try shared.executeQuery("SELECT MAX(id) as max_id FROM sensor_data", values: nil)
+            rs.next()
             let rowMax = rs.longLongInt(forColumn: "max_id")
             rs.close()
+            
+            print(rowMax)
 
-            rs = try shared.executeQuery("SELECT time, source, power, rssi FROM sensor_data WHERE id <= ?", values: [rowMax])
+            rs = try shared.executeQuery("SELECT * FROM sensor_data WHERE id <= ?", values: [rowMax])
             var list: [Row] = []
             while rs.next() {
+                let timeNumber = Double(rs.longLongInt(forColumn: "time")) / 1000.0
                 let row = Row(
-                    time: rs.date(forColumn: "time")!,
+                    id: UInt64(bitPattern: rs.longLongInt(forColumn: "id")),
+                    time: Date(timeIntervalSince1970: timeNumber),
                     source: UInt64(bitPattern: rs.longLongInt(forColumn: "source")),
                     power: rs.long(forColumn: "power"),
                     rssi: rs.double(forColumn: "rssi")
@@ -76,7 +83,7 @@ struct Database {
                 list.append(row)
             }
             rs.close()
-            shared.executeUpdate("DELETE FROM sensor_date WHERE id <= ?", withArgumentsIn: [rowMax])
+            shared.executeUpdate("DELETE FROM sensor_data WHERE id <= ?", withArgumentsIn: [rowMax])
             return list
         } catch {
             print(shared.lastErrorMessage())
@@ -100,11 +107,12 @@ struct Database {
 
     static func readRows() -> [Row] {
         do {
-            let rs = try shared.executeQuery("SELECT time, source, power, rssi FROM sensor_data", values: nil)
+            let rs = try shared.executeQuery("SELECT * FROM sensor_data", values: nil)
             var list: [Row] = []
             while rs.next() {
                 let timeNumber = Double(rs.longLongInt(forColumn: "time")) / 1000.0
                 let row = Row(
+                    id: UInt64(bitPattern: rs.longLongInt(forColumn: "id")),
                     time: Date(timeIntervalSince1970: timeNumber),
                     source: UInt64(bitPattern: rs.longLongInt(forColumn: "source")),
                     power: rs.long(forColumn: "power"),
