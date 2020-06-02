@@ -74,10 +74,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wHl-XZ-cl7">
-                                <rect key="frame" x="184" y="798" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
+                                <rect key="frame" x="189" y="798" width="36" height="30"/>
+                                <state key="normal" title="Clear"/>
                                 <connections>
-                                    <action selector="printData" destination="BYZ-38-t0r" eventType="touchUpInside" id="Z0g-9U-rac"/>
+                                    <action selector="clearData" destination="BYZ-38-t0r" eventType="touchUpInside" id="Vt7-j1-PtA"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1z-LR-Xgk">
+                                <rect key="frame" x="190" y="700" width="34" height="30"/>
+                                <state key="normal" title="Start"/>
+                                <connections>
+                                    <action selector="toggleRun" destination="BYZ-38-t0r" eventType="touchUpInside" id="Va4-Tv-Oe2"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -88,7 +95,9 @@
                             <constraint firstItem="wHl-XZ-cl7" firstAttribute="centerX" secondItem="8sa-Yh-kYT" secondAttribute="centerX" id="5YG-Qm-8Hz"/>
                             <constraint firstItem="8sa-Yh-kYT" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="BU6-fs-M5a"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="20" id="Hc3-VA-gh7"/>
+                            <constraint firstItem="8sa-Yh-kYT" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="22" id="INJ-LF-NQd"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="KpK-BK-Uj2"/>
+                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="centerX" secondItem="8sa-Yh-kYT" secondAttribute="centerX" id="RPd-CX-PZc"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="7N8-5b-ou9" secondAttribute="trailing" constant="20" id="VTL-br-Ouu"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" constant="170" id="VZd-fQ-ReQ"/>
                         </constraints>
@@ -96,6 +105,7 @@
                     </view>
                     <connections>
                         <outlet property="table" destination="7N8-5b-ou9" id="TTQ-bc-RZG"/>
+                        <outlet property="toggleRunButton" destination="p1z-LR-Xgk" id="Zn4-iz-Sv3"/>
                         <outlet property="wifiLabel" destination="8sa-Yh-kYT" id="hd0-bc-0Oe"/>
                     </connections>
                 </viewController>

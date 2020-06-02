@@ -36,12 +36,14 @@ struct Server {
                 callback(nil)
                 return
             }
-            guard let uintValue = UInt64(value.trimmingCharacters(in: .whitespacesAndNewlines)) else {
-                print(value)
+            
+            guard let uintValue = UInt64(value.trimmingCharacters(in: .whitespacesAndNewlines))
+            else {
                 print("Failed to parse data from API")
                 callback(nil)
                 return
             }
+            
             callback(uintValue)
         }.resume()
     }
@@ -81,11 +83,11 @@ struct Server {
             if let responseJSON = responseJSON as? [String: Any] {
                 print(responseJSON)
             }
-            
-            callback()
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                callback()
+            }
         }.resume()
-    }
-    
+    }    
 }
 
 

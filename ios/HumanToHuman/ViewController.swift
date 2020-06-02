@@ -12,9 +12,11 @@ class BluetoothCell: UITableViewCell {
 class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
+    @IBOutlet var toggleRunButton: UIButton!
 
     var beacon: Bluetooth!
     var queuedRows: Data?
+    var running: Bool = false
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
@@ -59,13 +61,24 @@ class ViewController: UIViewController {
 
     override func viewDidDisappear(_: Bool) {}
     
-    @IBAction func printData() {
-        print(Database.readRows())
+    @IBAction func clearData() {
+        print(Database.popRows())
+        self.queuedRows = nil
+    }
+    
+    @IBAction func toggleRun() {
+        self.running = !self.running
+        if self.running {
+            self.toggleRunButton.setTitle("stop", for: .normal)
+        } else {
+            self.toggleRunButton.setTitle("start", for: .normal)
+        }
     }
 }
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
+        if !self.running { return }
         guard Database.writeRow(device: device) else {
             print("something went wrong with sql")
             return

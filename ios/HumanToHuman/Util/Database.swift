@@ -73,7 +73,6 @@ struct Database {
     }
     
     static func setPropNumeric(prop: Int, value: Int64) {
-        print("prop is \(prop) while value is \(value)")
         do {
             try shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)",
                                   values: [prop, value])
