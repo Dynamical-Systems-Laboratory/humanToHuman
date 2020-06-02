@@ -48,9 +48,10 @@ struct Database {
             print(shared.lastErrorMessage())
             return false
         }
+        
         return true
     }
-
+    
     static func startExperiment(id: UInt64, otherIds: [UInt64]) {
         shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)", withArgumentsIn: [OWN_ID_KEY, id])
         shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)", withArgumentsIn: [CURRENT_CURSOR, 0])
@@ -59,15 +60,35 @@ struct Database {
             shared.executeUpdate("INSERT INTO experiment_member_ids (key) VALUES (?)", withArgumentsIn: [otherId])
         }
     }
+    
+    static func getPropNumeric(prop: Int) -> UInt64? {
+        let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key = ?",
+                                     withArgumentsIn: [prop])
+        if let rs = rs, rs.next() {
+            return UInt64(bitPattern: rs.longLongInt(forColumn: "nvalue"))
+        } else {
+            return nil
+        }
+        
+    }
+    
+    static func setPropNumeric(prop: Int, value: Int64) {
+        print("prop is \(prop) while value is \(value)")
+        do {
+            try shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)",
+                                  values: [prop, value])
+        } catch {
+            try? shared.executeUpdate("UPDATE metadata SET nvalue = ? WHERE key = ?",
+                                     values: [value, prop])
+        }
+    }
 
     static func popRows() -> [Row] {
         do {
-            var rs = try shared.executeQuery("SELECT MAX(id) as max_id FROM sensor_data", values: nil)
+            var rs = try shared.executeQuery("SELECT MAX(id) as max_id FROM sensor_data LIMIT 1", values: nil)
             rs.next()
             let rowMax = rs.longLongInt(forColumn: "max_id")
             rs.close()
-            
-            print(rowMax)
 
             rs = try shared.executeQuery("SELECT * FROM sensor_data WHERE id <= ?", values: [rowMax])
             var list: [Row] = []

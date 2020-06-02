@@ -2,15 +2,6 @@ import CoreBluetooth
 import Foundation
 import UIKit
 
-let API_USER_URL = URL(string: "http://192.168.1.151:8080/addUser")!
-let API_CONNECTIONS_URL = URL(string: "http://192.168.1.151:8080/addConnections")!
-let formatter = { () -> DateFormatter in
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    return formatter
-}()
 
 class BluetoothCell: UITableViewCell {
     @IBOutlet var name: UILabel!
@@ -27,47 +18,32 @@ class ViewController: UIViewController {
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
-        beacon = Bluetooth(delegate: self, id: 32)
-        print(Database.initDatabase())
+        guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
+        
+        if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
+            print("init with id \(id)")
+            beacon = Bluetooth(delegate: self, id: id)
+            beacon.start()
+        } else {
+            Server.getUserId() { id in
+                guard let id = id else { exit(1) }
+                print("got id \(id)")
+                Database.setPropNumeric(prop: OWN_ID_KEY, value: Int64(bitPattern: id))
+                self.beacon = Bluetooth(delegate: self, id: id)
+                self.beacon.start()
+            }
+        }
+        
         rows = []
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
-            print("trying to send data")
             if self.queuedRows == nil {
-                let rows = Database.popRows().map() { row in
-                    [
-                        "time": formatter.string(from: row.time),
-                        "other": row.source,
-                        "power": row.power,
-                        "rssi": row.rssi
-                    ]
-                }
-                if rows.count == 0 {
-                    print("nothing to send")
-                    return
-                }
-                self.queuedRows = try? JSONSerialization.data(withJSONObject: [
-                    "id": self.beacon.id,
-                    "connections":rows
-                ])
+                self.queuedRows = Server.formatConnectionData(id: self.beacon.id, rows: Database.popRows())
+                guard self.queuedRows != nil else { return }
             }
-            var request = URLRequest(url: API_CONNECTIONS_URL)
-            request.httpMethod = "POST"
-            request.httpBody = self.queuedRows
-
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                guard let data = data, error == nil else {
-                    print(error?.localizedDescription ?? "No data")
-                    return
-                }
-                
+            
+            Server.sendConnectionData(data: self.queuedRows!) {
                 self.queuedRows = nil
-                
-                let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
-                if let responseJSON = responseJSON as? [String: Any] {
-                    print(responseJSON)
-                }
             }
-            task.resume()
         })
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
@@ -79,9 +55,7 @@ class ViewController: UIViewController {
         })
     }
 
-    override func viewDidAppear(_: Bool) {
-        beacon.start()
-    }
+    override func viewDidAppear(_: Bool) {}
 
     override func viewDidDisappear(_: Bool) {}
     

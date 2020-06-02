@@ -9,7 +9,6 @@
 #ifndef Bridging_h
 #define Bridging_h
 
-#import "AltBeacon.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "FMDatabasePool.h"
