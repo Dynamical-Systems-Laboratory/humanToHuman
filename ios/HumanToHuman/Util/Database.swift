@@ -1,7 +1,13 @@
+// SQLite Database utilities.
+
 import Foundation
 
+
+// Property IDs. These are used in the database metadata table to store data.
 let OWN_ID_KEY = 0
 let CURRENT_CURSOR = 1
+
+// Shared database
 let shared: FMDatabase = {
     let fileURL = try! FileManager.default
         .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -10,6 +16,7 @@ let shared: FMDatabase = {
     return database
 }()
 
+// A row in the sensor_data table.
 struct Row {
     let id: UInt64
     let time: Date
@@ -19,6 +26,7 @@ struct Row {
 }
 
 struct Database {
+    // Initializes the local database.
     static func initDatabase() -> Bool {
         guard shared.open() else {
             print("failed to open database")
@@ -31,10 +39,6 @@ struct Database {
                 key         INTEGER         PRIMARY KEY,
                 tvalue      TEXT            NOT NULL DEFAULT '',
                 nvalue      INTEGER         NOT NULL DEFAULT 0
-            );
-
-            CREATE TABLE IF NOT EXISTS experiment_member_ids (
-                key         INTEGER         PRIMARY KEY
             );
 
             CREATE TABLE IF NOT EXISTS sensor_data (
@@ -52,15 +56,7 @@ struct Database {
         return true
     }
     
-    static func startExperiment(id: UInt64, otherIds: [UInt64]) {
-        shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)", withArgumentsIn: [OWN_ID_KEY, id])
-        shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)", withArgumentsIn: [CURRENT_CURSOR, 0])
-
-        for otherId in otherIds {
-            shared.executeUpdate("INSERT INTO experiment_member_ids (key) VALUES (?)", withArgumentsIn: [otherId])
-        }
-    }
-    
+    // Gets a numeric property from the metadata table.
     static func getPropNumeric(prop: Int) -> UInt64? {
         let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key = ?",
                                      withArgumentsIn: [prop])
@@ -72,6 +68,7 @@ struct Database {
         
     }
     
+    // Sets a numeric property in the metadata table.
     static func setPropNumeric(prop: Int, value: Int64) {
         do {
             try shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)",
@@ -82,6 +79,7 @@ struct Database {
         }
     }
 
+    // Pops all rows from the sensor_data table, reading then deleting them.
     static func popRows() -> [Row] {
         do {
             var rs = try shared.executeQuery("SELECT MAX(id) as max_id FROM sensor_data LIMIT 1", values: nil)
@@ -111,10 +109,7 @@ struct Database {
         }
     }
 
-    static func closeDatabase() {
-        shared.close()
-    }
-
+    // Write a row to the database.
     static func writeRow(device: Device) -> Bool {
         return shared.executeUpdate(
             """
@@ -125,8 +120,10 @@ struct Database {
         )
     }
 
+    // Read all rows from the database.
     static func readRows() -> [Row] {
         do {
+            // Get a resultset from the database cooresponding to all rows in the sensor_data table
             let rs = try shared.executeQuery("SELECT * FROM sensor_data", values: nil)
             var list: [Row] = []
             while rs.next() {

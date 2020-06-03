@@ -9,6 +9,8 @@
 import CoreBluetooth
 import Foundation
 
+// http://www.davidgyoungtech.com/2020/05/07/hacking-the-overflow-area
+
 public class OverflowAreaUtils {
     public static let TableOfOverflowServiceUuidStringsByBitPosition = [
         "00000000-0000-0000-0000-00000000007C",

@@ -9,6 +9,8 @@
 import Foundation
 import SystemConfiguration.CaptiveNetwork
 
+// Taken from StackOverflow.
+
 // Return IP address of WiFi interface (en0) as a String, or `nil`
 func getWiFiAddress() -> String? {
     var address: String?
