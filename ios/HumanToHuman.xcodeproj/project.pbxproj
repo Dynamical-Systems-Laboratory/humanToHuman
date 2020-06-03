@@ -12,10 +12,10 @@
 		4B5DD2B1248737D500059C7C /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A8248737D500059C7C /* FMDatabaseAdditions.m */; };
 		4B5DD2B2248737D500059C7C /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2AB248737D500059C7C /* FMDatabasePool.m */; };
 		4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2AF248737D500059C7C /* FMDatabase.m */; };
+		4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2B5248739A300059C7C /* FMResultSet.m */; };
 		4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */; };
 		4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A022481C6D900FE73F0 /* Wifi.swift */; };
 		4BD70A052481F60500FE73F0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A042481F60500FE73F0 /* Database.swift */; };
-		4BD70A262482181A00FE73F0 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A212482181A00FE73F0 /* FMResultSet.m */; };
 		4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C524721700002B0A6B /* AppDelegate.swift */; };
 		4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* ViewController.swift */; };
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
@@ -26,10 +26,6 @@
 
 /* Begin PBXFileReference section */
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
-		4B282F39247E128700114132 /* CBUUID+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBUUID+Ext.m"; sourceTree = "<group>"; };
-		4B282F40247E128700114132 /* CBPeripheralManager+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBPeripheralManager+Ext.h"; sourceTree = "<group>"; };
-		4B282F45247E128700114132 /* CBUUID+Ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CBUUID+Ext.h"; sourceTree = "<group>"; };
-		4B282F51247E128700114132 /* CBPeripheralManager+Ext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheralManager+Ext.m"; sourceTree = "<group>"; };
 		4B5DD2A42485E1B400059C7C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		4B5DD2A7248737D500059C7C /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
 		4B5DD2A8248737D500059C7C /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
@@ -40,11 +36,11 @@
 		4B5DD2AD248737D500059C7C /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
 		4B5DD2AE248737D500059C7C /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
 		4B5DD2AF248737D500059C7C /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		4B5DD2B4248739A300059C7C /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		4B5DD2B5248739A300059C7C /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverflowAreaUtils.swift; sourceTree = "<group>"; };
 		4BD70A022481C6D900FE73F0 /* Wifi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wifi.swift; sourceTree = "<group>"; };
 		4BD70A042481F60500FE73F0 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
-		4BD70A1D2482181900FE73F0 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
-		4BD70A212482181A00FE73F0 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		4BEAE6C224721700002B0A6B /* HumanToHuman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanToHuman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEAE6C524721700002B0A6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4BEAE6C724721700002B0A6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -69,8 +65,6 @@
 		4B282F23247E128700114132 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				4BD70A1D2482181900FE73F0 /* FMResultSet.h */,
-				4BD70A212482181A00FE73F0 /* FMResultSet.m */,
 				4BD70A042481F60500FE73F0 /* Database.swift */,
 				4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */,
 				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
@@ -80,20 +74,11 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
-		4B282F32247E128700114132 /* Extension */ = {
-			isa = PBXGroup;
-			children = (
-				4B282F39247E128700114132 /* CBUUID+Ext.m */,
-				4B282F40247E128700114132 /* CBPeripheralManager+Ext.h */,
-				4B282F45247E128700114132 /* CBUUID+Ext.h */,
-				4B282F51247E128700114132 /* CBPeripheralManager+Ext.m */,
-			);
-			path = Extension;
-			sourceTree = "<group>";
-		};
 		4B5DD2A62487379300059C7C /* FMDB */ = {
 			isa = PBXGroup;
 			children = (
+				4B5DD2B4248739A300059C7C /* FMResultSet.h */,
+				4B5DD2B5248739A300059C7C /* FMResultSet.m */,
 				4B5DD2AC248737D500059C7C /* FMDatabase.h */,
 				4B5DD2AF248737D500059C7C /* FMDatabase.m */,
 				4B5DD2AD248737D500059C7C /* FMDatabaseAdditions.h */,
@@ -127,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				4B5DD2A62487379300059C7C /* FMDB */,
-				4B282F32247E128700114132 /* Extension */,
 				4B282F23247E128700114132 /* Util */,
 				4BEAE6C524721700002B0A6B /* AppDelegate.swift */,
 				4BEAE6C724721700002B0A6B /* ViewController.swift */,
@@ -218,9 +202,9 @@
 				4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */,
 				4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */,
 				4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */,
+				4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */,
 				4B5DD2B2248737D500059C7C /* FMDatabasePool.m in Sources */,
 				4BD70A052481F60500FE73F0 /* Database.swift in Sources */,
-				4BD70A262482181A00FE73F0 /* FMResultSet.m in Sources */,
 				4B5DD2A52485E1B400059C7C /* Server.swift in Sources */,
 				4B5DD2B0248737D500059C7C /* FMDatabaseQueue.m in Sources */,
 				4B5DD2B1248737D500059C7C /* FMDatabaseAdditions.m in Sources */,
