@@ -53,6 +53,13 @@ func getDb(dbURL string) (*sql.DB, *migrate.Migrate) {
 	return globalDb, globalMigrate
 }
 
+func ClearConnections() error {
+	_, err := psql.Delete("connections").
+		RunWith(globalDb).
+		Exec()
+	return err
+}
+
 func Clear() error {
 	err := globalMigrate.Down()
 	if err != nil && err != migrate.ErrNoChange {

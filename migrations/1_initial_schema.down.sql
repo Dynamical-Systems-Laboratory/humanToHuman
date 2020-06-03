@@ -1,2 +1,3 @@
 DROP TABLE IF EXISTS connections;
 DROP TABLE IF EXISTS devices;
+DROP TABLE IF EXISTS experiments;

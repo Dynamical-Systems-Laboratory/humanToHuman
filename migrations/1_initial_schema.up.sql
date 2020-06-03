@@ -1,9 +1,9 @@
-create table if not exists devices (
+CREATE TABLE IF NOT EXISTS devices (
   id          BIGINT         NOT NULL,
   PRIMARY KEY (id)
 );
 
-create table if not exists connections (
+CREATE TABLE IF NOT EXISTS connections (
   id                SERIAL                            NOT NULL,
   time              TIMESTAMP                         NOT NULL,
   device_a          BIGINT REFERENCES devices (id)    NOT NULL,

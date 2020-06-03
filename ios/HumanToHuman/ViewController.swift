@@ -21,18 +21,19 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
+        toggleRunButton.isEnabled = false
         
         if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
             print("init with id \(id)")
             beacon = Bluetooth(delegate: self, id: id)
-            beacon.start()
+            toggleRunButton.isEnabled = true
         } else {
             Server.getUserId() { id in
                 guard let id = id else { exit(1) }
                 print("got id \(id)")
                 Database.setPropNumeric(prop: OWN_ID_KEY, value: Int64(bitPattern: id))
                 self.beacon = Bluetooth(delegate: self, id: id)
-                self.beacon.start()
+                self.toggleRunButton.isEnabled = true
             }
         }
         
@@ -69,8 +70,10 @@ class ViewController: UIViewController {
     @IBAction func toggleRun() {
         self.running = !self.running
         if self.running {
+            self.beacon.start()
             self.toggleRunButton.setTitle("stop", for: .normal)
         } else {
+            self.beacon.stop()
             self.toggleRunButton.setTitle("start", for: .normal)
         }
     }
