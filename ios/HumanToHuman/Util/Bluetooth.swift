@@ -41,7 +41,7 @@ class Bluetooth: NSObject {
     // Start scanning for peripherals, using the global service UUID
     private func scan() {
         central.scanForPeripherals(
-            withServices: [GLOBAL_SERVICE_UUID],
+            withServices: OverflowAreaUtils.allOverflowServiceUuids(),
             options: [CBCentralManagerScanOptionAllowDuplicatesKey: true]
         )
     }

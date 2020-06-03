@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         toggleRunButton.isEnabled = false
         
         if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
-            print("init with id \(id)")
+            print("init with saved id \(id)")
             beacon = Bluetooth(delegate: self, id: id)
             toggleRunButton.isEnabled = true
         } else {
@@ -33,12 +33,15 @@ class ViewController: UIViewController {
                 print("got id \(id)")
                 Database.setPropNumeric(prop: OWN_ID_KEY, value: Int64(bitPattern: id))
                 self.beacon = Bluetooth(delegate: self, id: id)
-                self.toggleRunButton.isEnabled = true
+                DispatchQueue.main.async {
+                   self.toggleRunButton.isEnabled = true
+                }
             }
         }
         
         rows = []
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+            if self.beacon == nil { return }
             if self.queuedRows == nil {
                 self.queuedRows = Server.formatConnectionData(id: self.beacon.id, rows: Database.popRows())
                 guard self.queuedRows != nil else { return }
