@@ -1,5 +1,11 @@
+create table if not exists experiments (
+
+  -- list of experiments
+
+);
 CREATE TABLE IF NOT EXISTS devices (
   id          BIGINT         NOT NULL,
+  token       char(127)      NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 

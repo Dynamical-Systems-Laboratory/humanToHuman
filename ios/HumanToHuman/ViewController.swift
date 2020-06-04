@@ -21,6 +21,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
+        self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
         toggleRunButton.isEnabled = false
         
         if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
@@ -39,7 +40,6 @@ class ViewController: UIViewController {
             }
         }
         
-        rows = []
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if self.beacon == nil { return }
             if self.queuedRows == nil {
@@ -51,19 +51,15 @@ class ViewController: UIViewController {
                 self.queuedRows = nil
             }
         })
+        
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
             self.rows = self.rows.filter { row in
                 row.lastSeen.addingTimeInterval(1.0).compare(currentTime) != .orderedAscending
             }
-            self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
             self.table.reloadData()
         })
     }
-
-    override func viewDidAppear(_: Bool) {}
-
-    override func viewDidDisappear(_: Bool) {}
     
     @IBAction func clearData() {
         print(Database.popRows())

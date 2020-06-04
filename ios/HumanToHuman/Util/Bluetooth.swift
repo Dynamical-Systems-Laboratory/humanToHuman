@@ -90,6 +90,9 @@ extension Bluetooth: CBCentralManagerDelegate {
         if central.state == .poweredOn, running { scan() }
     }
 
+    // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
+    // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
+    // each device as a collection of service UUIDs.
     func centralManager(_: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
         let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
@@ -107,6 +110,7 @@ extension Bluetooth: CBCentralManagerDelegate {
 }
 
 // We convert service uuids into a bitmap, and also ensure we find our sentinel value, the 0th bit in the overflow area.
+// The (index - 8) is because we skip the first byte of overflow space to store a sentinel value.
 public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
     var uint64: UInt64 = 0
     var foundSentinel = false
@@ -124,6 +128,7 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
 }
 
 // We convert our bitmap into a list of service uuids, and ensure the sentinel value is included.
+// The [index + 8] is because we skip the first byte of overflow space to store a sentinel value.
 public func uint64ToOverflowServiceUuids(uint64: UInt64) -> [CBUUID] {
     var cbUuids: [CBUUID] = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
     for index in 0 ... 63 {

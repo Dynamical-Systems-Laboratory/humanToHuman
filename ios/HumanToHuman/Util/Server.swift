@@ -25,7 +25,7 @@ let formatter = { () -> DateFormatter in
 
 struct Server {
     
-    // Get a user id from the server asynchronously.
+    // Get a user id from the server asynchronously. The callback either gets a valid user id, or nil if the request failed.
     static func getUserId(callback: @escaping (UInt64?) -> Void) {
         var request = URLRequest(url: API_USER_URL)
         request.httpMethod = "POST"
