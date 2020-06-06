@@ -33,7 +33,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.PermissionActivity"></activity>
-        <activity android:name=".Activities.AuthenticationActivity" />
 
         <service
             android:name=".Services.BGScanService"

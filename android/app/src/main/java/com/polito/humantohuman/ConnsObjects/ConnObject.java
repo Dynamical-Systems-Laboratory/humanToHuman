@@ -1,8 +1,6 @@
 package com.polito.humantohuman.ConnsObjects;
 
 
-import android.location.Location;
-
 import com.google.gson.annotations.Expose;
 import com.polito.humantohuman.Database.ConnDatabase;
 

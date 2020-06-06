@@ -26,10 +26,11 @@ import com.polito.humantohuman.Utilities;
 
 import java.util.TimerTask;
 
-import static com.polito.humantohuman.Constants.*;
 import static com.polito.humantohuman.Constants.MAX_BATTERY;
+import static com.polito.humantohuman.Constants.SERVICE_ACTION;
 import static com.polito.humantohuman.Constants.STATUS.NOT_RUNNING;
 import static com.polito.humantohuman.Constants.STATUS.RUNNING;
+import static com.polito.humantohuman.Constants.TIME;
 import static com.polito.humantohuman.Constants.TIME.NOTIFY_INTERVAL;
 import static com.polito.humantohuman.Utilities.getBatteryPercentage;
 

@@ -12,7 +12,6 @@ import android.net.wifi.WifiManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-
 import com.polito.humantohuman.ConnsObjects.WifiConn;
 
 import java.util.ArrayList;

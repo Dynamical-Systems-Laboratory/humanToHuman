@@ -1,23 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'io.fabric'
 
 android {
-    signingConfigs {
-        release {
-            storeFile file('../polito_key')
-            storePassword 'PoLiTo2019Rizzo'
-            keyAlias = 'polito'
-            keyPassword 'Rizzo2019PoLiTo'
-        }
-        debug {
-            storeFile file('../polito_debug')
-            storePassword 'politodebug'
-            keyAlias = 'polito'
-            keyPassword 'politodebug'
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.polito.humantohuman"
@@ -30,11 +14,8 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
         debug {
-            signingConfig signingConfigs.debug
         }
     }
 }
@@ -47,12 +28,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.google.firebase:firebase-auth:16.2.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
 }

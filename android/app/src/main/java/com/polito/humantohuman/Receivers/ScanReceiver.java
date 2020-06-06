@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import com.polito.humantohuman.Listeners.ReceiverScanFinishedListener;

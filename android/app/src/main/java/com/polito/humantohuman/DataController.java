@@ -9,27 +9,16 @@ import android.util.Log;
 import com.polito.humantohuman.ConnsObjects.ConnObject;
 import com.polito.humantohuman.ConnsObjects.LocationConn;
 import com.polito.humantohuman.Database.ConnDatabase;
-import com.polito.humantohuman.HTTPClient.HTTPClient;
-import com.polito.humantohuman.HTTPClient.HTTPClientBuilder;
 import com.polito.humantohuman.Listeners.ReceiverScanFinishedListener;
-
 import com.polito.humantohuman.Listeners.StateChangeListener;
 import com.polito.humantohuman.Receivers.BtReceiver;
 import com.polito.humantohuman.Receivers.ScanReceiver;
 import com.polito.humantohuman.Receivers.ScreenReceiver;
 import com.polito.humantohuman.Receivers.WifiReceiver;
-import com.polito.humantohuman.ResponseHandler.UploadDataHandler;
 import com.polito.humantohuman.Services.BGScanService;
-
-import java.util.HashMap;
-import java.util.Map;
-
-
-import static com.polito.humantohuman.Constants.TIME.*;
 
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_NOT_SCANNING;
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_SCANNING;
-import static com.polito.humantohuman.Constants.SERVER_ENDPOINT.*;
 
 /** Class that will manage all the scan types, and all the information received by them
  * It will also send the information to the server and add and delete the specific receiver for
@@ -197,7 +186,6 @@ public class DataController implements ReceiverScanFinishedListener {
 
         if(!isScanning()){
             Log.d("Status", "Scan has finished");
-            sendData(context);
             removeReceivers(context);
             wifiReceiver.clearData();
             btReceiver.clearData();
@@ -207,39 +195,11 @@ public class DataController implements ReceiverScanFinishedListener {
             } catch (Exception e) {
                 Log.d("Error", "The app has not been started, maybe the device has been rebooted or the app has been updated");
             }
-
-
-            //startScan(context);
         }
 
     }
 
-    /** How is going to send the data
-     *
-     * @param context
-     */
-    public void sendData(Context context){
-        if(!connObject.isEmpty()) {
-            ConnObject connObject = this.connObject.getCopy();
-            //Since we have made a copy of the connObject instance, we create a new ConnObject
-            this.connObject = new ConnObject();
-            connObject.setIdDevice(Utilities.getSecureId(context));
-            //Making a copy of the object, since it could be removed before it is saved
-            //We insert the object on the database
-            connDatabase.insertData(connObject);
-            if(!WifiReceiver.isWifiConnected(context)) {
-                Log.d("Status", "There is not a wifi connection, so data has been directly saved");
-                return;
-            }
-            try {
-                //The data will be uploaded, in case there is an error, it will catch the exception
-                //and because the data has been stored we don't need to do anything in there.
-                uploadData(connObject,context).post();
-            } catch (HTTPClient.InternetError internetError) {
-                internetError.printStackTrace();
-            }
-        }
-    }
+
     /** It will tell the different receivers to stop the scan
      *
      * @param context
@@ -253,27 +213,6 @@ public class DataController implements ReceiverScanFinishedListener {
         } catch (Exception e) {
             Log.d("Error", "The app has not been started, maybe the device has been rebooted or the app has been updated");
         }
-    }
-    /**How will be the httpclient behaviour
-     *
-     * @param connObject We pass a copy of a ConnObject
-     * @param context
-     * @return HTTPClient
-     */
-    private HTTPClient uploadData(ConnObject connObject, Context context) {
-        Map<String,ConnObject> connMap= new HashMap<>();
-        connMap.put("conn_info",connObject);
-        return new HTTPClientBuilder(context,new UploadDataHandler(connObject,context))
-                .setJsonHeader()
-                .setJson(Utilities.createJson(connMap))
-                .setUrl(CONN_INFO_ENDPOINT)
-
-                .setTimeOut(TIME_OUT)
-                .setRetriesAndTimeout(1,TIME_OUT)
-                .setResponseTimeOut(RESPONSE_TIME_OUT)
-                .addAuth()
-                .build();
-
     }
 
     public void addScanFinishedListener(StateChangeListener stateChangeListener){

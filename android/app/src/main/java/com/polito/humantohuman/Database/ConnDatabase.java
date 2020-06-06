@@ -1,7 +1,6 @@
 package com.polito.humantohuman.Database;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.polito.humantohuman.ConnsObjects.ConnObject;
 

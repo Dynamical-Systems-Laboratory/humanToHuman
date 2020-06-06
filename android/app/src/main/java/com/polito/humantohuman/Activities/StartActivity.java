@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.polito.humantohuman.AuthUser;
 import com.polito.humantohuman.Constants;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Utilities;
@@ -39,12 +38,6 @@ public class StartActivity extends AppCompatActivity {
         if(!PolicyActivity.isPolicyAccepted(this)) {
             activities.add(new PolicyActivity());
         }
-
-        /**
-         * Then we check if the user has logged in or not
-         */
-        if(!AuthUser.getInstance(this).isSignedIn()) {
-            activities.add(new AuthenticationActivity()); }
 
         /**
          * Add the scan activity

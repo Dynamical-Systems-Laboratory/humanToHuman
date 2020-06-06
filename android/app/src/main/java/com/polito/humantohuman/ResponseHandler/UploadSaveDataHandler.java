@@ -1,13 +1,10 @@
 package com.polito.humantohuman.ResponseHandler;
 
 import android.content.Context;
-import android.os.Build;
 
 import com.polito.humantohuman.ConnsObjects.ConnObject;
 import com.polito.humantohuman.Database.ConnDatabase;
-import com.polito.humantohuman.Services.UploadJobService;
 import com.polito.humantohuman.Services.UploadRunnable;
-import com.polito.humantohuman.Services.UploadService;
 
 import org.json.JSONObject;
 

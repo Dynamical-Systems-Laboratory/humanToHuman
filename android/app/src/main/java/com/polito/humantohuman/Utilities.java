@@ -10,16 +10,12 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.polito.humantohuman.AuthUser;
 import com.polito.humantohuman.ConnsObjects.BtConn;
 import com.polito.humantohuman.ConnsObjects.ConnObject;
 import com.polito.humantohuman.ConnsObjects.LocationConn;
 import com.polito.humantohuman.ConnsObjects.WifiConn;
-import com.polito.humantohuman.Constants;
-import com.polito.humantohuman.DataController;
 import com.polito.humantohuman.Database.ConnDatabase;
 import com.polito.humantohuman.Serializers.BtConnSerializer;
 import com.polito.humantohuman.Serializers.ConnObjectSerializer;
@@ -135,7 +131,7 @@ public class Utilities {
                             time,pendingIntent);
                 } catch (SecurityException exception) {
                     Log.d("Error", "The device has blocked the alarm");
-                    Crashlytics.logException(exception);
+                    System.err.println(exception);
                 }
 
             } else {
@@ -162,7 +158,6 @@ public class Utilities {
      * @param context
      */
     public static void initializeApp(Context context) {
-        AuthUser.getInstance(context);
         ConnDatabase.getInstance(context);
         DataController.getInstance();
         Constants.Permissions.setPermissions(context);

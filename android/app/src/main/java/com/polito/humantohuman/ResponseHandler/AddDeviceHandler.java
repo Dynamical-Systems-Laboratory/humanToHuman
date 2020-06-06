@@ -2,8 +2,8 @@ package com.polito.humantohuman.ResponseHandler;
 
 import android.content.Context;
 
-
 import com.polito.humantohuman.Listeners.AddedDeviceListener;
+
 import org.json.JSONObject;
 
 /**

@@ -8,9 +8,6 @@ import android.util.Log;
 import com.polito.humantohuman.ConnsObjects.ConnObject;
 import com.polito.humantohuman.Constants;
 import com.polito.humantohuman.Database.ConnDatabase;
-import com.polito.humantohuman.HTTPClient.HTTPClient;
-import com.polito.humantohuman.HTTPClient.HTTPClientBuilder;
-import com.polito.humantohuman.R;
 import com.polito.humantohuman.Receivers.WifiReceiver;
 import com.polito.humantohuman.ResponseHandler.UploadSaveDataHandler;
 import com.polito.humantohuman.Utilities;
@@ -69,27 +66,6 @@ public class UploadRunnable implements Runnable {
         this.service = service;
     }
 
-    /**
-     * HTTP client, that will upload the data
-     *
-     * @param connObject
-     * @param context
-     * @return
-     */
-    private HTTPClient uploadSavedData(ConnObject connObject, Context context) {
-        Map<String, ConnObject> connMap = new HashMap<>();
-        connMap.put("conn_info", connObject);
-        return new HTTPClientBuilder(context, new UploadSaveDataHandler(connObject, context))
-                .setJsonHeader()
-                .setJson(Utilities.createJson(connMap))
-                .setUrl(CONN_INFO_ENDPOINT)
-                .setTimeOut(TIME_OUT)
-                .setRetriesAndTimeout(1, TIME_OUT)
-                .setResponseTimeOut(RESPONSE_TIME_OUT)
-                .addAuth()
-                .build();
-    }
-
     //TODO look if change 15, next 30, next 60
 
     @Override
@@ -122,7 +98,6 @@ public class UploadRunnable implements Runnable {
                 if (!IS_SENDING_DATA && SERVICE_IS_RUNNING) {
                     //If the conditions are satisfied, the a new petition is created.
                     ConnObject connObject = connDatabase.getFirst();
-                    uploadSavedData(connObject, service).post();
                     setIsSendingData(true);
                 }
                 //It could be the case where the server didn't give a response yet, so we try to

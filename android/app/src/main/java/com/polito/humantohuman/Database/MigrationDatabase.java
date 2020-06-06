@@ -1,7 +1,5 @@
 package com.polito.humantohuman.Database;
 
-import com.polito.humantohuman.ConnsObjects.LocationConn;
-
 import io.realm.DynamicRealm;
 import io.realm.DynamicRealmObject;
 import io.realm.RealmMigration;
