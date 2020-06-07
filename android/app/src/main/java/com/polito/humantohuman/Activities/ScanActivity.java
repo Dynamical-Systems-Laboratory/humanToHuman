@@ -18,16 +18,11 @@ import android.widget.Toast;
 
 import com.polito.humantohuman.Constants;
 import com.polito.humantohuman.DataController;
-import com.polito.humantohuman.Database.ConnDatabase;
 import com.polito.humantohuman.Listeners.StateChangeListener;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Receivers.BtReceiver;
-import com.polito.humantohuman.Receivers.UploadReceiver;
-import com.polito.humantohuman.Receivers.WifiReceiver;
 import com.polito.humantohuman.Services.BGScanService;
 import com.polito.humantohuman.Utilities;
-
-import io.realm.Realm;
 
 import static com.polito.humantohuman.Constants.TIME.NOTIFY_INTERNET_INTERVAL;
 
@@ -58,8 +53,6 @@ public class ScanActivity extends AppCompatActivity implements StateChangeListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
         overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
-        ConnDatabase.getInstance(this);
-        Realm.init(this);
         //Adding view
         //checkButton = findViewById(R.id.check_items);
         service_switch = findViewById(R.id.service_running);
@@ -98,14 +91,6 @@ public class ScanActivity extends AppCompatActivity implements StateChangeListen
                 checkDatabase();
             }
         });*/
-
-        Intent intent= new Intent(this, UploadReceiver.class);
-        internetIntent = PendingIntent.getBroadcast(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, Utilities.getMilisForAlarm(1000),
-                    NOTIFY_INTERNET_INTERVAL, internetIntent);
-        startService();
-        service_switch.setChecked(true);
-        wifi_switch.setChecked(WifiReceiver.isUploadByWifiEnable(this));
     }
 
     @Override
@@ -157,11 +142,6 @@ public class ScanActivity extends AppCompatActivity implements StateChangeListen
             startService(stopIntent);
             BtReceiver.setOriginalName(this);
         }
-    }
-
-    private void checkDatabase(){
-        int size = ConnDatabase.getInstance(this).rows();
-        Toast.makeText(this,"Items stored: " + size,Toast.LENGTH_SHORT).show();
     }
 
     @Override

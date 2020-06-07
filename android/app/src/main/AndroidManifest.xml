@@ -41,25 +41,7 @@
             android:isolatedProcess="false"
             android:label="scan"
             android:permission="android.permission.ACCESS_COARSE_LOCATION" /> <!-- android:permission="android.permission.WAKE_LOCK" -->
-        <service
-            android:name=".Services.UploadService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.WAKE_LOCK" />
 
-        <receiver
-            android:name=".Receivers.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".Receivers.WifiReceiver"
-            android:permission="android.permission.WAKE_LOCK" />
         <receiver
             android:name=".Receivers.BtReceiver"
             android:permission="android.permission.WAKE_LOCK">
@@ -69,28 +51,9 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".Receivers.UploadReceiver"
-            android:exported="false"
-            android:permission="android.permission.WAKE_LOCK">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".Receivers.RestartServiceReceiver"
             android:exported="false"
             android:permission="android.permission.WAKE_LOCK" />
-        <receiver
-            android:name=".Receivers.StopScanReceiver"
-            android:exported="false"
-            android:permission="android.permission.WAKE_LOCK" />
-
-        <service
-            android:name=".Services.UploadJobService"
-            android:exported="true"
-            android:label="upload_job"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name=".Activities.ScanActivity" />
     </application>

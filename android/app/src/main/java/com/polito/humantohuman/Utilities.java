@@ -10,18 +10,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.polito.humantohuman.ConnsObjects.BtConn;
-import com.polito.humantohuman.ConnsObjects.ConnObject;
-import com.polito.humantohuman.ConnsObjects.LocationConn;
-import com.polito.humantohuman.ConnsObjects.WifiConn;
-import com.polito.humantohuman.Database.ConnDatabase;
-import com.polito.humantohuman.Serializers.BtConnSerializer;
-import com.polito.humantohuman.Serializers.ConnObjectSerializer;
-import com.polito.humantohuman.Serializers.LocationConnSerializer;
-import com.polito.humantohuman.Serializers.WifiConnSerializer;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -64,22 +52,6 @@ public class Utilities {
         String secureId= Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return convertPassMd5(secureId).substring(0,16);
-    }
-
-    /**
-     * We create a Json with the objects passed
-     * @param object
-     * @return
-     */
-    public static String createJson(Object object){
-        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(BtConn.class, new BtConnSerializer())
-                .registerTypeAdapter(WifiConn.class, new WifiConnSerializer())
-                .registerTypeAdapter(ConnObject.class, new ConnObjectSerializer())
-                .registerTypeAdapter(LocationConn.class, new LocationConnSerializer())
-                .create();
-        return gson.toJson(object);
     }
 
     /**
@@ -158,7 +130,6 @@ public class Utilities {
      * @param context
      */
     public static void initializeApp(Context context) {
-        ConnDatabase.getInstance(context);
         DataController.getInstance();
         Constants.Permissions.setPermissions(context);
     }

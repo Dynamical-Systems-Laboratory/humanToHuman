@@ -18,7 +18,6 @@ import android.widget.RemoteViews;
 
 import com.polito.humantohuman.Activities.StartActivity;
 import com.polito.humantohuman.DataController;
-import com.polito.humantohuman.Database.ConnDatabase;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Receivers.BtReceiver;
 import com.polito.humantohuman.Receivers.RestartServiceReceiver;
@@ -112,7 +111,6 @@ public class BGScanService extends Service {
      */
     private void startService() {
         SERVICE_STATUS = RUNNING;
-        ConnDatabase.getInstance(this);
         //Stick to the main thread
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //A different way to start the foreground service, one for versions before android Oreo

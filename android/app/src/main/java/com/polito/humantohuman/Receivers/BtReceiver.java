@@ -1,9 +1,11 @@
 package com.polito.humantohuman.Receivers;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,13 +15,12 @@ import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.polito.humantohuman.ConnsObjects.BtConn;
+import com.polito.humantohuman.Listeners.ReceiverScanFinishedListener;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Utilities;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_NOT_SCANNING;
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_SCANNING;
@@ -29,19 +30,37 @@ import static com.polito.humantohuman.Constants.TIME.MAX_TIME_BT_SCAN;
 /**
  * This class will handle the bluetooth scan
  */
-public class BtReceiver extends ScanReceiver {
+public class BtReceiver extends BroadcastReceiver {
+
     /**
-     * List of the current bluetooth devices that has been found during the scan.
+     * Constant value, that must be different for every type os ScanReceiver, in order to don't overlap
+     * different alarms.
      */
-    public final List<BtConn> btConns;
+    public final int requestCode;
+    /**
+     * Enumerator that defines the type of scan used
+     */
+    protected final ScanType scanType;
     /**
      * The instance of the current bluetooth adapter
      */
     public  BluetoothAdapter bluetoothAdapter;
+    /**
+     * Instant where last scan has been started
+     */
+    public long instant;
+    /**
+     * List of the current listeners that are waiting to the scan to finish
+     */
+    protected HashSet<ReceiverScanFinishedListener> setListener = new HashSet<>();
+    /**
+     * Value that defines the status of the scan
+     */
+    private int status = STATUS_NOT_SCANNING;
 
     public BtReceiver() {
-        super(ScanType.BLUETOOTH, 5);
-        this.btConns = new ArrayList<>();
+        this.scanType = ScanType.BLUETOOTH;
+        this.requestCode = 5;
     }
 
     @Override
@@ -61,8 +80,6 @@ public class BtReceiver extends ScanReceiver {
                 deviceType = device.getType();
                 isMobile = BluetoothDevice.DEVICE_TYPE_CLASSIC == deviceType;
             }
-            //adding object to list
-            if(deviceName != null && deviceName.length() > 0) { btConns.add(new BtConn(deviceName,rssi, macAddress,isMobile)); }
             return;
         }
 
@@ -77,7 +94,6 @@ public class BtReceiver extends ScanReceiver {
 
     }
 
-    @Override
     protected void onStartScan(Context context) {
         this.bluetoothAdapter = getAdapter(context);
 
@@ -104,13 +120,9 @@ public class BtReceiver extends ScanReceiver {
             e.printStackTrace();
         }
 
-        scanTimer(context,MAX_TIME_BT_SCAN);
-
-
         setStatus(STATUS_SCANNING);
     }
 
-    @Override
     public void onScanFinished() {
         setStatus(STATUS_NOT_SCANNING);
         if(bluetoothAdapter.isDiscovering()) {
@@ -119,7 +131,6 @@ public class BtReceiver extends ScanReceiver {
         instant = System.currentTimeMillis();
     }
 
-    @Override
     public boolean checkPermissions(Context context) {
         if(bluetoothAdapter == null ){ return false; }
         //Check that bt is available
@@ -128,10 +139,8 @@ public class BtReceiver extends ScanReceiver {
         return permissionCheck == PackageManager.PERMISSION_GRANTED;
     }
 
-    @Override
-    public void clearData() { btConns.clear(); }
+    public void clearData() { }
 
-    @Override
     public void stopScan(Context context) {
         try {
             bluetoothAdapter.cancelDiscovery();
@@ -142,7 +151,6 @@ public class BtReceiver extends ScanReceiver {
         scanFinished(context);
     }
 
-    @Override
     protected void addReceivers(Context context) {
         try{
             IntentFilter intentFilter = new IntentFilter();
@@ -245,4 +253,64 @@ public class BtReceiver extends ScanReceiver {
         return true;
     }
 
+    /**
+     * In which condition is the adapter at the moment Use class constants to determine the different states
+     * @return a constant value that could mean either Scanning or Not scanning
+     */
+    public int getStatus() { return status;}
+
+    /**
+     *
+     * @param status Constant that could mean either Scanning or Not scanning
+     */
+    protected void setStatus(int status){this.status = status;}
+
+    /**
+     * What the device should for start scanning
+     * @param context
+     */
+    public void startScan(Context context) {
+        addReceivers(context);
+        onStartScan(context);
+    }
+
+    /**
+     * Call the method to handle first the information and call the listener once the scannn has finished
+     * @param context
+     */
+    protected void scanFinished(Context context) {
+        if(status == STATUS_SCANNING) {
+            onScanFinished();
+            notifyListener(context);
+            instant = System.currentTimeMillis();
+            remoReceivers(context);
+        }
+    }
+
+    /**
+     * Notify the listener that the scan has finished
+     * @param context
+     */
+    protected void notifyListener(Context context){
+        this.status = STATUS_NOT_SCANNING;
+        for (ReceiverScanFinishedListener listener : setListener)  {
+            listener.onScanFinished(scanType, context);
+        }
+    }
+
+    /**
+     * To set up the listener
+     * @param listener
+     */
+    public  void setOnFinishedScanListener(ReceiverScanFinishedListener listener) {this.setListener.add(listener); }
+
+    protected void remoReceivers(Context context) {
+        try{ context.unregisterReceiver(this); } catch (Exception e)  {
+            Log.d("Error", "Receiver from " + scanType.toString() + " not removed");
+        }
+    }
+
+    public synchronized long getInstant() {return instant;}
+
+    public enum ScanType {BLUETOOTH, WIFI}
 }
