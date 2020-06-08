@@ -1,16 +1,15 @@
 package com.polito.humantohuman.Activities;
 
+import static com.polito.humantohuman.OverflowAreaUtils.*;
+
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import com.polito.humantohuman.R;
-
-import java.util.ArrayList;
-import java.util.UUID;
-
-import static com.polito.humantohuman.OverflowAreaUtils.SERVICE_UUIDS;
-import static com.polito.humantohuman.OverflowAreaUtils.SERVICE_UUIDS_TO_BITS;
+import java.util.*;
 
 /**
  * This class will be the core of the application. From here the user can start
@@ -18,8 +17,6 @@ import static com.polito.humantohuman.OverflowAreaUtils.SERVICE_UUIDS_TO_BITS;
  * network or not. Also, he can check their anonymous ID.
  */
 public class ScanActivity extends AppCompatActivity {
-
-  static final byte FIRST_BIT_MASK = (-1 << 7);
 
   BluetoothAdapter adapter;
 
@@ -69,7 +66,8 @@ public class ScanActivity extends AppCompatActivity {
       for (int j = 0; i < end; j++) {
         byte current = bytes[++i];
         for (int k = 0; k < 8; k++) {
-          if ((current & (1 << (7 - k))) != 0) {
+          int mask = 1 << (7 - k);
+          if ((current & mask) != 0) {
             uuids.add(SERVICE_UUIDS[8 * j + k]);
           }
         }
@@ -109,10 +107,35 @@ public class ScanActivity extends AppCompatActivity {
       System.out.println();
     };
     adapter.startLeScan(callback);
+
+    byte[] advertisementData = new byte[] {
+            1,
+            -1 << 7, 0, 0, 0,
+            0, 0, 0, 0,
+            0,0,0,0,
+            0,0,0,0,
+    };
+
+
+    AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder().setConnectable(false);
+    AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder()
+            .setIncludeTxPowerLevel(true)
+            .addManufacturerData(0x4C, advertisementData);
+
+    adapter.getBluetoothLeAdvertiser().startAdvertising(settingsBuilder.build(), dataBuilder.build(), new AdvCallback());
   }
 
   @Override
   protected void onResume() {
     super.onResume();
+  }
+
+  static class AdvCallback extends AdvertiseCallback {
+    public AdvCallback() {}
+    @Override
+    public void onStartSuccess(AdvertiseSettings settingsInEffect) {}
+
+    @Override
+    public void onStartFailure(int errorCode) { System.err.println("Errored AdvCallback: " + errorCode); }
   }
 }

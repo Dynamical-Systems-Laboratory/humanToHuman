@@ -75,6 +75,7 @@ class Bluetooth: NSObject {
         if !running { return }
         running = false
         central.stopScan()
+        peripheral.removeAllServices()
         peripheral.stopAdvertising()
     }
 }
@@ -89,6 +90,7 @@ extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn, running { scan() }
     }
+
 
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
     // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
@@ -130,7 +132,7 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
 // We convert our bitmap into a list of service uuids, and ensure the sentinel value is included.
 // The [index + 8] is because we skip the first byte of overflow space to store a sentinel value.
 public func uint64ToOverflowServiceUuids(uint64: UInt64) -> [CBUUID] {
-    var cbUuids: [CBUUID] = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
+    var cbUuids = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
     for index in 0 ... 63 {
         if (1 << index) & uint64 != 0 {
             cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index + 8])

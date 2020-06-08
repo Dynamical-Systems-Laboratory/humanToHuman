@@ -14,7 +14,6 @@ import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.polito.humantohuman.Listeners.ReceiverScanFinishedListener;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Utilities;
 
@@ -47,18 +46,13 @@ public class BtReceiver extends BroadcastReceiver {
      */
     public long instant;
     /**
-     * List of the current listeners that are waiting to the scan to finish
-     */
-    protected ReceiverScanFinishedListener listener;
-    /**
      * Value that defines the status of the scan
      */
     private int status = STATUS_NOT_SCANNING;
 
-    public BtReceiver(ReceiverScanFinishedListener listener) {
+    public BtReceiver() {
         this.scanType = ScanType.BLUETOOTH;
         this.requestCode = 5;
-        this.listener = listener;
     }
 
     @Override
@@ -291,7 +285,6 @@ public class BtReceiver extends BroadcastReceiver {
      */
     protected void notifyListener(Context context){
         this.status = STATUS_NOT_SCANNING;
-        listener.onScanFinished(scanType, context);
     }
 
     protected void remoReceivers(Context context) {
