@@ -130,7 +130,6 @@ public class Utilities {
      * @param context
      */
     public static void initializeApp(Context context) {
-        DataController.getInstance();
         Constants.Permissions.setPermissions(context);
     }
 }

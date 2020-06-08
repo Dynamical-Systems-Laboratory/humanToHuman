@@ -25,7 +25,6 @@ import java.util.HashSet;
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_NOT_SCANNING;
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_SCANNING;
 import static com.polito.humantohuman.Constants.TIME.MAX_TIME_BT_DISCOVERY;
-import static com.polito.humantohuman.Constants.TIME.MAX_TIME_BT_SCAN;
 
 /**
  * This class will handle the bluetooth scan
@@ -52,15 +51,16 @@ public class BtReceiver extends BroadcastReceiver {
     /**
      * List of the current listeners that are waiting to the scan to finish
      */
-    protected HashSet<ReceiverScanFinishedListener> setListener = new HashSet<>();
+    protected ReceiverScanFinishedListener listener;
     /**
      * Value that defines the status of the scan
      */
     private int status = STATUS_NOT_SCANNING;
 
-    public BtReceiver() {
+    public BtReceiver(ReceiverScanFinishedListener listener) {
         this.scanType = ScanType.BLUETOOTH;
         this.requestCode = 5;
+        this.listener = listener;
     }
 
     @Override
@@ -293,24 +293,14 @@ public class BtReceiver extends BroadcastReceiver {
      */
     protected void notifyListener(Context context){
         this.status = STATUS_NOT_SCANNING;
-        for (ReceiverScanFinishedListener listener : setListener)  {
-            listener.onScanFinished(scanType, context);
-        }
+        listener.onScanFinished(scanType, context);
     }
-
-    /**
-     * To set up the listener
-     * @param listener
-     */
-    public  void setOnFinishedScanListener(ReceiverScanFinishedListener listener) {this.setListener.add(listener); }
 
     protected void remoReceivers(Context context) {
         try{ context.unregisterReceiver(this); } catch (Exception e)  {
             Log.d("Error", "Receiver from " + scanType.toString() + " not removed");
         }
     }
-
-    public synchronized long getInstant() {return instant;}
 
     public enum ScanType {BLUETOOTH, WIFI}
 }

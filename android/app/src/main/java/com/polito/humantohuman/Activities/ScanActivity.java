@@ -1,177 +1,136 @@
 package com.polito.humantohuman.Activities;
 
+import static com.polito.humantohuman.OverflowAreaUtils.*;
+
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.polito.humantohuman.Constants;
-import com.polito.humantohuman.DataController;
-import com.polito.humantohuman.Listeners.StateChangeListener;
+import com.polito.humantohuman.OverflowAreaUtils;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Receivers.BtReceiver;
 import com.polito.humantohuman.Services.BGScanService;
 import com.polito.humantohuman.Utilities;
-
-import static com.polito.humantohuman.Constants.TIME.NOTIFY_INTERNET_INTERVAL;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
- * This class will be the core of the application. From here the user can start or stop the service
- * select if he want to upload the data using only a wifi network or not.
- * Also, he can check their anonymous ID.
+ * This class will be the core of the application. From here the user can start
+ * or stop the service select if he want to upload the data using only a wifi
+ * network or not. Also, he can check their anonymous ID.
  */
-public class ScanActivity extends AppCompatActivity implements StateChangeListener {
+public class ScanActivity extends AppCompatActivity {
 
+  static final byte FIRST_BIT_MASK = (-1 << 7);
 
-   // private Button checkButton;
-    private AlarmManager alarmMgr;
-    private PendingIntent internetIntent;
-    private TextView htmlTextView;
-//    private TextView running;
+  BluetoothAdapter adapter;
 
-    private Switch service_switch;
-    private Switch wifi_switch;
+  static ArrayList<UUID> getUUIDs(byte[] bytes) {
+    ArrayList<UUID> uuids = new ArrayList<>();
+    for (int i = 0; i < bytes.length; i++) {
+      int len = bytes[i];
+      if (len == 0)
+        break;
+      int end = len + i;
+      if (len < 3) {
+        i = end;
+        continue;
+      }
 
+      if (bytes[++i] == 6) { // We're in an incomplete UUID list
+        if (len != 17) {
+          i = end;
+          continue;
+        } // It's not following the apple behavior
 
+        long first = 0, second = 0;
+        for (int j = 0; j < 8; j++)
+          first = (first << 8) | bytes[++i];
+        for (int j = 0; j < 8; j++)
+          second = (second << 8) | bytes[++i];
+        uuids.add(
+            new UUID(Long.reverseBytes(second), Long.reverseBytes(first)));
+      }
 
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan);
-        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
-        //Adding view
-        //checkButton = findViewById(R.id.check_items);
-        service_switch = findViewById(R.id.service_running);
-        wifi_switch = findViewById(R.id.wifi);
-        htmlTextView = findViewById(R.id.html_text);
-
-        wifi_switch.setOnCheckedChangeListener(new onWifiSwitchListener());
-        service_switch.setOnCheckedChangeListener(new onServiceSwitchListener());
-        htmlTextView.setText(Html.fromHtml(getString(R.string.app_text)));
-
-        //Set the anonymous id of the device
-        TextView textView = findViewById(R.id.md5_id);
-        String md5 = Utilities.convertPassMd5(Settings.Secure.getString(getContentResolver(),
-                Settings.Secure.ANDROID_ID)).substring(0,16);
-        textView.setText(getString(R.string.anonymous_id, Utilities.convertPassMd5(md5)));
-
-
-        //running = findViewById(R.id.running_text);
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                int i = usageStatsManager.getAppStandbyBucket();
-                Log.d("Status:", "Battery bucket: " + i);
-
-            }
-        }*/
-        alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //Google auth stuff
-        DataController.getInstance().addScanFinishedListener(this);
-        setStatus();
-        //Add buttons functionality
-      /*  checkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkDatabase();
-            }
-        });*/
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(!Constants.Permissions.checkPermissions(this)) {
-            Constants.Permissions.requestPermissions(this);
+      if (bytes[i] != -1) {
+        i = end;
+        continue;
+      }
+      if (bytes[++i] != 76) {
+        i = end;
+        continue;
+      }
+      if (bytes[++i] != 0) {
+        i = end;
+        continue;
+      }
+      if (bytes[++i] != 1) {
+        i = end;
+        continue;
+      }
+      for (int j = 0; i < end; j++) {
+        byte current = bytes[++i];
+        for (int k = 0; k < 8; k++) {
+          if ((current & (1 << (7 - k))) != 0) {
+            uuids.add(SERVICE_UUIDS[8 * j + k]);
+          }
         }
+      }
     }
+    return uuids;
+  }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
+  static Long getID(ArrayList<UUID> uuids) {
+    long id = 0;
+    boolean foundSentinel = false;
+    for (UUID uuid : uuids) {
+      int index = SERVICE_UUIDS_TO_BITS.get(uuid);
+      if (index == 0) {
+        foundSentinel = true;
+        continue;
+      }
+      id |= ((long)1) << (index - 8);
     }
+    if (foundSentinel)
+      return id;
+    return null;
+  }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        BtReceiver.setOriginalName(this);
-    }
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_scan);
 
+    adapter = BluetoothAdapter.getDefaultAdapter();
 
-    public void changeServiceStatus() {
-        if(BGScanService.getServiceStatus() == Constants.STATUS.RUNNING) {
-            stopService();
-        } else {
-            startService();
-        }
-    }
+    BluetoothAdapter.LeScanCallback callback = (device, rssi, scanRecord) -> {
+      ArrayList<UUID> uuids = getUUIDs(scanRecord);
 
-    //https://developer.android.com/topic/libraries/architecture/workmanager/
-    public void startService(){
-        if(BGScanService.getServiceStatus() == Constants.STATUS.RUNNING) {return;}
-        Intent serviceIntent = new Intent(this, BGScanService.class);
-        serviceIntent.setAction(Constants.SERVICE_ACTION.START_FOREGROUND_INTENT);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            this.startForegroundService(serviceIntent);
-        } else {
-            this.startService(serviceIntent);
-        }
-    }
+      System.out.println(uuids);
+      System.out.println(getID(uuids));
+      System.out.println();
+    };
+    adapter.startLeScan(callback);
+  }
 
-    private void stopService(){
-        if(BGScanService.getServiceStatus() == Constants.STATUS.RUNNING) {
-            //DataController.getInstance().stopScan(this);
-            Log.d("Status", "Trying to stop de service");
-            Intent stopIntent = new Intent(this, BGScanService.class);
-            stopIntent.setAction(Constants.SERVICE_ACTION.STOP_FOREGROUND_INTENT);
-            startService(stopIntent);
-            BtReceiver.setOriginalName(this);
-        }
-    }
-
-    @Override
-    public void onStateChanged() {
-        setStatus();
-    }
-
-    public void setStatus(){
-        boolean state = BGScanService.getServiceStatus() == Constants.STATUS.RUNNING;
-        service_switch.setChecked(state);
-    }
-
-    public class onServiceSwitchListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                startService();
-            } else {
-                stopService();
-            }
-        }
-    }
-
-    public class onWifiSwitchListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            SharedPreferences sh = ScanActivity.this.getSharedPreferences("config", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sh.edit();
-            editor.putBoolean("wifi",isChecked);
-            editor.apply();
-        }
-    }
+  @Override
+  protected void onResume() {
+    super.onResume();
+  }
 }

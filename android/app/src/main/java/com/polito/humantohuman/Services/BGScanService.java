@@ -17,7 +17,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.polito.humantohuman.Activities.StartActivity;
-import com.polito.humantohuman.DataController;
+import com.polito.humantohuman.Listeners.ReceiverScanFinishedListener;
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Receivers.BtReceiver;
 import com.polito.humantohuman.Receivers.RestartServiceReceiver;
@@ -33,11 +33,11 @@ import static com.polito.humantohuman.Constants.TIME;
 import static com.polito.humantohuman.Constants.TIME.NOTIFY_INTERVAL;
 import static com.polito.humantohuman.Utilities.getBatteryPercentage;
 
-public class BGScanService extends Service {
+public class BGScanService extends Service implements ReceiverScanFinishedListener {
     /**
      * Instance of the DataController
      */
-    public DataController dataController;
+    public BtReceiver dataController;
     /**
      * Value that will return the current state of the service
      */
@@ -50,7 +50,7 @@ public class BGScanService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Utilities.initializeApp(this);
 
-        dataController = DataController.getInstance();
+        dataController = new BtReceiver(this);
         String action = "";
         try { action = intent.getAction(); } catch (Exception e) {
             Log.d("Error", "Action not provided");
@@ -191,9 +191,13 @@ public class BGScanService extends Service {
     }
 
     public static synchronized int getServiceStatus() {return  SERVICE_STATUS;}
-    public static synchronized void setServiceStatus(int status) {SERVICE_STATUS = status;}
     public static synchronized long getLastScanTime() {return LAST_SCAN;}
     public static synchronized void setLastScanTime(long lastScanTime) {LAST_SCAN = lastScanTime;}
+
+    @Override
+    public void onScanFinished(BtReceiver.ScanType type, Context context) {
+
+    }
 
     /**
      * Task that will be repeated for every scan that is going to be performed, in the case where the
@@ -218,8 +222,6 @@ public class BGScanService extends Service {
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(BGScanService.this
                         ,1,i,PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-                DataController.getInstance().startScan(BGScanService.this);
                 //This will happen if the task is executed from another handler or when the service
                 //has been started
 
