@@ -1,7 +1,6 @@
 package com.polito.humantohuman.Receivers;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -20,7 +19,6 @@ import com.polito.humantohuman.R;
 import com.polito.humantohuman.Utilities;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
 
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_NOT_SCANNING;
 import static com.polito.humantohuman.Constants.SCAN_STATUS.STATUS_SCANNING;

@@ -1,34 +1,16 @@
 package com.polito.humantohuman.Activities;
 
-import static com.polito.humantohuman.OverflowAreaUtils.*;
-
-import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
-import android.util.Log;
-import android.widget.CompoundButton;
-import android.widget.Switch;
-import android.widget.TextView;
-import com.polito.humantohuman.Constants;
-import com.polito.humantohuman.OverflowAreaUtils;
+
 import com.polito.humantohuman.R;
-import com.polito.humantohuman.Receivers.BtReceiver;
-import com.polito.humantohuman.Services.BGScanService;
-import com.polito.humantohuman.Utilities;
+
 import java.util.ArrayList;
 import java.util.UUID;
+
+import static com.polito.humantohuman.OverflowAreaUtils.SERVICE_UUIDS;
+import static com.polito.humantohuman.OverflowAreaUtils.SERVICE_UUIDS_TO_BITS;
 
 /**
  * This class will be the core of the application. From here the user can start
