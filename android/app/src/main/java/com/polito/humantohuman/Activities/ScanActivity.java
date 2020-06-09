@@ -6,6 +6,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.AdvertisingSetCallback;
+import android.bluetooth.le.AdvertisingSetParameters;
+import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.polito.humantohuman.R;
@@ -17,7 +20,6 @@ import java.util.*;
  * network or not. Also, he can check their anonymous ID.
  */
 public class ScanActivity extends AppCompatActivity {
-
   BluetoothAdapter adapter;
 
   static ArrayList<UUID> getUUIDs(byte[] bytes) {
@@ -92,6 +94,18 @@ public class ScanActivity extends AppCompatActivity {
     return null;
   }
 
+  public static byte getReversedByte(long value, int index) {
+    byte byteValue = (byte) ((value >> (index * 8)) & ~-256);
+    byte y=0;
+    for(int position=7; position>0; position--){
+      y+=((byteValue&1)<<position);
+      byteValue >>= 1;
+    }
+    return y;
+
+  }
+
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -99,43 +113,41 @@ public class ScanActivity extends AppCompatActivity {
 
     adapter = BluetoothAdapter.getDefaultAdapter();
 
-    BluetoothAdapter.LeScanCallback callback = (device, rssi, scanRecord) -> {
-      ArrayList<UUID> uuids = getUUIDs(scanRecord);
+    adapter.startLeScan((device, rssi, scanRecord) -> {
+      Long id = getID(getUUIDs(scanRecord));
+      if (id != null)
+        System.out.println(id);
+    });
 
-      System.out.println(uuids);
-      System.out.println(getID(uuids));
-      System.out.println();
-    };
-    adapter.startLeScan(callback);
+    long id = 120_000_000;
 
     byte[] advertisementData = new byte[] {
-            1,
-            -1 << 7, 0, 0, 0,
-            0, 0, 0, 0,
-            0,0,0,0,
-            0,0,0,0,
+        1, -1 << 7,
+            getReversedByte(id, 0), getReversedByte(id, 1),
+            getReversedByte(id, 2), getReversedByte(id, 3),
+            getReversedByte(id, 4), getReversedByte(id, 5),
+            getReversedByte(id, 6), getReversedByte(id, 7),
+            0, 0, 0, 0, 0, 0, 0
     };
 
-
-    AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder().setConnectable(false);
-    AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder()
+    AdvertisingSetParameters params = new AdvertisingSetParameters.Builder()
+            .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
+            .setConnectable(false)
+            .build();
+    AdvertiseSettings settings = new AdvertiseSettings.Builder()
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+            .build();
+    AdvertiseData data =
+        new AdvertiseData.Builder()
             .setIncludeTxPowerLevel(true)
-            .addManufacturerData(0x4C, advertisementData);
+            .addManufacturerData(0x4C, advertisementData).build();
 
-    adapter.getBluetoothLeAdvertiser().startAdvertising(settingsBuilder.build(), dataBuilder.build(), new AdvCallback());
+    BluetoothLeAdvertiser advertiser = adapter.getBluetoothLeAdvertiser();
+    advertiser.startAdvertising(settings, data, new AdvCallback());
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-  }
 
   static class AdvCallback extends AdvertiseCallback {
     public AdvCallback() {}
-    @Override
-    public void onStartSuccess(AdvertiseSettings settingsInEffect) {}
-
-    @Override
-    public void onStartFailure(int errorCode) { System.err.println("Errored AdvCallback: " + errorCode); }
   }
 }
