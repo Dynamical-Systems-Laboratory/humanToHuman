@@ -2,37 +2,65 @@ package com.polito.humantohuman.Services;
 
 import static com.polito.humantohuman.OverflowAreaUtils.*;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.AdvertisingSetCallback;
-import android.bluetooth.le.AdvertisingSetParameters;
 import android.bluetooth.le.BluetoothLeAdvertiser;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+
+import com.polito.humantohuman.Activities.ScanActivity;
 import com.polito.humantohuman.R;
+
 import java.util.*;
 
-public final class Bluetooth {
+public final class Bluetooth extends Service {
     public interface BluetoothDelegate { void foundDevice(long id, int power, int rssi); }
 
-    private static BluetoothLeAdvertiser advertiser;
-    private static BluetoothAdapter adapter;
-    private static BluetoothAdapter.LeScanCallback scanCallback;
-    private static AdvertiseCallback advertiseCallback;
+    public static BluetoothDelegate delegate = null;
+    public static String CHANNEL_ID = "HumanToHuman";
+    private static final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+    private static final BluetoothLeAdvertiser advertiser = adapter.getBluetoothLeAdvertiser();
+    private static final BluetoothAdapter.LeScanCallback scanCallback = (device, rssi, scanRecord) -> {
+        Long id = getID(getUUIDs(scanRecord));
+        if (id != null)
+            delegate.foundDevice(id, getTxPowerLevel(scanRecord), rssi);
+    };;
+    private static final AdvertiseCallback advertiseCallback = new AdvertiseCallback();
 
-    private Bluetooth() {}
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
-    public static void start(BluetoothDelegate delegate) {
-        if (adapter == null)adapter = BluetoothAdapter.getDefaultAdapter();
-        if (advertiser == null) advertiser = adapter.getBluetoothLeAdvertiser();
-        if (scanCallback == null) scanCallback = (device, rssi, scanRecord) -> {
-            Long id = getID(getUUIDs(scanRecord));
-            if (id != null)
-                delegate.foundDevice(id, getTxPowerLevel(scanRecord), rssi);
-        };
-        if (advertiseCallback == null) advertiseCallback = new AdvertiseCallback();
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        System.err.println("bluetooth service started");
+        NotificationChannel serviceChannel = new NotificationChannel(
+                CHANNEL_ID,
+                "Foreground Service Channel",
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+        getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ScanActivity.class), 0);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Foreground Service")
+                .setContentText("Running...")
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        startForeground(1, notification);
 
         adapter.startLeScan(scanCallback);
         long id = 120_000_000;
@@ -54,9 +82,15 @@ public final class Bluetooth {
                 .build();
 
         advertiser.startAdvertising(settings, data, advertiseCallback);
+
+        return Service.START_STICKY;
     }
 
-    public static void stop() {
+    @Override
+    public void onCreate() {}
+
+    @Override
+    public void onDestroy() {
         adapter.stopLeScan(scanCallback);
         advertiser.stopAdvertising(advertiseCallback);
     }

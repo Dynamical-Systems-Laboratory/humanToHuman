@@ -8,14 +8,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -35,25 +27,11 @@
         <activity android:name=".Activities.PermissionActivity"></activity>
 
         <service
-            android:name=".Services.BGScanService"
+            android:name=".Services.Bluetooth"
             android:enabled="true"
             android:exported="false"
-            android:isolatedProcess="false"
-            android:label="scan"
-            android:permission="android.permission.ACCESS_COARSE_LOCATION" /> <!-- android:permission="android.permission.WAKE_LOCK" -->
-
-        <receiver
-            android:name=".Receivers.BtReceiver"
-            android:permission="android.permission.WAKE_LOCK">
-            <intent-filter>
-                <action android:name="BluetoothDevice.ACTION_FOUND" />
-                <action android:name="BluetoothAdapter.ACTION_DISCOVERY_FINISHED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".Receivers.RestartServiceReceiver"
-            android:exported="false"
-            android:permission="android.permission.WAKE_LOCK" />
+            android:permission="android.permission.ACCESS_COARSE_LOCATION"
+            />
 
         <activity android:name=".Activities.ScanActivity" />
     </application>

@@ -1,5 +1,7 @@
 package com.polito.humantohuman.Activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -7,10 +9,8 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import com.polito.humantohuman.R;
 import com.polito.humantohuman.Services.Bluetooth;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +38,7 @@ public class ScanActivity extends AppCompatActivity {
   Switch dataSwitch;
   TableLayout table;
   ArrayList<Device> devices = new ArrayList<>();
-  Handler handler =  new Handler();
+  Handler handler = new Handler();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,8 @@ public class ScanActivity extends AppCompatActivity {
         table.addView(header);
         synchronized (devices) {
           for (int i = 0; i < devices.size(); i++) {
-            if (devices.get(i).lastSeen.before(Date.from(Instant.now().minusSeconds(1)))) {
+            if (devices.get(i).lastSeen.before(
+                    Date.from(Instant.now().minusSeconds(1)))) {
               devices.remove(i);
               i--;
             }
@@ -77,10 +78,10 @@ public class ScanActivity extends AppCompatActivity {
             id.setText(device.id + " ");
             tableRow.addView(id);
             TextView powerLevel = new TextView(activity);
-            powerLevel.setText(" "+device.powerLevel + " ");
+            powerLevel.setText(" " + device.powerLevel + " ");
             tableRow.addView(powerLevel);
             TextView rssi = new TextView(activity);
-            rssi.setText(" " +device.rssi);
+            rssi.setText(" " + device.rssi);
             tableRow.addView(rssi);
             table.addView(tableRow);
           }
@@ -90,25 +91,29 @@ public class ScanActivity extends AppCompatActivity {
     };
 
     handler.postDelayed(updateTable, 200);
+
+    Bluetooth.delegate = (id, powerLevel, rssi) -> {
+      synchronized (devices) {
+        for (Device device : devices) {
+          if (device.id == id) {
+            device.powerLevel = powerLevel;
+            device.rssi = rssi;
+            device.lastSeen = Date.from(Instant.now());
+            return;
+          }
+        };
+        devices.add(new Device(id, powerLevel, rssi));
+      }; // Semicolon here is because of bug in clang-format
+    };
+
     dataSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
       if (checked) {
         System.err.println("Starting bluetooth");
-        Bluetooth.start((id, powerLevel, rssi) -> {
-          synchronized (devices) {
-            for (Device device : devices) {
-              if (device.id == id) {
-                device.powerLevel = powerLevel;
-                device.rssi = rssi;
-                device.lastSeen = Date.from(Instant.now());
-                return;
-              }
-            }
-            devices.add(new Device(id, powerLevel, rssi));
-          }
-        });
+
+        startService(new Intent(this, Bluetooth.class));
       } else {
         System.err.println("Stopping bluetooth");
-        Bluetooth.stop();
+        stopService(new Intent(this, Bluetooth.class));
       }
     });
   }
