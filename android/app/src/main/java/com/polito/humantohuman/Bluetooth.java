@@ -117,6 +117,7 @@ public final class Bluetooth extends Service {
                     second = (second << 8) | bytes[++i];
                 uuids.add(
                         new UUID(Long.reverseBytes(second), Long.reverseBytes(first)));
+                continue;
             }
 
             if (bytes[i] != -1) {
