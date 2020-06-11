@@ -2,7 +2,6 @@
 
 import Foundation
 
-
 // Property IDs. These are used in the database metadata table to store data.
 let OWN_ID_KEY = 0
 let CURRENT_CURSOR = 1
@@ -32,11 +31,11 @@ struct Database {
             print("failed to open database")
             return false
         }
-        
+
         guard shared.executeStatements(
             """
             CREATE TABLE IF NOT EXISTS metadata (
-                key         INTEGER         PRIMARY KEY,
+                key_        INTEGER         PRIMARY KEY,
                 tvalue      TEXT            NOT NULL DEFAULT '',
                 nvalue      INTEGER         NOT NULL DEFAULT 0
             );
@@ -52,30 +51,29 @@ struct Database {
             print(shared.lastErrorMessage())
             return false
         }
-        
+
         return true
     }
-    
+
     // Gets a numeric property from the metadata table.
     static func getPropNumeric(prop: Int) -> UInt64? {
-        let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key = ?",
+        let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
         if let rs = rs, rs.next() {
             return UInt64(bitPattern: rs.longLongInt(forColumn: "nvalue"))
         } else {
             return nil
         }
-        
     }
-    
+
     // Sets a numeric property in the metadata table.
     static func setPropNumeric(prop: Int, value: Int64) {
         do {
-            try shared.executeUpdate("INSERT INTO metadata (key, nvalue) VALUES (?, ?)",
-                                  values: [prop, value])
+            try shared.executeUpdate("INSERT INTO metadata (key_, nvalue) VALUES (?, ?)",
+                                     values: [prop, value])
         } catch {
-            try? shared.executeUpdate("UPDATE metadata SET nvalue = ? WHERE key = ?",
-                                     values: [value, prop])
+            try? shared.executeUpdate("UPDATE metadata SET nvalue = ? WHERE key_ = ?",
+                                      values: [value, prop])
         }
     }
 
@@ -113,8 +111,8 @@ struct Database {
     static func writeRow(device: Device) -> Bool {
         return shared.executeUpdate(
             """
-            INSERT INTO sensor_data (time, source, power, rssi)
-            VALUES (strftime('%s','now') || substr(strftime('%f','now'),4), ?, ?, ?)
+            insert into sensor_data (time, source, power, rssi)
+            values (strftime('%s','now') || substr(strftime('%f','now'),4), ?, ?, ?)
             """,
             withArgumentsIn: [device.uuid, device.measuredPower, device.rssi]
         )

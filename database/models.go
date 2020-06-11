@@ -6,8 +6,8 @@ import (
 
 type Connection struct {
 	Time    time.Time
-	DeviceA uint64
-	DeviceB uint64
-	Power   uint64
+	DeviceA int64
+	DeviceB int64
+	Power   int64
 	Rssi    float64
 }

@@ -1,4 +1,4 @@
-package com.polito.humantohuman.Services;
+package com.polito.humantohuman;
 
 import static com.polito.humantohuman.OverflowAreaUtils.*;
 
@@ -24,6 +24,7 @@ import java.util.*;
 public final class Bluetooth extends Service {
     public interface BluetoothDelegate { void foundDevice(long id, int power, int rssi); }
 
+    public static long id;
     public static BluetoothDelegate delegate = null;
     public static String CHANNEL_ID = "HumanToHuman";
     private static final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
@@ -63,7 +64,6 @@ public final class Bluetooth extends Service {
         startForeground(1, notification);
 
         adapter.startLeScan(scanCallback);
-        long id = 120_000_000;
         byte[] overflowData = new byte[17];
         overflowData[0] = 1;
         overflowData[1] = -1 << 7;
@@ -85,9 +85,6 @@ public final class Bluetooth extends Service {
 
         return Service.START_STICKY;
     }
-
-    @Override
-    public void onCreate() {}
 
     @Override
     public void onDestroy() {
@@ -160,18 +157,18 @@ public final class Bluetooth extends Service {
                 foundSentinel = true;
                 continue;
             }
-            id |= ((long)1) << (index - 8);
+            id |= 1L << (index - 8);
         }
         if (foundSentinel)
             return id;
         return null;
     }
 
-    public static byte getReversedByte(long value, int index) {
-        byte byteValue = (byte)((value >> (index * 8)) & ~-256);
+    public static byte getReversedByte(long value, int index) { // TODO make this cleaner
+        long byteValue = value >> (index * 8);
         byte y = 0;
-        for (int position = 7; position > 0; position--) {
-            y += ((byteValue & 1) << position);
+        for (int position = 7; position >= 0; position--) {
+            y |= ((byteValue & 1) << position);
             byteValue >>= 1;
         }
         return y;

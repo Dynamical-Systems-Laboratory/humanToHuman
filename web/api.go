@@ -10,13 +10,13 @@ import (
 
 type OneWayConnection struct {
 	Time  string  `json:"time"`
-	Other uint64  `json:"other"`
-	Power uint64  `json:"power"`
+	Other int64   `json:"other"`
+	Power int64   `json:"power"`
 	Rssi  float64 `json:"rssi"`
 }
 
 type ConnectionInfo struct {
-	Id          uint64             `json:"id"`
+	Id          int64              `json:"id"`
 	Connections []OneWayConnection `json:"connections"`
 }
 

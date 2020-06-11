@@ -24,57 +24,56 @@ let formatter = { () -> DateFormatter in
 }()
 
 struct Server {
-    
     // Get a user id from the server asynchronously. The callback either gets a valid user id, or nil if the request failed.
     static func getUserId(callback: @escaping (UInt64?) -> Void) {
         var request = URLRequest(url: API_USER_URL)
         request.httpMethod = "POST"
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
                 print(error?.localizedDescription ?? "No data")
                 callback(nil)
                 return
             }
-            
+
             guard let value = String(data: data, encoding: .utf8) else {
                 print("Failed to decode data as utf8")
                 callback(nil)
                 return
             }
-            
+
             guard let uintValue = UInt64(value.trimmingCharacters(in: .whitespacesAndNewlines))
             else {
                 print("Failed to parse data from API")
                 callback(nil)
                 return
             }
-            
+
             callback(uintValue)
         }.resume()
     }
-    
+
     // Format connection data for use when sending a request. Returns nil if the list given is empty
     static func formatConnectionData(id: UInt64, rows: [Row]) -> Data? {
         if rows.count == 0 {
             return nil
         }
-        
-        let jsonRows = rows.map() { row in
+
+        let jsonRows = rows.map { row in
             [
                 "time": formatter.string(from: row.time),
                 "other": row.source,
                 "power": row.power,
-                "rssi": row.rssi
+                "rssi": row.rssi,
             ]
         }
-        
+
         return try! JSONSerialization.data(withJSONObject: [
             "id": id,
-            "connections": jsonRows
+            "connections": jsonRows,
         ])
     }
-    
+
     // Send connection data to the server asynchronously. Calls the given callback if the request succeeded.
     static func sendConnectionData(data: Data, callback: @escaping () -> Void) {
         var request = URLRequest(url: API_CONNECTIONS_URL)
@@ -86,7 +85,7 @@ struct Server {
                 print(error?.localizedDescription ?? "No data")
                 return
             }
-                        
+
             let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
             if let responseJSON = responseJSON as? [String: Any] {
                 print("LOG `Util/Server.swift:\(#line)` got response: \(responseJSON)")
@@ -95,7 +94,5 @@ struct Server {
                 callback()
             }
         }.resume()
-    }    
+    }
 }
-
-

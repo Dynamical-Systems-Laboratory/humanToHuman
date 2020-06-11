@@ -1,6 +1,5 @@
 package com.polito.humantohuman.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,8 +8,10 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import com.polito.humantohuman.Bluetooth;
+import com.polito.humantohuman.Database;
 import com.polito.humantohuman.R;
-import com.polito.humantohuman.Services.Bluetooth;
+import com.polito.humantohuman.Server;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,10 @@ public class ScanActivity extends AppCompatActivity {
     }
   }
 
+  Server server;
+  Database database;
   Switch dataSwitch;
+  ArrayList<Database.Row> rows;
   TableLayout table;
   ArrayList<Device> devices = new ArrayList<>();
   Handler handler = new Handler();
@@ -44,8 +48,12 @@ public class ScanActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_scan);
+    server = new Server(this);
+    database = new Database(this);
     dataSwitch = findViewById(R.id.service_running);
     table = findViewById(R.id.deviceRows);
+
+    Bluetooth.id = 5952679123360942499L;
 
     ScanActivity activity = this;
 
@@ -92,8 +100,30 @@ public class ScanActivity extends AppCompatActivity {
 
     handler.postDelayed(updateTable, 200);
 
+    Runnable updateServer = new Runnable() {
+      @Override
+      public void run() {
+        if (rows == null || rows.isEmpty())
+          rows = database.popRows();
+        if (!rows.isEmpty())
+          server.sendData(rows, Bluetooth.id, (response, error) -> {
+            if (response != null)
+              System.err.println("got response " + response.toString());
+            if (error != null)
+              System.err.println("got error " + error.toString());
+            rows = null;
+            handler.postDelayed(this, 5000);
+          });
+        else
+          handler.postDelayed(this, 5000);
+      }
+    };
+
+    handler.postDelayed(updateServer, 5000);
+
     Bluetooth.delegate = (id, powerLevel, rssi) -> {
       synchronized (devices) {
+        database.addRow(id, powerLevel, rssi);
         for (Device device : devices) {
           if (device.id == id) {
             device.powerLevel = powerLevel;
@@ -101,7 +131,7 @@ public class ScanActivity extends AppCompatActivity {
             device.lastSeen = Date.from(Instant.now());
             return;
           }
-        };
+        }
         devices.add(new Device(id, powerLevel, rssi));
       }; // Semicolon here is because of bug in clang-format
     };
