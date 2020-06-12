@@ -73,7 +73,7 @@ public final class Bluetooth extends Service {
 
         AdvertiseSettings settings =
                 new AdvertiseSettings.Builder()
-                        .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+                        .setAdvertiseMode(AdvertiseSettings.ADVERTISE_TX_POWER_LOW)
                         .build();
 
         AdvertiseData data = new AdvertiseData.Builder()

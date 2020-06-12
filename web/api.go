@@ -62,7 +62,7 @@ func JsonFail(c *gin.Context, err error) bool {
 // @Failure 400 {object} web.ErrorApiMessage
 // @Router /addUser [post]
 func NewUser(c *gin.Context) {
-	id, err := database.InsertUser()
+	id, err := database.InsertUser(c.PostForm("token"))
 	JsonInfer(c, id, err)
 }
 
@@ -98,6 +98,6 @@ func AddConnections(c *gin.Context) {
 		connections = append(connections, conn)
 	}
 
-	err = database.InsertConnections(connections)
+	err = database.InsertConnectionsUnsafe(connections)
 	JsonInfer(c, len(connections), err)
 }

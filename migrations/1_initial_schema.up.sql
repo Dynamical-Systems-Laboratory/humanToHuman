@@ -1,11 +1,19 @@
-create table if not exists experiments (
+-- CREATE TABLE IF NOT EXISTS metadata (
+-- );
 
-  -- list of experiments
-
+CREATE TABLE IF NOT EXISTS experiments (
+  id          SERIAL          NOT NULL,
+  token       char(127)       NOT NULL UNIQUE,
+  open        TIMESTAMP       NOT NULL,
+  began       TIMESTAMP       ,
+  ended       TIMESTAMP       ,
+  PRIMARY KEY (id)
 );
+
 CREATE TABLE IF NOT EXISTS devices (
-  id          BIGINT         NOT NULL,
-  token       char(127)      NOT NULL UNIQUE,
+  id          BIGINT                                NOT NULL,
+  experiment  INTEGER REFERENCES experiments (id)   NOT NULL,
+  token       char(127)                             NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
