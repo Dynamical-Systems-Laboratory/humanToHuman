@@ -31,7 +31,8 @@ class Bluetooth: NSObject {
     let id: UInt64
     var peripheral: CBPeripheralManager!
     var central: CBCentralManager!
-    var running: Bool = false
+    var scanning: Bool = false
+    var advertising: Bool = false
 
     init(delegate: BTDelegate, id: UInt64) {
         self.delegate = delegate
@@ -52,29 +53,39 @@ class Bluetooth: NSObject {
             CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id),
         ])
     }
-    
-    // start advertising and scanning, making sure to not do any work we don't have to
-    func start() {
-        if running { return }
 
-        if central == nil {
-            central = CBCentralManager(delegate: self, queue: nil)
-        }
-
+    func startAdvertising() {
+        if advertising { return }
+        advertising = true
         if peripheral == nil {
             peripheral = CBPeripheralManager(delegate: self, queue: nil)
+            return
         }
 
-        running = true
-        if central.state == .poweredOn { scan() }
-        if peripheral.state == .poweredOn { advertise() }
+        advertise()
+    }
+
+    func startScanning() {
+        if scanning { return }
+        scanning = true
+        if central == nil {
+            central = CBCentralManager(delegate: self, queue: nil)
+            return
+        }
+
+        scan()
+    }
+
+    func stopScanning() {
+        if !scanning { return }
+        scanning = false
+        central.stopScan()
     }
 
     // stop advertising and scanning.
-    func stop() {
-        if !running { return }
-        running = false
-        central.stopScan()
+    func stopAdvertising() {
+        if !advertising { return }
+        advertising = false
         peripheral.removeAllServices()
         peripheral.stopAdvertising()
     }
@@ -82,15 +93,14 @@ class Bluetooth: NSObject {
 
 extension Bluetooth: CBPeripheralManagerDelegate {
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        if peripheral.state == .poweredOn, running { advertise() }
+        if peripheral.state == .poweredOn, advertising { advertise() }
     }
 }
 
 extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if central.state == .poweredOn, running { scan() }
+        if central.state == .poweredOn, scanning { scan() }
     }
-
 
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
     // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
@@ -124,7 +134,7 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
 
         uint64 = uint64 | (1 << (index - 8))
     }
-    
+
     if foundSentinel { return uint64 }
     else { return nil }
 }

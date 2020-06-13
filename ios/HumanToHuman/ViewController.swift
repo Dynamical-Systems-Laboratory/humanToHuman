@@ -2,7 +2,6 @@ import CoreBluetooth
 import Foundation
 import UIKit
 
-
 class BluetoothCell: UITableViewCell {
     @IBOutlet var name: UILabel!
     @IBOutlet var power: UILabel!
@@ -21,37 +20,37 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
-        self.wifiLabel.text = getWiFiAddress() ?? "Unknown"
+        wifiLabel.text = getWiFiAddress() ?? "Unknown"
         toggleRunButton.isEnabled = false
-        
+
         if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
             print("init with saved id \(id)")
             beacon = Bluetooth(delegate: self, id: id)
             toggleRunButton.isEnabled = true
         } else {
-            Server.getUserId() { id in
+            Server.getUserId { id in
                 guard let id = id else { exit(1) }
                 print("got id \(id)")
                 Database.setPropNumeric(prop: OWN_ID_KEY, value: Int64(bitPattern: id))
                 self.beacon = Bluetooth(delegate: self, id: id)
                 DispatchQueue.main.async {
-                   self.toggleRunButton.isEnabled = true
+                    self.toggleRunButton.isEnabled = true
                 }
             }
         }
-        
+
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if self.beacon == nil { return }
             if self.queuedRows == nil {
                 self.queuedRows = Server.formatConnectionData(id: self.beacon.id, rows: Database.popRows())
                 guard self.queuedRows != nil else { return }
             }
-            
+
             Server.sendConnectionData(data: self.queuedRows!) {
                 self.queuedRows = nil
             }
         })
-        
+
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let currentTime = Date()
             self.rows = self.rows.filter { row in
@@ -60,27 +59,29 @@ class ViewController: UIViewController {
             self.table.reloadData()
         })
     }
-    
+
     @IBAction func clearData() {
         print(Database.popRows())
-        self.queuedRows = nil
+        queuedRows = nil
     }
-    
+
     @IBAction func toggleRun() {
-        self.running = !self.running
-        if self.running {
-            self.beacon.start()
-            self.toggleRunButton.setTitle("stop", for: .normal)
+        running = !running
+        if running {
+            beacon.startAdvertising()
+            beacon.startScanning()
+            toggleRunButton.setTitle("stop", for: .normal)
         } else {
-            self.beacon.stop()
-            self.toggleRunButton.setTitle("start", for: .normal)
+            beacon.stopAdvertising()
+            beacon.stopScanning()
+            toggleRunButton.setTitle("start", for: .normal)
         }
     }
 }
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
-        if !self.running { return }
+        if !running { return }
         guard Database.writeRow(device: device) else {
             print("something went wrong with sql")
             return
