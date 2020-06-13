@@ -14,6 +14,6 @@ func main() {
 	database.ConnectToDb(database.DefaultURL)
 	database.ClearConnections()
 	router.POST("/addUser", web.NewUser)
-	router.POST("/addConnections", web.AddConnections)
+	router.POST("/addConnections", web.AddConnectionsUnsafe)
 	router.Run(":8080")
 }

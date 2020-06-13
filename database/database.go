@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	sq "github.com/Masterminds/squirrel"
+	"time"
 )
 
 var (
@@ -65,13 +66,17 @@ func InsertUser(experimentToken string) (uint64, error) {
 	return id, nil
 }
 
-func InsertConnectionsUnsafe(connections []Connection) error {
+func InsertConnections(connections ConnectionInfo) error {
+	return nil
+}
+
+func InsertConnectionsUnsafe(connections ConnectionInfoUnsafe) error {
 	builder := psql.Insert("connections").
 		Columns("time", "device_a", "device_b", "measured_power", "rssi").
 		RunWith(globalDb)
 
-	for _, connection := range connections {
-		builder = builder.Values(connection.Time, connection.DeviceA, connection.DeviceB,
+	for _, connection := range connections.Connections {
+		builder = builder.Values(time.Time(connection.Time), connections.Id, connection.Other,
 			connection.Power, connection.Rssi)
 	}
 	_, err := builder.Exec()

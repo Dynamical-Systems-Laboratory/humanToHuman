@@ -5,20 +5,7 @@ import (
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/gin-gonic/gin"
-	"time"
 )
-
-type OneWayConnection struct {
-	Time  string  `json:"time"`
-	Other int64   `json:"other"`
-	Power int64   `json:"power"`
-	Rssi  float64 `json:"rssi"`
-}
-
-type ConnectionInfo struct {
-	Id          int64              `json:"id"`
-	Connections []OneWayConnection `json:"connections"`
-}
 
 type ErrorApiMessage struct {
 	Status  uint64 `json:"status"`
@@ -76,28 +63,24 @@ func NewUser(c *gin.Context) {
 // @Success 200 {object} uint64
 // @Failure 400 {object} web.ErrorApiMessage
 // @Router /addConnections [post]
+func AddConnectionsUnsafe(c *gin.Context) {
+	var connections database.ConnectionInfoUnsafe
+	err := c.BindJSON(&connections)
+	if JsonFail(c, err) {
+		return
+	}
+
+	err = database.InsertConnectionsUnsafe(connections)
+	JsonInfer(c, len(connections.Connections), err)
+}
+
 func AddConnections(c *gin.Context) {
-	var userConns ConnectionInfo
+	var userConns database.ConnectionInfo
 	err := c.BindJSON(&userConns)
 	if JsonFail(c, err) {
 		return
 	}
 
-	var conn database.Connection
-	conn.DeviceA = userConns.Id
-	connections := make([]database.Connection, 100)[:0]
-	for _, connection := range userConns.Connections {
-		conn.Time, err = time.Parse(database.TimeFormat, connection.Time)
-		if JsonFail(c, err) {
-			return
-		}
-
-		conn.DeviceB = connection.Other
-		conn.Power = connection.Power
-		conn.Rssi = connection.Rssi
-		connections = append(connections, conn)
-	}
-
-	err = database.InsertConnectionsUnsafe(connections)
-	JsonInfer(c, len(connections), err)
+	err = database.InsertConnections(userConns)
+	JsonInfer(c, len(userConns.Connections), err)
 }
