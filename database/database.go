@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	NewUserFailed    = errors.New("failed to make new user")
-	AuthFailed       = errors.New("failed to authenticate")
-	ExperimentOver   = errors.New("experiment has already completed")
-	ExperimentClosed = errors.New("experiment has already closed")
+	NewUserFailed        = errors.New("failed to make new user")
+	AuthFailed           = errors.New("failed to authenticate")
+	ExperimentOver       = errors.New("experiment has already completed")
+	ExperimentClosed     = errors.New("experiment has already closed")
+	ExperimentNotStarted = errors.New("experiment hasn't started yet")
 )
 
 func InsertExperiment() (uint32, error) {
@@ -46,10 +47,11 @@ func InsertUser(experimentToken string) (uint64, error) {
 		return 0, err
 	}
 
-	if ended.Valid {
-		return 0, ExperimentOver
-	} else if began.Valid {
+	now := time.Now()
+	if began.Valid && now.After(began.Time) {
 		return 0, ExperimentClosed
+	} else if ended.Valid && now.After(ended.Time) {
+		return 0, ExperimentOver
 	}
 
 	token := utils.RandomString(127)
@@ -67,7 +69,37 @@ func InsertUser(experimentToken string) (uint64, error) {
 }
 
 func InsertConnections(connections ConnectionInfo) error {
-	return nil
+	row := psql.Select("devices.id", "experiments.began", "experiments.ended").
+		From("devices").
+		Join("experiments ON devices.experiment = experiments.id").
+		Where(sq.Eq{"token": connections.Key}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var deviceId int64
+	var began, ended sql.NullTime
+	err := row.Scan(&deviceId, &began, &ended)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+	if !began.Valid || now.Before(began.Time) {
+		return ExperimentNotStarted
+	} else if ended.Valid && now.After(ended.Time) {
+		return ExperimentOver
+	}
+
+	builder := psql.Insert("connections").
+		Columns("time", "device_a", "device_b", "measured_power", "rssi").
+		RunWith(globalDb)
+	for _, connection := range connections.Connections {
+		builder = builder.Values(time.Time(connection.Time), deviceId, connection.Other,
+			connection.Power, connection.Rssi)
+	}
+
+	_, err = builder.Exec()
+	return err
 }
 
 func InsertConnectionsUnsafe(connections ConnectionInfoUnsafe) error {
@@ -79,7 +111,7 @@ func InsertConnectionsUnsafe(connections ConnectionInfoUnsafe) error {
 		builder = builder.Values(time.Time(connection.Time), connections.Id, connection.Other,
 			connection.Power, connection.Rssi)
 	}
-	_, err := builder.Exec()
 
+	_, err := builder.Exec()
 	return err
 }
