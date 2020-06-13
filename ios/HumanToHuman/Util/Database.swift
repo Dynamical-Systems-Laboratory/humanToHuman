@@ -119,27 +119,21 @@ struct Database {
     }
 
     // Read all rows from the database.
-    static func readRows() -> [Row] {
+    static func rowCount() -> Int {
         do {
             // Get a resultset from the database cooresponding to all rows in the sensor_data table
-            let rs = try shared.executeQuery("SELECT * FROM sensor_data", values: nil)
-            var list: [Row] = []
-            while rs.next() {
-                let timeNumber = Double(rs.longLongInt(forColumn: "time")) / 1000.0
-                let row = Row(
-                    id: UInt64(bitPattern: rs.longLongInt(forColumn: "id")),
-                    time: Date(timeIntervalSince1970: timeNumber),
-                    source: UInt64(bitPattern: rs.longLongInt(forColumn: "source")),
-                    power: rs.long(forColumn: "power"),
-                    rssi: rs.double(forColumn: "rssi")
-                )
-                list.append(row)
+            let rs = try shared.executeQuery("SELECT COUNT(id) AS row_count FROM sensor_data", values: nil)
+            guard rs.next() else {
+                return 0
             }
+
+            let rowCount = rs.long(forColumn: "row_count")
             rs.close()
-            return list
+            print("row count is \(rowCount)")
+            return rowCount
         } catch {
             print(shared.lastErrorMessage())
-            return []
+            return 0
         }
     }
 }

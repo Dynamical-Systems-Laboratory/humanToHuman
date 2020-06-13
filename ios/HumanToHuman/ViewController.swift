@@ -11,22 +11,25 @@ class BluetoothCell: UITableViewCell {
 class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
-    @IBOutlet var toggleRunButton: UIButton!
+    @IBOutlet var toggleAdvertiseButton: UIButton!
+    @IBOutlet var toggleScanButton: UIButton!
+    @IBOutlet var clearDataButton: UIButton!
 
     var beacon: Bluetooth!
     var queuedRows: Data?
-    var running: Bool = false
     var rows: [(device: Device, lastSeen: Date)] = []
 
     override func viewDidLoad() {
         guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
         wifiLabel.text = getWiFiAddress() ?? "Unknown"
-        toggleRunButton.isEnabled = false
+        toggleScanButton.isEnabled = true
+        toggleAdvertiseButton.isEnabled = false
+        clearDataButton.isEnabled = Database.rowCount() != 0
 
         if let id = Database.getPropNumeric(prop: OWN_ID_KEY) {
             print("init with saved id \(id)")
             beacon = Bluetooth(delegate: self, id: id)
-            toggleRunButton.isEnabled = true
+            toggleAdvertiseButton.isEnabled = true
         } else {
             Server.getUserId { id in
                 guard let id = id else { exit(1) }
@@ -34,7 +37,7 @@ class ViewController: UIViewController {
                 Database.setPropNumeric(prop: OWN_ID_KEY, value: Int64(bitPattern: id))
                 self.beacon = Bluetooth(delegate: self, id: id)
                 DispatchQueue.main.async {
-                    self.toggleRunButton.isEnabled = true
+                    self.toggleAdvertiseButton.isEnabled = true
                 }
             }
         }
@@ -63,32 +66,39 @@ class ViewController: UIViewController {
     @IBAction func clearData() {
         print(Database.popRows())
         queuedRows = nil
+        clearDataButton.isEnabled = false
     }
-
-    @IBAction func toggleRun() {
-        running = !running
-        if running {
-            beacon.startAdvertising()
-            beacon.startScanning()
-            toggleRunButton.setTitle("stop", for: .normal)
-        } else {
+    
+    @IBAction func toggleAdvertising() {
+        if beacon.advertising {
             beacon.stopAdvertising()
+            toggleAdvertiseButton.setTitle("advertise", for: .normal)
+        } else {
+            beacon.startAdvertising()
+            toggleAdvertiseButton.setTitle("stop advertising", for: .normal)
+        }
+    }
+    
+    @IBAction func toggleScanning() {
+        if beacon.scanning {
             beacon.stopScanning()
-            toggleRunButton.setTitle("start", for: .normal)
+            toggleScanButton.setTitle("scan", for: .normal)
+        } else {
+            beacon.startScanning()
+            toggleScanButton.setTitle("stop scanning", for: .normal)
         }
     }
 }
 
 extension ViewController: BTDelegate {
     func discoveredDevice(_ device: Device) {
-        if !running { return }
         guard Database.writeRow(device: device) else {
             print("something went wrong with sql")
             return
         }
-        let firstIndex = rows.firstIndex(where: { row in row.device.uuid == device.uuid })
-
-        if let idx = firstIndex {
+        
+        clearDataButton.isEnabled = true
+        if let idx = rows.firstIndex(where: { row in row.device.uuid == device.uuid }) {
             rows[idx].device.rssi = device.rssi
             rows[idx].device.measuredPower = device.measuredPower
             rows[idx].lastSeen = Date()
