@@ -140,11 +140,11 @@ public class ScanActivity extends AppCompatActivity {
       if (checked) {
         System.err.println("Starting bluetooth");
         startService(new Intent(this, Bluetooth.Advertiser.class));
-//        startService(new Intent(this, Bluetooth.Scanner.class));
+        startService(new Intent(this, Bluetooth.Scanner.class));
       } else {
         System.err.println("Stopping bluetooth");
         stopService(new Intent(this, Bluetooth.Advertiser.class));
-//        stopService(new Intent(this, Bluetooth.Scanner.class));
+        stopService(new Intent(this, Bluetooth.Scanner.class));
       }
     });
   }
