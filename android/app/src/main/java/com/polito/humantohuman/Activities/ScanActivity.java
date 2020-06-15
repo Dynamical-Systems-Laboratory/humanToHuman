@@ -38,7 +38,7 @@ public class ScanActivity extends AppCompatActivity {
 
   Server server;
   Database database;
-  Switch dataSwitch;
+  Switch scanSwitch;
   ArrayList<Database.Row> rows;
   TableLayout table;
   ArrayList<Device> devices = new ArrayList<>();
@@ -50,7 +50,7 @@ public class ScanActivity extends AppCompatActivity {
     setContentView(R.layout.activity_scan);
     server = new Server(this);
     database = new Database(this);
-    dataSwitch = findViewById(R.id.service_running);
+    scanSwitch = findViewById(R.id.service_running);
     table = findViewById(R.id.deviceRows);
 
     Bluetooth.id = 5952679123360942499L;
@@ -136,14 +136,15 @@ public class ScanActivity extends AppCompatActivity {
       }; // Semicolon here is because of bug in clang-format
     };
 
-    dataSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+    scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
       if (checked) {
         System.err.println("Starting bluetooth");
-
-        startService(new Intent(this, Bluetooth.class));
+        startService(new Intent(this, Bluetooth.Advertiser.class));
+//        startService(new Intent(this, Bluetooth.Scanner.class));
       } else {
         System.err.println("Stopping bluetooth");
-        stopService(new Intent(this, Bluetooth.class));
+        stopService(new Intent(this, Bluetooth.Advertiser.class));
+//        stopService(new Intent(this, Bluetooth.Scanner.class));
       }
     });
   }

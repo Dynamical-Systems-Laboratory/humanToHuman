@@ -48,13 +48,14 @@ class ViewController: UIViewController {
                 self.queuedRows = Server.formatConnectionData(id: self.beacon.id, rows: Database.popRows())
                 guard self.queuedRows != nil else { return }
             }
+            self.clearDataButton.isEnabled = true
 
             Server.sendConnectionData(data: self.queuedRows!) {
                 self.queuedRows = nil
             }
         })
 
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let currentTime = Date()
             self.rows = self.rows.filter { row in
                 row.lastSeen.addingTimeInterval(1.0).compare(currentTime) != .orderedAscending
@@ -64,7 +65,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func clearData() {
-        print(Database.popRows())
+        Database.popRows()
         queuedRows = nil
         clearDataButton.isEnabled = false
     }

@@ -31,7 +31,7 @@ struct Server {
 
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
-                print(error?.localizedDescription ?? "No data")
+                print("Server error: \(error?.localizedDescription ?? "No data")")
                 callback(nil)
                 return
             }
