@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B3A066B24992C4B00BA7978 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */; };
 		4B5DD2A52485E1B400059C7C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A42485E1B400059C7C /* Server.swift */; };
 		4B5DD2B0248737D500059C7C /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A7248737D500059C7C /* FMDatabaseQueue.m */; };
 		4B5DD2B1248737D500059C7C /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A8248737D500059C7C /* FMDatabaseAdditions.m */; };
@@ -25,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
+		4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4B5DD2A42485E1B400059C7C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		4B5DD2A7248737D500059C7C /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
 		4B5DD2A8248737D500059C7C /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
+				4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */,
 				4B3A066924992A9C00BA7978 /* UI */,
 				4B5DD2A62487379300059C7C /* FMDB */,
 				4B282F23247E128700114132 /* Util */,
@@ -188,6 +191,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B3A066B24992C4B00BA7978 /* LaunchScreen.storyboard in Resources */,
 				4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */,
 				4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */,
 			);
