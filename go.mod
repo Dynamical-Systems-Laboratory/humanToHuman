@@ -9,5 +9,4 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/lib/pq v1.3.0
 	github.com/markbates/pkger v0.15.1
-	github.com/swaggo/swag v1.6.6
 )

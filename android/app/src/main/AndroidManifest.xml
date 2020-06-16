@@ -31,6 +31,12 @@
         <activity android:name=".Activities.PermissionActivity"></activity>
 
         <service
+            android:name=".Server"
+            android:enabled="true"
+            android:exported="false"
+            />
+
+        <service
             android:name=".Bluetooth$Advertiser"
             android:enabled="true"
             android:exported="false"

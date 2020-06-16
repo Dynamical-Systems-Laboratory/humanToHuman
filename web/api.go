@@ -43,26 +43,17 @@ func JsonFail(c *gin.Context, err error) bool {
 	return false
 }
 
-// AddUser godoc
-// @Summary Adds a user
-// @Success 200 {object} uint64
-// @Failure 400 {object} web.ErrorApiMessage
-// @Router /addUser [post]
+func GetPrivacyPolicy(c *gin.Context) {
+	policy, err := database.GetPrivacyPolicy()
+	JsonInfer(c, policy, err)
+
+}
+
 func NewUser(c *gin.Context) {
 	id, err := database.InsertUser(c.PostForm("token"))
 	JsonInfer(c, id, err)
 }
 
-// AddConnections godoc
-// @Summary Adds a set of connection
-// @Param id formData string true "id of current device"
-// @Param time formData string true "time of connection: 2012-11-01T22:08:41+00:00"
-// @Param other formData uint64 true "device connected to"
-// @Param power formData int32 true "power of the connection"
-// @Param rssi formData float64 true "rssi of the connection"
-// @Success 200 {object} uint64
-// @Failure 400 {object} web.ErrorApiMessage
-// @Router /addConnections [post]
 func AddConnectionsUnsafe(c *gin.Context) {
 	var connections database.ConnectionInfoUnsafe
 	err := c.BindJSON(&connections)

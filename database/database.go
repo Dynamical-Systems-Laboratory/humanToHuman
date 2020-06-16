@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+const (
+	PRIVACY_POLICY int32 = 1
+)
+
 var (
 	NewUserFailed        = errors.New("failed to make new user")
 	AuthFailed           = errors.New("failed to authenticate")
@@ -15,6 +19,18 @@ var (
 	ExperimentClosed     = errors.New("experiment has already closed")
 	ExperimentNotStarted = errors.New("experiment hasn't started yet")
 )
+
+func GetPrivacyPolicy() (string, error) {
+	row := psql.Select("tdata").
+		From("metadata").
+		Where(sq.Eq{"id": PRIVACY_POLICY}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var policy string
+	err := row.Scan(&policy)
+	return policy, err
+}
 
 func InsertExperiment() (uint32, error) {
 	token := utils.RandomString(127)

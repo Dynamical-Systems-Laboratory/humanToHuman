@@ -1,5 +1,9 @@
--- CREATE TABLE IF NOT EXISTS metadata (
--- );
+CREATE TABLE IF NOT EXISTS metadata (
+  id          INTEGER         NOT NULL,
+  tdata       VARCHAR         NOT NULL,
+  ndata       BIGINT          NOT NULL,
+  PRIMARY KEY (id)
+);
 
 CREATE TABLE IF NOT EXISTS experiments (
   id          SERIAL          NOT NULL,
