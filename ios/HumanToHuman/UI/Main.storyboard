@@ -88,8 +88,14 @@
                                     <action selector="toggleAdvertising" destination="BYZ-38-t0r" eventType="touchUpInside" id="XMc-n1-8Zz"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8sa-Yh-kYT">
-                                <rect key="frame" x="171" y="795" width="72" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F6H-0W-Wgy">
+                                <rect key="frame" x="308" y="718" width="72" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l1I-pg-rFE">
+                                <rect key="frame" x="308" y="753" width="72" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -98,26 +104,29 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="wHl-XZ-cl7" firstAttribute="leading" secondItem="7Kg-5n-EgM" secondAttribute="leading" id="4TC-DC-Kxj"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="8sa-Yh-kYT" secondAttribute="bottom" constant="46" id="4Uk-HG-OL6"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="l1I-pg-rFE" secondAttribute="bottom" constant="88" id="5KN-E5-0OY"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="F6H-0W-Wgy" secondAttribute="trailing" constant="34" id="69U-E5-Ckc"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="7N8-5b-ou9" secondAttribute="trailing" constant="20" id="79M-5U-ae4"/>
-                            <constraint firstItem="8sa-Yh-kYT" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="8Dm-wS-wS6"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="wHl-XZ-cl7" secondAttribute="bottom" constant="46" id="BOd-JJ-Wbo"/>
                             <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="32" id="CtC-xM-yxU"/>
                             <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="p1z-LR-Xgk" secondAttribute="leading" id="F6f-QK-zGQ"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="20" id="Zzz-q3-VmO"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="F6H-0W-Wgy" secondAttribute="bottom" constant="123" id="bfN-Ys-O1l"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" constant="170" id="e4U-5D-tjV"/>
                             <constraint firstItem="wHl-XZ-cl7" firstAttribute="top" secondItem="7Kg-5n-EgM" secondAttribute="bottom" constant="8" id="ihp-oL-Knm"/>
                             <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="jYj-dI-eEc"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="l1I-pg-rFE" secondAttribute="trailing" constant="34" id="mce-gK-i5m"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="ndV-lM-PPH"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="I9s-FX-c6U"/>
                     </view>
                     <connections>
                         <outlet property="clearDataButton" destination="wHl-XZ-cl7" id="Hcp-c7-T2p"/>
+                        <outlet property="idLabel" destination="l1I-pg-rFE" id="yP6-fr-vbP"/>
                         <outlet property="table" destination="7N8-5b-ou9" id="TTQ-bc-RZG"/>
                         <outlet property="toggleAdvertiseButton" destination="7Kg-5n-EgM" id="kRK-mQ-PcC"/>
                         <outlet property="toggleScanButton" destination="p1z-LR-Xgk" id="CGw-qB-3Hc"/>
-                        <outlet property="wifiLabel" destination="8sa-Yh-kYT" id="hd0-bc-0Oe"/>
+                        <outlet property="wifiLabel" destination="F6H-0W-Wgy" id="NP6-Cz-vav"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

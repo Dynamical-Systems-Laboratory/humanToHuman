@@ -17,10 +17,9 @@
 		4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A022481C6D900FE73F0 /* Wifi.swift */; };
 		4BD70A052481F60500FE73F0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A042481F60500FE73F0 /* Database.swift */; };
 		4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C524721700002B0A6B /* AppDelegate.swift */; };
-		4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* ViewController.swift */; };
+		4BEAE6C824721700002B0A6B /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEAE6C724721700002B0A6B /* MainController.swift */; };
 		4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6CB24721702002B0A6B /* Assets.xcassets */; };
 		4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6D92472176E002B0A6B /* Main.storyboard */; };
-		4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */; };
 		4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFCDF5E2481538700C44E19 /* Bluetooth.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,11 +42,10 @@
 		4BD70A042481F60500FE73F0 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		4BEAE6C224721700002B0A6B /* HumanToHuman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HumanToHuman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEAE6C524721700002B0A6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4BEAE6C724721700002B0A6B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		4BEAE6C724721700002B0A6B /* MainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
 		4BEAE6CB24721702002B0A6B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4BEAE6D324721702002B0A6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BEAE6D92472176E002B0A6B /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4BFCDF5E2481538700C44E19 /* Bluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,6 +70,15 @@
 				4B5DD2A42485E1B400059C7C /* Server.swift */,
 			);
 			path = Util;
+			sourceTree = "<group>";
+		};
+		4B3A066924992A9C00BA7978 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				4BEAE6C724721700002B0A6B /* MainController.swift */,
+				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		4B5DD2A62487379300059C7C /* FMDB */ = {
@@ -111,13 +118,11 @@
 		4BEAE6C424721700002B0A6B /* HumanToHuman */ = {
 			isa = PBXGroup;
 			children = (
+				4B3A066924992A9C00BA7978 /* UI */,
 				4B5DD2A62487379300059C7C /* FMDB */,
 				4B282F23247E128700114132 /* Util */,
 				4BEAE6C524721700002B0A6B /* AppDelegate.swift */,
-				4BEAE6C724721700002B0A6B /* ViewController.swift */,
-				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
 				4BEAE6CB24721702002B0A6B /* Assets.xcassets */,
-				4BEAE6DB24721A53002B0A6B /* LaunchScreen.storyboard */,
 				4BEAE6D324721702002B0A6B /* Info.plist */,
 				4B282F22247E0F0C00114132 /* Bridging.h */,
 			);
@@ -183,7 +188,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BEAE6DC24721A53002B0A6B /* LaunchScreen.storyboard in Resources */,
 				4BEAE6CC24721702002B0A6B /* Assets.xcassets in Resources */,
 				4BEAE6DA2472176E002B0A6B /* Main.storyboard in Resources */,
 			);
@@ -200,7 +204,7 @@
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
 				4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */,
 				4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */,
-				4BEAE6C824721700002B0A6B /* ViewController.swift in Sources */,
+				4BEAE6C824721700002B0A6B /* MainController.swift in Sources */,
 				4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */,
 				4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */,
 				4B5DD2B2248737D500059C7C /* FMDatabasePool.m in Sources */,

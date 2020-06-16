@@ -11,6 +11,7 @@ class BluetoothCell: UITableViewCell {
 class ViewController: UIViewController {
     @IBOutlet var table: UITableView!
     @IBOutlet var wifiLabel: UILabel!
+    @IBOutlet var idLabel: UILabel!
     @IBOutlet var toggleAdvertiseButton: UIButton!
     @IBOutlet var toggleScanButton: UIButton!
     @IBOutlet var clearDataButton: UIButton!
@@ -30,6 +31,7 @@ class ViewController: UIViewController {
             print("init with saved id \(id)")
             beacon = Bluetooth(delegate: self, id: id)
             toggleAdvertiseButton.isEnabled = true
+            self.idLabel.text = "ID: \(id)"
         } else {
             Server.getUserId { id in
                 guard let id = id else { exit(1) }
@@ -38,6 +40,7 @@ class ViewController: UIViewController {
                 self.beacon = Bluetooth(delegate: self, id: id)
                 DispatchQueue.main.async {
                     self.toggleAdvertiseButton.isEnabled = true
+                    self.idLabel.text = "ID: \(id)"
                 }
             }
         }
