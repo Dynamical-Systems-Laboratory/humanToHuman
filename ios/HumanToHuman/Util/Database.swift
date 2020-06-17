@@ -5,6 +5,8 @@ import Foundation
 // Property IDs. These are used in the database metadata table to store data.
 let OWN_ID_KEY = 0
 let CURRENT_CURSOR = 1
+let ADVERTISING = 2
+let SCANNING = 3
 
 // Shared database
 let shared: FMDatabase = {
@@ -129,7 +131,6 @@ struct Database {
 
             let rowCount = rs.long(forColumn: "row_count")
             rs.close()
-            print("row count is \(rowCount)")
             return rowCount
         } catch {
             print(shared.lastErrorMessage())

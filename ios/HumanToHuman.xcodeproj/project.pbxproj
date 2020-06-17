@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B24AB64249990310008021F /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B24AB63249990310008021F /* Services.swift */; };
 		4B3A066B24992C4B00BA7978 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */; };
 		4B5DD2A52485E1B400059C7C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A42485E1B400059C7C /* Server.swift */; };
 		4B5DD2B0248737D500059C7C /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A7248737D500059C7C /* FMDatabaseQueue.m */; };
@@ -14,6 +15,7 @@
 		4B5DD2B2248737D500059C7C /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2AB248737D500059C7C /* FMDatabasePool.m */; };
 		4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2AF248737D500059C7C /* FMDatabase.m */; };
 		4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2B5248739A300059C7C /* FMResultSet.m */; };
+		4BCBFC8924997DE000BB2DDD /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCBFC8824997DE000BB2DDD /* SettingsController.swift */; };
 		4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */; };
 		4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A022481C6D900FE73F0 /* Wifi.swift */; };
 		4BD70A052481F60500FE73F0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A042481F60500FE73F0 /* Database.swift */; };
@@ -25,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4B24AB63249990310008021F /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
 		4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4B5DD2A42485E1B400059C7C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -39,6 +42,7 @@
 		4B5DD2AF248737D500059C7C /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
 		4B5DD2B4248739A300059C7C /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		4B5DD2B5248739A300059C7C /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		4BCBFC8824997DE000BB2DDD /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverflowAreaUtils.swift; sourceTree = "<group>"; };
 		4BD70A022481C6D900FE73F0 /* Wifi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wifi.swift; sourceTree = "<group>"; };
 		4BD70A042481F60500FE73F0 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -70,6 +74,7 @@
 				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
 				4BD70A022481C6D900FE73F0 /* Wifi.swift */,
 				4B5DD2A42485E1B400059C7C /* Server.swift */,
+				4B24AB63249990310008021F /* Services.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -79,6 +84,7 @@
 			children = (
 				4BEAE6C724721700002B0A6B /* MainController.swift */,
 				4BEAE6D92472176E002B0A6B /* Main.storyboard */,
+				4BCBFC8824997DE000BB2DDD /* SettingsController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -205,6 +211,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */,
+				4B24AB64249990310008021F /* Services.swift in Sources */,
+				4BCBFC8924997DE000BB2DDD /* SettingsController.swift in Sources */,
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
 				4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */,
 				4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */,

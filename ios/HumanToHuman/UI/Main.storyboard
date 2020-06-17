@@ -7,16 +7,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Main Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="HumanToHuman" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MainController" customModule="HumanToHuman" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PXY-KJ-Lcc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7N8-5b-ou9">
-                                <rect key="frame" x="20" y="52" width="374" height="640"/>
+                                <rect key="frame" x="20" y="82" width="374" height="701"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="BluetoothCell" rowHeight="58" id="arg-OL-sgu" customClass="BluetoothCell" customModule="HumanToHuman" customModuleProvider="target">
@@ -67,35 +67,15 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="KaT-o0-3x8"/>
                                 </connections>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wHl-XZ-cl7">
-                                <rect key="frame" x="32" y="786" width="34" height="30"/>
-                                <state key="normal" title="clear"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rVX-7q-haN">
+                                <rect key="frame" x="323" y="44" width="57" height="30"/>
+                                <state key="normal" title="Settings"/>
                                 <connections>
-                                    <action selector="clearData" destination="BYZ-38-t0r" eventType="touchUpInside" id="Vt7-j1-PtA"/>
+                                    <segue destination="m5t-BW-zxg" kind="presentation" id="gwm-ui-Hbe"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1z-LR-Xgk">
-                                <rect key="frame" x="32" y="713" width="33" height="30"/>
-                                <state key="normal" title="scan"/>
-                                <connections>
-                                    <action selector="toggleScanning" destination="BYZ-38-t0r" eventType="touchUpInside" id="nvh-p3-0NW"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Kg-5n-EgM">
-                                <rect key="frame" x="32" y="748" width="64" height="30"/>
-                                <state key="normal" title="advertise"/>
-                                <connections>
-                                    <action selector="toggleAdvertising" destination="BYZ-38-t0r" eventType="touchUpInside" id="XMc-n1-8Zz"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F6H-0W-Wgy">
-                                <rect key="frame" x="308" y="718" width="72" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l1I-pg-rFE">
-                                <rect key="frame" x="308" y="795" width="72" height="21"/>
+                                <rect key="frame" x="171" y="813" width="72" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -103,35 +83,91 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="leading" secondItem="7Kg-5n-EgM" secondAttribute="leading" id="4TC-DC-Kxj"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="F6H-0W-Wgy" secondAttribute="trailing" constant="34" id="69U-E5-Ckc"/>
+                            <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="38" id="0Qx-1b-cRg"/>
                             <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="7N8-5b-ou9" secondAttribute="trailing" constant="20" id="79M-5U-ae4"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="l1I-pg-rFE" secondAttribute="bottom" constant="46" id="7fr-5d-pGA"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="wHl-XZ-cl7" secondAttribute="bottom" constant="46" id="BOd-JJ-Wbo"/>
-                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="32" id="CtC-xM-yxU"/>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="p1z-LR-Xgk" secondAttribute="leading" id="F6f-QK-zGQ"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="F6H-0W-Wgy" secondAttribute="bottom" constant="123" id="bfN-Ys-O1l"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" constant="170" id="e4U-5D-tjV"/>
-                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="top" secondItem="7Kg-5n-EgM" secondAttribute="bottom" constant="8" id="ihp-oL-Knm"/>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="jYj-dI-eEc"/>
-                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="l1I-pg-rFE" secondAttribute="trailing" constant="34" id="mce-gK-i5m"/>
-                            <constraint firstItem="7N8-5b-ou9" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" constant="8" id="nab-2R-0S9"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="l1I-pg-rFE" secondAttribute="bottom" constant="28" id="Aya-UL-p8E"/>
+                            <constraint firstItem="rVX-7q-haN" firstAttribute="top" secondItem="I9s-FX-c6U" secondAttribute="top" id="QYG-lU-bjA"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="trailing" secondItem="rVX-7q-haN" secondAttribute="trailing" constant="34" id="b0Z-rL-LwK"/>
+                            <constraint firstItem="I9s-FX-c6U" firstAttribute="bottom" secondItem="7N8-5b-ou9" secondAttribute="bottom" constant="79" id="gH6-VK-z1B"/>
+                            <constraint firstItem="l1I-pg-rFE" firstAttribute="centerX" secondItem="I9s-FX-c6U" secondAttribute="centerX" id="lcF-bW-2A8"/>
                             <constraint firstItem="7N8-5b-ou9" firstAttribute="leading" secondItem="I9s-FX-c6U" secondAttribute="leading" constant="20" id="ndV-lM-PPH"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="I9s-FX-c6U"/>
                     </view>
+                    <navigationItem key="navigationItem" id="zzg-qo-1wc"/>
                     <connections>
-                        <outlet property="clearDataButton" destination="wHl-XZ-cl7" id="Hcp-c7-T2p"/>
                         <outlet property="idLabel" destination="l1I-pg-rFE" id="yP6-fr-vbP"/>
                         <outlet property="table" destination="7N8-5b-ou9" id="TTQ-bc-RZG"/>
-                        <outlet property="toggleAdvertiseButton" destination="7Kg-5n-EgM" id="kRK-mQ-PcC"/>
-                        <outlet property="toggleScanButton" destination="p1z-LR-Xgk" id="CGw-qB-3Hc"/>
-                        <outlet property="wifiLabel" destination="F6H-0W-Wgy" id="NP6-Cz-vav"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="137.94642857142856"/>
+        </scene>
+        <!--Settings Controller-->
+        <scene sceneID="j50-uN-QEH">
+            <objects>
+                <viewController id="m5t-BW-zxg" customClass="SettingsController" customModule="HumanToHuman" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Oy4-kh-5Ah">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wHl-XZ-cl7">
+                                <rect key="frame" x="33" y="414" width="34" height="30"/>
+                                <state key="normal" title="clear"/>
+                                <connections>
+                                    <action selector="clearData" destination="m5t-BW-zxg" eventType="touchUpInside" id="Rq0-Kc-xyN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1z-LR-Xgk">
+                                <rect key="frame" x="33" y="341" width="33" height="30"/>
+                                <state key="normal" title="scan"/>
+                                <connections>
+                                    <action selector="toggleScanning" destination="m5t-BW-zxg" eventType="touchUpInside" id="3rd-oG-21f"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Kg-5n-EgM">
+                                <rect key="frame" x="33" y="376" width="64" height="30"/>
+                                <state key="normal" title="advertise"/>
+                                <connections>
+                                    <action selector="toggleAdvertising" destination="m5t-BW-zxg" eventType="touchUpInside" id="lWm-8l-exC"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F6H-0W-Wgy">
+                                <rect key="frame" x="309" y="346" width="72" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="top" secondItem="7Kg-5n-EgM" secondAttribute="bottom" constant="8" id="0Te-nc-bXy"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="0Ww-Xi-LkC"/>
+                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="0v5-Ak-lsK"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="23B-SK-jyc"/>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="leading" secondItem="7Kg-5n-EgM" secondAttribute="leading" id="2Mt-Te-Meh"/>
+                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="top" secondItem="Rje-VJ-olw" secondAttribute="top" constant="341" id="5gn-54-9D6"/>
+                            <constraint firstItem="Rje-VJ-olw" firstAttribute="trailing" secondItem="F6H-0W-Wgy" secondAttribute="trailing" constant="33" id="FKW-67-bDb"/>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="top" secondItem="7Kg-5n-EgM" secondAttribute="bottom" constant="8" id="NXG-N9-wis"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="p1z-LR-Xgk" secondAttribute="leading" id="NXy-wj-alt"/>
+                            <constraint firstItem="wHl-XZ-cl7" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="S6p-Dl-Pww"/>
+                            <constraint firstItem="F6H-0W-Wgy" firstAttribute="top" secondItem="Rje-VJ-olw" secondAttribute="top" constant="346" id="TYZ-ch-AQ0"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="VKf-Z7-R5t"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Rje-VJ-olw"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="lpI-FN-8jp"/>
+                    <connections>
+                        <outlet property="clearDataButton" destination="wHl-XZ-cl7" id="RkE-VR-O92"/>
+                        <outlet property="toggleAdvertiseButton" destination="7Kg-5n-EgM" id="eLD-Td-39Y"/>
+                        <outlet property="toggleScanButton" destination="p1z-LR-Xgk" id="8fk-sc-f2U"/>
+                        <outlet property="wifiLabel" destination="F6H-0W-Wgy" id="cHK-Cm-Ufr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="58T-Ru-EgX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="977" y="138"/>
         </scene>
     </scenes>
 </document>

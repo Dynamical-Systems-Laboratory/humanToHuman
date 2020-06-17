@@ -10,9 +10,6 @@ import CoreBluetooth
 import Foundation
 import UIKit
 
-// The service UUID we search with; this cooresponds to index zero of TableOfOverflowServiceUuidStringsByBitPosition
-let GLOBAL_SERVICE_UUID = CBUUID(string: "00000000-0000-0000-0000-00000000007C")
-
 // A single device that we've scanned.
 struct Device {
     let uuid: UInt64
@@ -25,22 +22,21 @@ protocol BTDelegate {
     func discoveredDevice(_: Device)
 }
 
+
 // The class that handles the bluetooth communication. Its two main methods are start() and stop()
 class Bluetooth: NSObject {
-    let delegate: BTDelegate
-    let id: UInt64
-    var peripheral: CBPeripheralManager!
-    var central: CBCentralManager!
-    var scanning: Bool = false
-    var advertising: Bool = false
+    
 
-    init(delegate: BTDelegate, id: UInt64) {
-        self.delegate = delegate
-        self.id = id
-    }
-
+    static let beacon = Bluetooth()
+    static var delegate: BTDelegate!
+    static var id: UInt64!
+    static var peripheral: CBPeripheralManager!
+    static var central: CBCentralManager!
+    static var scanning: Bool = false
+    static var advertising: Bool = false
+    
     // Start scanning for peripherals, using the global service UUID
-    private func scan() {
+    private static func scan() {
         central.scanForPeripherals(
             withServices: OverflowAreaUtils.allOverflowServiceUuids(),
             options: [CBCentralManagerScanOptionAllowDuplicatesKey: true]
@@ -48,42 +44,44 @@ class Bluetooth: NSObject {
     }
 
     // start advertising, using the service uuid combination that cooresponds to our id.
-    private func advertise() {
+    private static func advertise() {
         peripheral.startAdvertising([
             CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id),
         ])
     }
 
-    func startAdvertising() {
-        if advertising { return }
+    static func startAdvertising() -> Bool {
+        if Bluetooth.id == nil { return false }
+        if advertising { return true }
         advertising = true
         if peripheral == nil {
-            peripheral = CBPeripheralManager(delegate: self, queue: nil)
-            return
+            peripheral = CBPeripheralManager(delegate: beacon, queue: nil)
+            return true
         }
 
         advertise()
+        return true
     }
 
-    func startScanning() {
+    static func startScanning() {
         if scanning { return }
         scanning = true
         if central == nil {
-            central = CBCentralManager(delegate: self, queue: nil)
+            central = CBCentralManager(delegate: beacon, queue: nil)
             return
         }
 
         scan()
     }
 
-    func stopScanning() {
+    static func stopScanning() {
         if !scanning { return }
         scanning = false
         central.stopScan()
     }
 
     // stop advertising and scanning.
-    func stopAdvertising() {
+    static func stopAdvertising() {
         if !advertising { return }
         advertising = false
         peripheral.removeAllServices()
@@ -93,13 +91,13 @@ class Bluetooth: NSObject {
 
 extension Bluetooth: CBPeripheralManagerDelegate {
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        if peripheral.state == .poweredOn, advertising { advertise() }
+        if peripheral.state == .poweredOn, Bluetooth.advertising { Bluetooth.advertise() }
     }
 }
 
 extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if central.state == .poweredOn, scanning { scan() }
+        if central.state == .poweredOn, Bluetooth.scanning { Bluetooth.scan() }
     }
 
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
@@ -111,7 +109,7 @@ extension Bluetooth: CBCentralManagerDelegate {
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-                delegate.discoveredDevice(Device(
+                Bluetooth.delegate.discoveredDevice(Device(
                     uuid: uuid,
                     rssi: rssi.floatValue,
                     measuredPower: measuredPower ?? -1
