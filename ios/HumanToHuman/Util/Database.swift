@@ -56,6 +56,10 @@ struct Database {
 
         return true
     }
+    
+    static func clearProp(prop: Int) {
+        try? shared.executeUpdate("DELETE FROM metadata where key_ = ?", values: [prop])
+    }
 
     // Gets a numeric property from the metadata table.
     static func getPropNumeric(prop: Int) -> UInt64? {
