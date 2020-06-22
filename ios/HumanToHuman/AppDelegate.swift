@@ -12,9 +12,31 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var rows: [(device: Device, lastSeen: Date)] = []
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        print("application launch")
+        guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
+        Bluetooth.delegate = self
+        
+        if let baseurl = Database.getPropText(prop: KEY_SERVER_BASE_URL) { // we have a server to connect to
+            Services.popToServer(baseurl: baseurl)
+            
+            if let id = Database.getPropNumeric(prop: KEY_OWN_ID) {
+                print("init with saved id \(id)")
+                Bluetooth.id = id
+            } else {
+                Server.getUserId(baseurl: baseurl) { id in
+                    guard let id = id else { exit(1) }
+                    print("got id \(id)")
+                    Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(bitPattern: id))
+                    Bluetooth.id = id
+                }
+            }
+        }
+        
+        
         // Override point for customization after application launch.
         return true
     }
@@ -27,6 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        print("applicationDidEnterBackground")
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -39,9 +62,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        print("applicationWillTerminate")
     }
 
 
 }
 
-
+extension AppDelegate: BTDelegate {
+    func discoveredDevice(_ device: Device) {
+        guard Database.writeRow(device: device) else {
+            print("something went wrong with sql")
+            return
+        }
+        
+        if let idx = rows.firstIndex(where: { row in row.device.uuid == device.uuid }) {
+            rows[idx].device.rssi = device.rssi
+            rows[idx].device.measuredPower = device.measuredPower
+            rows[idx].lastSeen = Date()
+        } else {
+            rows.append((device: device, lastSeen: Date()))
+        }
+    }
+}

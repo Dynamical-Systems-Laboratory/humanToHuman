@@ -9,32 +9,18 @@
 import Foundation
 
 class Services {
-    private static var updateTableTimer : Timer?
     private static var popToServerTimer : Timer?
     private static var queuedRows : Data?
     
-    static func updateTable(_ mainController: MainController) {
-        guard updateTableTimer == nil else { return }
-        updateTableTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            let currentTime = Date()
-            mainController.rows = mainController.rows.filter { row in
-                row.lastSeen.addingTimeInterval(1.0).compare(currentTime) != .orderedAscending
-            }
-            DispatchQueue.main.async {
-                mainController.table.reloadData()
-            }
-        })
-    }
-    
-    static func popToServer() {
+    static func popToServer(baseurl: String) {
         guard popToServerTimer == nil else { return }
         popToServerTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if queuedRows == nil {
                 queuedRows = Server.formatConnectionData(id: Bluetooth.id, rows: Database.popRows())
                 guard queuedRows != nil else { return }
             }
-
-            Server.sendConnectionData(data: queuedRows!) {
+            
+            Server.sendConnectionData(baseurl: baseurl, data: queuedRows!) {
                 queuedRows = nil
             }
         })

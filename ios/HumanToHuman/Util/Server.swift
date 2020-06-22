@@ -8,12 +8,6 @@
 
 import Foundation
 
-// API URL to create a new user
-let API_USER_URL = URL(string: "http://192.168.1.151:8080/addUser")!
-
-// API URL to add connections to the db
-let API_CONNECTIONS_URL = URL(string: "http://192.168.1.151:8080/addConnections")!
-
 // Date formatter
 let formatter = { () -> DateFormatter in
     let formatter = DateFormatter()
@@ -25,8 +19,8 @@ let formatter = { () -> DateFormatter in
 
 struct Server {
     // Get a user id from the server asynchronously. The callback either gets a valid user id, or nil if the request failed.
-    static func getUserId(callback: @escaping (UInt64?) -> Void) {
-        var request = URLRequest(url: API_USER_URL)
+    static func getUserId(baseurl: String, callback: @escaping (UInt64?) -> Void) {
+        var request = URLRequest(url: URL(string: "\(baseurl)/addUser")!)
         request.httpMethod = "POST"
 
         URLSession.shared.dataTask(with: request) { data, _, error in
@@ -75,8 +69,8 @@ struct Server {
     }
 
     // Send connection data to the server asynchronously. Calls the given callback if the request succeeded.
-    static func sendConnectionData(data: Data, callback: @escaping () -> Void) {
-        var request = URLRequest(url: API_CONNECTIONS_URL)
+    static func sendConnectionData(baseurl: String, data: Data, callback: @escaping () -> Void) {
+        var request = URLRequest(url: URL(string: "\(baseurl)/addConnections")!)
         request.httpMethod = "POST"
         request.httpBody = data
 

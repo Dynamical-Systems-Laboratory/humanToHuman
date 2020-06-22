@@ -10,51 +10,52 @@ import Foundation
 import UIKit
 
 class SettingsController: UIViewController {
-    
-    @IBOutlet var wifiLabel: UILabel!
-    @IBOutlet var toggleAdvertiseButton: UIButton!
-    @IBOutlet var toggleScanButton: UIButton!
-    @IBOutlet var clearDataButton: UIButton!
-    
+
+    @IBOutlet var toggleCollectButton: UIButton!
+    @IBOutlet var baseurlField: UITextField!
+
     override func viewDidLoad() {
         print("settings controller loading...")
-        wifiLabel.text = getWiFiAddress() ?? "Unknown"
-        clearDataButton.isEnabled = Database.rowCount() != 0
-
         if Bluetooth.advertising {
-            toggleAdvertiseButton.setTitle("stop advertising", for: .normal)
+            toggleCollectButton.setTitle("stop collection", for: .normal)
         } else {
-            toggleAdvertiseButton.setTitle("advertise", for: .normal)
+            toggleCollectButton.setTitle("collect data", for: .normal)
         }
-        
-        if Bluetooth.scanning {
-            toggleScanButton.setTitle("stop scannning", for: .normal)
-        } else {
-            toggleScanButton.setTitle("scan", for: .normal)
-        }
+        baseurlField.text = Database.getPropText(prop: KEY_SERVER_BASE_URL)
     }
     
-    @IBAction func clearData() {
-        Services.popDestroy()
-    }
-    
-    @IBAction func toggleAdvertising() {
+    @IBAction func toggleCollection() {
         if Bluetooth.advertising {
             Bluetooth.stopAdvertising()
-            toggleAdvertiseButton.setTitle("advertise", for: .normal)
+            Bluetooth.stopScanning()
+            toggleCollectButton.setTitle("collect data", for: .normal)
         } else {
             guard Bluetooth.startAdvertising() else { return } // this fails if there's no id given
-            toggleAdvertiseButton.setTitle("stop advertising", for: .normal)
+            Bluetooth.startScanning()
+            toggleCollectButton.setTitle("stop collection", for: .normal)
         }
     }
     
-    @IBAction func toggleScanning() {
-        if Bluetooth.scanning {
-            Bluetooth.stopScanning()
-            toggleScanButton.setTitle("scan", for: .normal)
-        } else {
-            Bluetooth.startScanning()
-            toggleScanButton.setTitle("stop scanning", for: .normal)
+    @IBAction func setBaseurl() {
+        if let baseurl = baseurlField.text {
+            guard URL(string: baseurl) != nil else {
+                print("error, baseurl is not properly formatted")
+                return
+            }
+            
+            Database.setPropText(prop: KEY_SERVER_BASE_URL, value: baseurl)
+            Services.popToServer(baseurl: baseurl)
+            if let id = Database.getPropNumeric(prop: KEY_OWN_ID) {
+                print("init with saved id \(id)")
+                Bluetooth.id = id
+            } else {
+                Server.getUserId(baseurl: baseurl) { id in
+                    guard let id = id else { exit(1) }
+                    print("got id \(id)")
+                    Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(bitPattern: id))
+                    Bluetooth.id = id
+                }
+            }
         }
     }
 }
