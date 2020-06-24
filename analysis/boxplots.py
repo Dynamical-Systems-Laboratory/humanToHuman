@@ -61,13 +61,40 @@ def box_plots_log_ignore_0_with_fit():
 
     (m, b), _ = curve_fit(curve, xlog, [y.mean() for y in ys], [10, 3])
     plt.plot(xlog, curve(xlog, m, b), mfc='b', mec='b', marker=',')
-    a = b / 10 / m
+    a = b / m
     n = 1 / 10 / m
 
     print(a, n)
 
     plt.show()
 
+def box_plots_normal_ignore_0_with_fit():
+    xlog = np.log10(x[1:])
+    ys = nexus_i10[1:]
+    def curve(x, m, b):
+        return m * x + b
 
-box_plots_log_ignore_0_with_fit()
+    (m, b), _ = curve_fit(curve, xlog, [y.mean() for y in ys])
+    a = b / m
+    n = 1 / 10 / m
+
+    print(a, n)
+
+    plt.ylabel('RSSI (dBm)')
+    plt.xlabel('AB Distance (meters)')
+    plt.title('Measured RSSI vs Distance for Various Phone Pairs')
+    plt.boxplot(nexus_i10, positions = x)
+
+    def curve_exp(x):
+        return 10 ** ((x - a) / 10 / n)
+
+    xsmall = np.arange(.001, 9, .001)
+    plt.plot(xsmall, curve_exp(xsmall), mfc='b', mec='b', marker=',')
+
+
+    plt.show()
+
+
+
+box_plots_normal_ignore_0_with_fit()
 
