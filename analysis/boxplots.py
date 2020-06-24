@@ -61,11 +61,6 @@ def box_plots_log_ignore_0_with_fit():
 
     (m, b), _ = curve_fit(curve, xlog, [y.mean() for y in ys], [10, 3])
     plt.plot(xlog, curve(xlog, m, b), mfc='b', mec='b', marker=',')
-    a = b / m
-    n = 1 / 10 / m
-
-    print(a, n)
-
     plt.show()
 
 def box_plots_normal_ignore_0_with_fit():
@@ -75,9 +70,7 @@ def box_plots_normal_ignore_0_with_fit():
         return m * x + b
 
     (m, b), _ = curve_fit(curve, xlog, [y.mean() for y in ys])
-    a = b / m
-    n = 1 / 10 / m
-
+    a, n = b, m / 10
     print(a, n)
 
     plt.ylabel('RSSI (dBm)')
@@ -86,12 +79,10 @@ def box_plots_normal_ignore_0_with_fit():
     plt.boxplot(nexus_i10, positions = x)
 
     def curve_exp(x):
-        return 10 ** ((x - a) / 10 / n)
+        return 10 * n * np.log10(x) + a
 
     xsmall = np.arange(.001, 9, .001)
     plt.plot(xsmall, curve_exp(xsmall), mfc='b', mec='b', marker=',')
-
-
     plt.show()
 
 
