@@ -3,6 +3,7 @@ import pandas as pd
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import statistics
+import pickle
 
 nexus = 5952679123360942499
 i8 = 7132799880531636771
@@ -23,7 +24,7 @@ i10_i8_mask = lambda df: (df['device_b'] == i8) & (df['device_a'] == i10)
 
 nexus_i8 = [df['rssi'][nexus_i8_mask(df)] for df in dfs]
 i8_nexus = [df['rssi'][i8_nexus_mask(df)] for df in dfs]
-nexus_i10 = np.array([np.array(df['rssi'][nexus_i10_mask(df)]) for df in dfs])
+nexus_i10 = [df['rssi'][nexus_i10_mask(df)] for df in dfs]
 i10_nexus = [df['rssi'][i10_nexus_mask(df)] for df in dfs]
 i10_i8 = [df['rssi'][i10_i8_mask(df)] for df in dfs]
 i8_i10 = [df['rssi'][i8_i10_mask(df)] for df in dfs]
@@ -69,23 +70,21 @@ def box_plots_normal_ignore_0_with_fit():
     def curve(x, m, b):
         return m * x + b
 
-    (m, b), _ = curve_fit(curve, xlog, [y.mean() for y in ys])
+    (m, b), coef = curve_fit(curve, xlog, [y.mean() for y in ys])
     a, n = b, m / 10
-    print(a, n)
+    print(a, n, coef)
 
-    plt.ylabel('RSSI (dBm)')
-    plt.xlabel('AB Distance (meters)')
-    plt.title('Measured RSSI vs Distance for Various Phone Pairs')
-    plt.boxplot(nexus_i10, positions = x)
+    plt.xlabel('RSSI (dBm)')
+    plt.ylabel('AB Distance (meters)')
+    plt.title('Distance vs Measured RSSI or Various Phone Pairs')
+    plt.boxplot(nexus_i10, positions = x, vert = False)
 
     def curve_exp(x):
         return 10 * n * np.log10(x) + a
 
     xsmall = np.arange(.001, 9, .001)
-    plt.plot(xsmall, curve_exp(xsmall), mfc='b', mec='b', marker=',')
+    plt.plot(curve_exp(xsmall), xsmall, mfc='b', mec='b', marker=',')
     plt.show()
 
 
-
 box_plots_normal_ignore_0_with_fit()
-
