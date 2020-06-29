@@ -97,6 +97,8 @@ def shaded_area(meters, rssi2d, description):
     Xs = np.array([x.mean() for x in rssi2d])
     Xs_stdev = np.array([x.std() for x in rssi2d])
 
+    deriv = np.log(10) / 10 / n * 10**((Xs_stdev - a) / 10 / n)
+    m_stdev = np.sqrt(deriv * deriv * db_stdev * db_stdev)
     (a, a_stdev), (n, n_stdev), r2 = fit_curve_a_n_r2(meters[1:], rssi2d[1:])
 
     plt.xlabel('RSSI (dBm)')
@@ -129,7 +131,7 @@ def stdev_for_dist(meters, rssi2d, description):
     (a, a_stdev), (n, n_stdev), r2 = fit_curve_a_n_r2(meters[1:], rssi2d[1:])
 
     deriv = np.log(10) / 10 / n * 10**((db_mean - a) / 10 / n)
-    m_stdev = np.sqrt(deriv * deriv + db_stdev * db_stdev)
+    m_stdev = np.sqrt(deriv * deriv * db_stdev * db_stdev)
 
     plt.ylabel('Calculated Meters Standard Deviation (meters)')
     plt.xlabel('Distance (meters)')
@@ -140,9 +142,10 @@ def stdev_for_dist(meters, rssi2d, description):
     plt.savefig(f"stdev_for_dist_{description}.png")
     plt.show()
 
-
-# (data, name) = all_phones[5]
+# (data, name) = all_phones[3]
 # box_plots_normal_ignore_0_with_fit(meters[::-1], data, name)
 # stdev_for_dist(meters, data, name)
 # shaded_area(meters[::-1], data, name)
-# stdev_for_dist(meters[::-1], data, name)
+# stdev_for_dist(meters, data, name)
+# for data, name in all_phones:
+#     print(name, np.array([d.count() for d in data]).mean())
