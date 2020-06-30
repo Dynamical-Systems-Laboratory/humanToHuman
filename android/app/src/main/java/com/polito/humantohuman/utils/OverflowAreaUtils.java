@@ -1,4 +1,4 @@
-package com.polito.humantohuman;
+package com.polito.humantohuman.utils;
 
 import java.util.HashMap;
 import java.util.UUID;

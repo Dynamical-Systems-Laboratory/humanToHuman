@@ -1,11 +1,7 @@
 package com.polito.humantohuman;
 
-import static com.polito.humantohuman.OverflowAreaUtils.*;
+import static com.polito.humantohuman.utils.OverflowAreaUtils.*;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.AdvertiseData;
@@ -14,9 +10,6 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-
-import com.polito.humantohuman.Activities.ScanActivity;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class Bluetooth {
     public interface BluetoothDelegate { void foundDevice(long id, int power, int rssi); }
 
-    public static long id;
     public static BluetoothDelegate delegate = null;
     public static AtomicBoolean scanning = new AtomicBoolean(false); // Keeping it atomic for now
     public static AtomicBoolean advertising = new AtomicBoolean(false);
@@ -51,28 +43,28 @@ public final class Bluetooth {
             if (!advertising.compareAndSet(false, true))
                 return Service.START_NOT_STICKY;
             System.err.println("bluetooth advertiser service started");
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    ADVERTISE_CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-
-            getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ScanActivity.class), 0);
-
-            Notification notification = new NotificationCompat.Builder(this, ADVERTISE_CHANNEL_ID)
-                    .setContentTitle("Human To Human")
-                    .setContentText("Advertising...")
-                    .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentIntent(pendingIntent)
-                    .build();
-
-            startForeground(1, notification);
+//            NotificationChannel serviceChannel = new NotificationChannel(
+//                    ADVERTISE_CHANNEL_ID,
+//                    "Foreground Service Channel",
+//                    NotificationManager.IMPORTANCE_DEFAULT);
+//
+//            getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
+//
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ScanActivity.class), 0);
+//
+//            Notification notification = new NotificationCompat.Builder(this, ADVERTISE_CHANNEL_ID)
+//                    .setContentTitle("Human To Human")
+//                    .setContentText("Advertising...")
+//                    .setSmallIcon(R.drawable.ic_stat_name)
+//                    .setContentIntent(pendingIntent)
+//                    .build();
+//
+//            startForeground(1, notification);
             byte[] overflowData = new byte[17];
             overflowData[0] = 1;
             overflowData[1] = -1 << 7;
             for (int i = 0; i < 8; i++) {
-                overflowData[i + 2] = getReversedByte(id, i);
+                overflowData[i + 2] = getReversedByte(AppLogic.getBluetoothID(), i);
             }
 
             AdvertiseSettings settings =
@@ -107,23 +99,23 @@ public final class Bluetooth {
             if (!scanning.compareAndSet(false, true))
                 return Service.START_NOT_STICKY;
 
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    SCAN_CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-
-            getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ScanActivity.class), 0);
-
-            Notification notification = new NotificationCompat.Builder(this, SCAN_CHANNEL_ID)
-                    .setContentTitle("Human To Human")
-                    .setContentText("Scanning...")
-                    .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentIntent(pendingIntent)
-                    .build();
-
-            startForeground(2, notification);
+//            NotificationChannel serviceChannel = new NotificationChannel(
+//                    SCAN_CHANNEL_ID,
+//                    "Foreground Service Channel",
+//                    NotificationManager.IMPORTANCE_DEFAULT);
+//
+//            getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
+//
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, ScanActivity.class), 0);
+//
+//            Notification notification = new NotificationCompat.Builder(this, SCAN_CHANNEL_ID)
+//                    .setContentTitle("Human To Human")
+//                    .setContentText("Scanning...")
+//                    .setSmallIcon(R.drawable.ic_stat_name)
+//                    .setContentIntent(pendingIntent)
+//                    .build();
+//
+//            startForeground(2, notification);
             adapter.startLeScan(scanCallback);
             return Service.START_STICKY;
         }

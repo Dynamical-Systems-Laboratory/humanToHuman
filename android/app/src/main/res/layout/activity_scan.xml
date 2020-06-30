@@ -47,28 +47,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TableLayout
-            android:id="@+id/deviceRows"
-            android:layout_width="match_parent"
-            android:layout_height="477dp">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </TableLayout>
-
         <Switch
             android:id="@+id/service_running"
             android:layout_width="match_parent"
@@ -95,5 +73,28 @@
             android:text="@string/upload_data_with_wifi" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/scanSettingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="42dp"
+        android:text="Settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/scanExperimentDescription"
+        android:layout_width="366dp"
+        android:layout_height="440dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="146dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="145dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

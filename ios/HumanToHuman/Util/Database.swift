@@ -61,11 +61,11 @@ struct Database {
             print(shared.lastErrorMessage())
             return false
         }
-        
+
         if getPropNumeric(prop: KEY_HAS_INIT_DATABASE) != nil {
             return true
         }
-        
+
         setPropText(prop: KEY_SERVER_BASE_URL, value: "http://192.168.1.151:8080")
         setPropNumeric(prop: KEY_HAS_INIT_DATABASE, value: 1)
         setPropText(prop: KEY_PRIVACY_POLICY, value: VALUE_DEFAULT_PRIVACY_POLICY)
@@ -75,13 +75,13 @@ struct Database {
         setPropNumeric(prop: KEY_CURRENT_CURSOR, value: 0)
         return true
     }
-    
+
     static func clearProp(prop: Int) {
         try? shared.executeUpdate("DELETE FROM metadata where key_ = ?", values: [prop])
     }
-    
+
     static func getPropText(prop: Int) -> String? {
-       let rs = shared.executeQuery("SELECT tvalue from metadata WHERE key_ = ?",
+        let rs = shared.executeQuery("SELECT tvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
         if let rs = rs, rs.next() {
             return rs.string(forColumn: "tvalue")
@@ -89,7 +89,7 @@ struct Database {
             return nil
         }
     }
-    
+
     static func setPropText(prop: Int, value: String) {
         do {
             try shared.executeUpdate("INSERT INTO metadata (key_, tvalue) VALUES (?, ?)",
@@ -99,7 +99,7 @@ struct Database {
                                       values: [value, prop])
         }
     }
-    
+
     // Gets a numeric property from the metadata table.
     static func getPropNumeric(prop: Int) -> UInt64? {
         let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key_ = ?",
