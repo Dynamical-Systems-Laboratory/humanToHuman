@@ -58,8 +58,7 @@ public class Database extends SQLiteOpenHelper {
         + "    time        INTEGER         NOT NULL,\n"
         + "    source      INTEGER         NOT NULL,\n"
         + "    power       INTEGER         NOT NULL,\n"
-        + "    rssi        REAL            NOT NULL,\n"
-        + "    dirty       BOOLEAN         NOT NULL\n"
+        + "    rssi        REAL            NOT NULL\n"
         + ");");
   }
 
@@ -79,11 +78,7 @@ public class Database extends SQLiteOpenHelper {
 
   public static void setPropNumeric(int prop, long value) {
     SQLiteDatabase db = database.getWritableDatabase();
-    try {
-      db.execSQL("INSERT INTO metadata (key_, nvalue) VALUES (?, ?)", new Object[] { prop, value });
-    } catch (SQLiteConstraintException e) {
-      db.execSQL("UPDATE metadata SET nvalue = ? WHERE key_ = ?", new Object[] { value, prop });
-    }
+    db.execSQL("INSERT OR REPLACE INTO metadata (key_, nvalue) VALUES (?, ?)", new Object[] { prop, value });
   }
 
   public static String getPropText(int prop) {
@@ -99,11 +94,7 @@ public class Database extends SQLiteOpenHelper {
 
   public static void setPropText(int prop, String value) {
     SQLiteDatabase db = database.getWritableDatabase();
-    try {
-      db.execSQL("INSERT INTO metadata (key_, tvalue) VALUES (?, ?)", new Object[] { prop, value });
-    } catch (SQLiteConstraintException e) {
-      db.execSQL("UPDATE metadata SET tvalue = ? WHERE key_ = ?", new Object[] { value, prop });
-    }
+    db.execSQL("INSERT OR REPLACE INTO metadata (key_, tvalue) VALUES (?, ?)", new Object[] { prop, value });
   }
 
   public static void addRow(long id, int power, int rssi) {

@@ -1,5 +1,6 @@
 package com.polito.humantohuman.Activities;
 
+import android.bluetooth.le.PeriodicAdvertisingParameters;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -13,6 +14,7 @@ public class SettingsActivity extends AppCompatActivity {
     Button exitButton;
     Button setServerButton;
     TextView setServerEditText;
+    TextView serverErrorText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,14 +24,19 @@ public class SettingsActivity extends AppCompatActivity {
         exitButton.setOnClickListener((view) -> this.finish());
         setServerEditText = findViewById(R.id.settingsSetServerEditText);
         setServerButton = findViewById(R.id.settingsSetServerButton);
-        setServerButton.setOnClickListener((view) -> {
-            setServerEditText.setText("");
-            setServerButton.setEnabled(false);
+        serverErrorText = findViewById(R.id.settingsServerErrorText);
 
-            AppLogic.setServerURL(setServerEditText.getText().toString(), (succeeded) -> {
-                System.err.println("hello world: "+succeeded);
-                if (!succeeded) {
+        setServerEditText.setText("http://192.168.1.151:8080/experiment/password");
+
+        setServerButton.setEnabled(AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT);
+        setServerButton.setOnClickListener((view) -> {
+            setServerButton.setEnabled(false);
+            AppLogic.setServerCredentials(setServerEditText.getText().toString(), (error) -> {
+                if (error != null) {
                     setServerButton.setEnabled(true);
+                    serverErrorText.setText(error.toString());
+                } else {
+                    serverErrorText.setText("SUCCESS!");
                 }
             });
         });

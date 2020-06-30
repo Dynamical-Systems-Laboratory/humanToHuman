@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"encoding/base64"
+	"golang.org/x/crypto/sha3"
 	"math/rand"
 	"time"
 	"unsafe"
@@ -19,6 +21,10 @@ func RandomLong() uint64 {
 	return uint64(src.Int63())
 }
 
+func RandomInt() uint32 {
+	return uint32(src.Int63())
+}
+
 func RandomString(n int) string {
 	b := make([]byte, n)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
@@ -35,4 +41,15 @@ func RandomString(n int) string {
 	}
 
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+func HashPassword(password string) (string, error) {
+	hash := sha3.New512()
+	_, err := hash.Write([]byte(password))
+	if err != nil {
+		return "", err
+	}
+
+	bytes := hash.Sum(make([]byte, 512)[:0])
+	return base64.StdEncoding.EncodeToString(bytes), err
 }

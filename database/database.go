@@ -15,6 +15,7 @@ const (
 var (
 	NewUserFailed        = errors.New("failed to make new user")
 	AuthFailed           = errors.New("failed to authenticate")
+	IncorrectPassword    = errors.New("provided password was incorrect")
 	ExperimentOver       = errors.New("experiment has already completed")
 	ExperimentClosed     = errors.New("experiment has already closed")
 	ExperimentNotStarted = errors.New("experiment hasn't started yet")
@@ -32,17 +33,28 @@ func GetPrivacyPolicy() (string, error) {
 	return policy, err
 }
 
-func InsertExperiment() (uint32, error) {
-	token := utils.RandomString(127)
-	row := psql.Insert("devices").
-		Columns("token").
-		Values(token).
-		RunWith(globalDb).
+func InsertExperiment(password string, openNullable sql.NullTime) (uint32, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return 0, err
+	}
+
+	utils.Log("password is: %v", password)
+
+	open := time.Now()
+	if openNullable.Valid {
+		open = openNullable.Time
+	}
+
+	row := psql.Insert("experiments").
+		Columns("hash", "open").
+		Values(hashed, open).
 		Suffix("RETURNING \"id\"").
+		RunWith(globalDb).
 		QueryRow()
 
 	var id uint32
-	err := row.Scan(&id)
+	err = row.Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -50,51 +62,66 @@ func InsertExperiment() (uint32, error) {
 	return id, nil
 }
 
-func InsertUser(experimentToken string) (uint64, error) {
+func InsertUser(password string) (uint64, string, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return 0, "", err
+	}
+
 	row := psql.Select("id", "began", "ended").
 		From("experiments").
-		Where(sq.Eq{"token": experimentToken}).
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
 		QueryRow()
 
-	var experiment uint32
+	var experimentId uint32
 	var began, ended sql.NullTime
-	err := row.Scan(&experiment, &began, &ended)
+	err = row.Scan(&experimentId, &began, &ended)
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	now := time.Now()
 	if began.Valid && now.After(began.Time) {
-		return 0, ExperimentClosed
+		return 0, "", ExperimentClosed
 	} else if ended.Valid && now.After(ended.Time) {
-		return 0, ExperimentOver
+		return 0, "", ExperimentOver
 	}
 
 	token := utils.RandomString(127)
-	id := utils.RandomLong()
-	_, err = psql.Insert("devices").
-		Columns("id", "experiment", "token").
-		Values(id, experiment, token).
-		RunWith(globalDb).
-		Exec()
-	if err == nil {
-		return 0, err
+	hashedToken, err := utils.HashPassword(token)
+	if err != nil {
+		return 0, "", err
 	}
 
-	return id, nil
+	id := utils.RandomLong()
+	_, err = psql.Insert("devices").
+		Columns("id", "experiment", "hash").
+		Values(id, experimentId, hashedToken).
+		RunWith(globalDb).
+		Exec()
+	if err != nil {
+		return 0, "", err
+	}
+
+	return id, token, nil
 }
 
 func InsertConnections(connections ConnectionInfo) error {
+	hashed, err := utils.HashPassword(connections.Key)
+	if err != nil {
+		return err
+	}
+
 	row := psql.Select("devices.id", "experiments.began", "experiments.ended").
 		From("devices").
-		Join("experiments ON devices.experiment = experiments.id").
-		Where(sq.Eq{"token": connections.Key}).
+		Where(sq.Eq{"hash": hashed}).
 		RunWith(globalDb).
 		QueryRow()
 
 	var deviceId int64
 	var began, ended sql.NullTime
-	err := row.Scan(&deviceId, &began, &ended)
+	err = row.Scan(&deviceId, &began, &ended)
 	if err != nil {
 		return err
 	}

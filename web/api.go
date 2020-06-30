@@ -1,10 +1,12 @@
 package web
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type ErrorApiMessage struct {
@@ -43,15 +45,56 @@ func JsonFail(c *gin.Context, err error) bool {
 	return false
 }
 
+func ParamUint(c *gin.Context, param string) (uint32, error) {
+	valString := c.Param(param)
+	val, err := strconv.ParseUint(valString, 10, 64)
+	return uint32(val), err
+}
+
 func GetPrivacyPolicy(c *gin.Context) {
 	policy, err := database.GetPrivacyPolicy()
 	JsonInfer(c, policy, err)
+}
 
+func NewExperimentBrowser(c *gin.Context) {
+	password, ok := c.GetQuery("password")
+	if !ok {
+		password = utils.RandomString(127)
+	}
+
+	utils.Log("password is: %v", password)
+
+	type Response struct {
+		Password string `json:"password"`
+		Id       uint32 `json:"id"`
+	}
+
+	id, err := database.InsertExperiment(password, sql.NullTime{})
+	JsonInfer(c, Response{password, id}, err)
+}
+
+func NewExperiment(c *gin.Context) {
+	password, ok := c.GetPostForm("password")
+	if !ok {
+		password = utils.RandomString(127)
+	}
+
+	type Response struct {
+		Password string `json:"password"`
+		Id       uint32 `json:"id"`
+	}
+
+	id, err := database.InsertExperiment(password, sql.NullTime{})
+	JsonInfer(c, Response{password, id}, err)
 }
 
 func NewUser(c *gin.Context) {
-	id, err := database.InsertUser(c.PostForm("token"))
-	JsonInfer(c, id, err)
+	id, token, err := database.InsertUser(c.Param("experiment"))
+	type Response struct {
+		Id    uint64 `json:"id"`
+		Token string `json:"token"`
+	}
+	JsonInfer(c, Response{id, token}, err)
 }
 
 func AddConnectionsUnsafe(c *gin.Context) {
@@ -61,6 +104,7 @@ func AddConnectionsUnsafe(c *gin.Context) {
 		return
 	}
 
+	utils.Log("connection values are: %v", connections)
 	err = database.InsertConnectionsUnsafe(connections)
 	JsonInfer(c, len(connections.Connections), err)
 }

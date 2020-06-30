@@ -3,8 +3,6 @@ package com.polito.humantohuman;
 import android.content.Context;
 import android.content.Intent;
 
-import com.polito.humantohuman.Activities.ScanActivity;
-
 import static com.polito.humantohuman.utils.Polyfill.*;
 
 import java.net.MalformedURLException;
@@ -34,17 +32,14 @@ public class AppLogic {
         Long appStateNullable = getPropNumeric(KEY_APPSTATE);
         long appStateLong = appStateNullable == null ? APPSTATE_NO_EXPERIMENT : appStateNullable;
         appState = (int) appStateLong;
-        if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN) {
-            serverURL = getPropText(KEY_SERVER_BASE_URL);
-            bluetoothId = getPropNumeric(KEY_OWN_ID);
-        }
 
         Server.listener = (response, error) -> {
-            if (response != null)
+            if (response != null) {
                 System.err.println("got response " + response.toString());
+                devices = null;
+            }
             if (error != null)
                 System.err.println("got error " + error.toString());
-            devices = null;
         };
         Server.supplier = () -> {
             if (devices == null || devices.isEmpty())
@@ -54,7 +49,18 @@ public class AppLogic {
             return null;
         };
 
-        Bluetooth.delegate = (id, powerLevel, rssi) -> Database.addRow(id, powerLevel, rssi);
+        Bluetooth.delegate = Database::addRow;
+
+        if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN) {
+            serverURL = getPropText(KEY_SERVER_BASE_URL);
+            bluetoothId = getPropNumeric(KEY_OWN_ID);
+
+            if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
+                context.startService(new Intent(context, Bluetooth.Advertiser.class));
+                context.startService(new Intent(context, Bluetooth.Scanner.class));
+                context.startService(new Intent(context, Server.class));
+            }
+        }
     }
 
     public static int getAppState() {
@@ -62,7 +68,7 @@ public class AppLogic {
     }
 
     public static long getBluetoothID() {
-        if (appState == APPSTATE_NO_EXPERIMENT)
+        if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
             throw new RuntimeException("No id to get!");
 
         return bluetoothId;
@@ -108,26 +114,28 @@ public class AppLogic {
         return Database.getPropText(Database.KEY_EXPERIMENT_DESCRIPTION);
     }
 
-    public static void setServerURL(String url, Consumer<Boolean> cb) {
+    public static void setServerCredentials(String urlString, Consumer<Exception> cb) {
         if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN)
             throw new RuntimeException("Can't set URL while already in an experiment!");
 
         try {
-            new URL(url); // check if the server URL parses
+            new URL(urlString); // check if the server URL parses
         } catch (MalformedURLException e) {
-            cb.accept(false);
+            System.err.println("Malformed URL: " + urlString);
+            cb.accept(e);
             return;
         }
 
-        serverURL = url;
-        Database.setPropText(Database.KEY_SERVER_BASE_URL, url);
+        serverURL = urlString;
+        Database.setPropText(Database.KEY_SERVER_BASE_URL, serverURL);
         appState = APPSTATE_LOGGING_IN;
         Database.setPropNumeric(Database.KEY_APPSTATE, appState);
 
         CountdownExecutor executor = new CountdownExecutor(1, () -> {
             appState = APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING; // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
             Database.setPropNumeric(Database.KEY_APPSTATE, appState);
-            cb.accept(true);
+            System.err.println("login finished successfully");
+            cb.accept(null);
         });
 
         Server.getId((id, error) -> {
@@ -135,7 +143,7 @@ public class AppLogic {
                 System.err.println("got error: " + error);
                 appState = APPSTATE_NO_EXPERIMENT;
                 Database.setPropNumeric(Database.KEY_APPSTATE, appState);
-                cb.accept(false);
+                cb.accept(error);
             } else if (id != null) {
                 bluetoothId = id;
                 Database.setPropNumeric(KEY_OWN_ID, bluetoothId);

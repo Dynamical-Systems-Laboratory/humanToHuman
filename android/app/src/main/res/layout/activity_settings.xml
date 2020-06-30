@@ -34,4 +34,13 @@
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/settingsServerErrorText"
+        android:layout_width="305dp"
+        android:layout_height="86dp"
+        android:layout_marginTop="228dp"
+        app:layout_constraintEnd_toEndOf="@+id/settingsSetServerButton"
+        app:layout_constraintStart_toStartOf="@+id/settingsSetServerEditText"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

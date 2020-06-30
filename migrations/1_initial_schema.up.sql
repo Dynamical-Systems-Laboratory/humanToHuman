@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS metadata (
   id          INTEGER         NOT NULL,
-  tdata       VARCHAR         NOT NULL,
-  ndata       BIGINT          NOT NULL,
+  tdata       VARCHAR         NOT NULL DEFAULT '',
+  ndata       BIGINT          NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS experiments (
   id          SERIAL          NOT NULL,
-  token       char(127)       NOT NULL UNIQUE,
+  hash        varchar         NOT NULL UNIQUE,
   open        TIMESTAMP       NOT NULL,
   began       TIMESTAMP       ,
   ended       TIMESTAMP       ,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS experiments (
 CREATE TABLE IF NOT EXISTS devices (
   id          BIGINT                                NOT NULL,
   experiment  INTEGER REFERENCES experiments (id)   NOT NULL,
-  token       char(127)                             NOT NULL UNIQUE,
+  hash        varchar                               NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 

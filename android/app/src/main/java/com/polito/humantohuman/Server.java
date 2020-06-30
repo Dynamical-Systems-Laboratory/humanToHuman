@@ -58,6 +58,7 @@ public class Server extends Service {
       @Override
       public void run() {
         ArrayList<Database.Row> rows = supplier.get();
+        System.err.println("Why do we get data here: "+rows);
         if (rows == null) {
           handler.postDelayed(this, 3000);
           return;
@@ -98,26 +99,33 @@ public class Server extends Service {
       try {
           JSONArray jsonArray = new JSONArray();
           for (Database.Row row : rows) {
-              JSONObject jsonObject = new JSONObject();
-              jsonObject.put("other", row.id);
-              jsonObject.put("time", format.format(row.date));
-              jsonObject.put("power", row.power);
-              jsonObject.put("rssi", row.rssi);
-              jsonArray.put(jsonObject);
+              jsonArray.put(new JSONObject()
+                      .put("other", row.id)
+                      .put("time", format.format(row.date))
+                      .put("power", row.power)
+                      .put("rssi", row.rssi)
+              );
           }
-          JSONObject jsonObject = new JSONObject();
 
-          jsonObject.put("id", AppLogic.getBluetoothID());
-          jsonObject.put("connections", jsonArray);
-          return jsonObject;
+          return new JSONObject()
+                  .put("id", AppLogic.getBluetoothID())
+                  .put("connections", jsonArray);
       } catch (JSONException e) {
           throw new RuntimeException(e);
       }
   }
 
   public static void getId(Listener<Long> l) {
-      StringRequest req = new StringRequest(Request.Method.POST, AppLogic.getServerURL()+"/addUser",
-              (response) -> l.onFinish(Long.parseLong(response), null),
+      System.err.println("Server url: " + AppLogic.getServerURL());
+      JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, AppLogic.getServerURL()+"/addUser",
+              new JSONObject(),
+              (response) -> {
+                  try {
+                      l.onFinish(response.getLong("id"), null);
+                  } catch (JSONException e) {
+                      throw new RuntimeException(e);
+                  }
+              },
               (error) -> l.onFinish(null, error));
 
       requestQueue.add(req);

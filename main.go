@@ -30,7 +30,12 @@ func main() {
 
 	database.ConnectToDb(database.DefaultURL)
 	database.ClearConnections()
-	router.POST("/addUser", web.NewUser)
-	router.POST("/addConnections", web.AddConnectionsUnsafe)
+	router.GET("/clear", func(ctx *gin.Context) {
+		database.Clear()
+	})
+	router.GET("/addExperiment", web.NewExperimentBrowser)
+	router.POST("/addExperiment", web.NewExperiment)
+	router.POST("/experiment/:experiment/addUser", web.NewUser)
+	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.Run(":8080")
 }

@@ -17,27 +17,9 @@ import java.util.*;
  */
 public final class ScanActivity extends AppCompatActivity {
 
-  final class Device {
-    public final long id;
-    public int powerLevel, rssi;
-    public Date lastSeen;
-
-    Device(long id, int powerLevel, int rssi) {
-      this.id = id;
-      this.powerLevel = powerLevel;
-      this.rssi = rssi;
-      this.lastSeen = new Date();
-    }
-  }
-
   Switch scanSwitch;
   Button settingsButton;
   TextView experimentDescription;
-  boolean checked = false;
-
-  ArrayList<Database.Row> rows;
-  ArrayList<Device> devices = new ArrayList<>();
-  Handler handler = new Handler();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +46,6 @@ public final class ScanActivity extends AppCompatActivity {
     }
 
     scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
-      this.checked = checked;
       if (checked) {
         System.err.println("Starting bluetooth");
         startCollectingData(this);
