@@ -1,8 +1,10 @@
 package com.polito.humantohuman;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -17,7 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Server extends Service {
-  private static final String SEND_CHANNEL_ID = "HumanToHuman Sending";
+  private static final String SEND_CHANNEL_ID = "HumanToHumanSending";
+    private static final String SEND_CHANNEL_NAME = "HumanToHuman Sending";
+    private static final int SEND_FOREGROUND_ID = 3;
   public static Polyfill.Supplier<ArrayList<Database.Row>> supplier;
   public static Listener<JSONObject> listener;
   public static final SimpleDateFormat format =
@@ -32,37 +36,22 @@ public class Server extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    System.err.println("bluetooth server service started");
-//    NotificationChannel serviceChannel =
-//        new NotificationChannel(SEND_CHANNEL_ID, "Foreground Service Channel",
-//                                NotificationManager.IMPORTANCE_DEFAULT);
-//
-//    getSystemService(NotificationManager.class)
-//        .createNotificationChannel(serviceChannel);
-//
-//    PendingIntent pendingIntent = PendingIntent.getActivity(
-//        this, 0, new Intent(this, ScanActivity.class), 0);
-//
-//    Notification notification =
-//        new NotificationCompat.Builder(this, SEND_CHANNEL_ID)
-//            .setContentTitle("Human To Human")
-//            .setContentText("Sending data to server...")
-//            .setSmallIcon(R.drawable.ic_stat_name)
-//            .setContentIntent(pendingIntent)
-//            .build();
-//
-//    startForeground(3, notification);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          Polyfill.startForeground(this, SEND_FOREGROUND_ID, SEND_CHANNEL_ID, SEND_CHANNEL_NAME);
+      } else {
+          startForeground(SEND_FOREGROUND_ID, new Notification());
+      }
 
     Handler handler = new Handler();
     Runnable runner = new Runnable() {
       @Override
       public void run() {
         ArrayList<Database.Row> rows = supplier.get();
-        System.err.println("Why do we get data here: "+rows);
         if (rows == null) {
           handler.postDelayed(this, 3000);
           return;
         }
+
         JsonObjectRequest request = new JsonObjectRequest(
             Request.Method.POST, AppLogic.getServerURL() + "/addConnections",
             serializeRows(rows),

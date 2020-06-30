@@ -37,16 +37,9 @@
             />
 
         <service
-            android:name=".Bluetooth$Advertiser"
+            android:name=".Bluetooth"
             android:enabled="true"
             android:exported="false"
-            />
-
-        <service
-            android:name=".Bluetooth$Scanner"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.ACCESS_COARSE_LOCATION"
             />
 
     </application>

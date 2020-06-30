@@ -29,6 +29,7 @@ public class AppLogic {
     public static void startup(Context context) {
         initializeDatabase(context);
         Server.initializeServer(context);
+
         Long appStateNullable = getPropNumeric(KEY_APPSTATE);
         long appStateLong = appStateNullable == null ? APPSTATE_NO_EXPERIMENT : appStateNullable;
         appState = (int) appStateLong;
@@ -43,12 +44,11 @@ public class AppLogic {
         };
         Server.supplier = () -> {
             if (devices == null || devices.isEmpty())
-                devices = Database.popRows();
+                devices = popRows();
             if (!devices.isEmpty())
                 return devices;
             return null;
         };
-
         Bluetooth.delegate = Database::addRow;
 
         if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN) {
@@ -56,8 +56,7 @@ public class AppLogic {
             bluetoothId = getPropNumeric(KEY_OWN_ID);
 
             if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
-                context.startService(new Intent(context, Bluetooth.Advertiser.class));
-                context.startService(new Intent(context, Bluetooth.Scanner.class));
+                context.startService(new Intent(context, Bluetooth.class));
                 context.startService(new Intent(context, Server.class));
             }
         }
@@ -65,6 +64,11 @@ public class AppLogic {
 
     public static int getAppState() {
         return appState;
+    }
+
+    private static void setAppState(int state) {
+        appState = state;
+        setPropNumeric(KEY_APPSTATE, appState);
     }
 
     public static long getBluetoothID() {
@@ -78,22 +82,18 @@ public class AppLogic {
         if (appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
             throw new RuntimeException("Can't start collecting data while not in an experiment!");
 
-        context.startService(new Intent(context, Bluetooth.Advertiser.class));
-        context.startService(new Intent(context, Bluetooth.Scanner.class));
+        context.startService(new Intent(context, Bluetooth.class));
         context.startService(new Intent(context, Server.class));
-        appState = APPSTATE_EXPERIMENT_RUNNING_COLLECTING;
-        setPropNumeric(KEY_APPSTATE, appState);
+        setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING);
     }
 
     public static void stopCollectingData(Context context) {
         if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
             throw new RuntimeException("Can't stop collecting data while not currently collecting!");
 
-        context.stopService(new Intent(context, Bluetooth.Advertiser.class));
-        context.stopService(new Intent(context, Bluetooth.Scanner.class));
+        context.stopService(new Intent(context, Bluetooth.class));
         context.stopService(new Intent(context, Server.class));
-        appState = APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING;
-        Database.setPropNumeric(Database.KEY_APPSTATE, appState);
+        setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
     }
 
     public static String getServerURL() {
@@ -103,15 +103,15 @@ public class AppLogic {
     }
 
     public static String getPrivacyPolicyText() {
-        if (appState == APPSTATE_NO_EXPERIMENT)
+        if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
             return "DEFAULT PRIVACY POLICY: HELLO WORLD!\n";
-        return Database.getPropText(Database.KEY_PRIVACY_POLICY);
+        return getPropText(KEY_PRIVACY_POLICY);
     }
 
     public static String getDescriptionText() {
-        if (appState == APPSTATE_NO_EXPERIMENT)
+        if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
             return "DEFAULT DESCRIPTION: HELLO WORLD!\n";
-        return Database.getPropText(Database.KEY_EXPERIMENT_DESCRIPTION);
+        return getPropText(KEY_EXPERIMENT_DESCRIPTION);
     }
 
     public static void setServerCredentials(String urlString, Consumer<Exception> cb) {
@@ -127,26 +127,22 @@ public class AppLogic {
         }
 
         serverURL = urlString;
-        Database.setPropText(Database.KEY_SERVER_BASE_URL, serverURL);
-        appState = APPSTATE_LOGGING_IN;
-        Database.setPropNumeric(Database.KEY_APPSTATE, appState);
+        setPropText(KEY_SERVER_BASE_URL, serverURL);
+        setAppState(APPSTATE_LOGGING_IN);
 
         CountdownExecutor executor = new CountdownExecutor(1, () -> {
-            appState = APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING; // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
-            Database.setPropNumeric(Database.KEY_APPSTATE, appState);
-            System.err.println("login finished successfully");
+            setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING); // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
             cb.accept(null);
         });
 
         Server.getId((id, error) -> {
             if (error != null) {
                 System.err.println("got error: " + error);
-                appState = APPSTATE_NO_EXPERIMENT;
-                Database.setPropNumeric(Database.KEY_APPSTATE, appState);
+                setAppState(APPSTATE_NO_EXPERIMENT);
                 cb.accept(error);
             } else if (id != null) {
                 bluetoothId = id;
-                Database.setPropNumeric(KEY_OWN_ID, bluetoothId);
+                setPropNumeric(KEY_OWN_ID, bluetoothId);
                 executor.decrement();
             }
         });
