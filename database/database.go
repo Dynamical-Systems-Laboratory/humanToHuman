@@ -9,7 +9,9 @@ import (
 )
 
 const (
-	PRIVACY_POLICY int32 = 1
+	KEY_PRIVACY_POLICY         int32 = 1
+	KEY_EXPERIMENT_DESCRIPTION int32 = 2
+	KEY_SALT                   int32 = 3
 )
 
 var (
@@ -24,7 +26,7 @@ var (
 func GetPrivacyPolicy() (string, error) {
 	row := psql.Select("tdata").
 		From("metadata").
-		Where(sq.Eq{"id": PRIVACY_POLICY}).
+		Where(sq.Eq{"id": KEY_PRIVACY_POLICY}).
 		RunWith(globalDb).
 		QueryRow()
 
@@ -33,13 +35,23 @@ func GetPrivacyPolicy() (string, error) {
 	return policy, err
 }
 
+func GetExperimentDescription() (string, error) {
+	row := psql.Select("tdata").
+		From("metadata").
+		Where(sq.Eq{"id": KEY_EXPERIMENT_DESCRIPTION}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var description string
+	err := row.Scan(&description)
+	return description, err
+}
+
 func InsertExperiment(password string, openNullable sql.NullTime) (uint32, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
 		return 0, err
 	}
-
-	utils.Log("password is: %v", password)
 
 	open := time.Now()
 	if openNullable.Valid {

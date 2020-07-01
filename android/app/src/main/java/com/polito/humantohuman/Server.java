@@ -102,7 +102,6 @@ public class Server extends Service {
   }
 
   public static void getId(Listener<Long> l) {
-    System.err.println("Server url: " + AppLogic.getServerURL());
     JsonObjectRequest req = new JsonObjectRequest(
         Request.Method.POST, AppLogic.getServerURL() + "/addUser",
         new JSONObject(), (response) -> {
@@ -113,6 +112,20 @@ public class Server extends Service {
           }
         }, (error) -> l.onFinish(null, error));
 
+    requestQueue.add(req);
+  }
+
+  public static void getPrivacyPolicy(Listener<String> l) {
+    StringRequest req = new StringRequest(
+            Request.Method.POST, AppLogic.getServerURL() + "/privacyPolicy",
+            (response) -> l.onFinish(response, null), (error) -> l.onFinish(null, error));
+    requestQueue.add(req);
+  }
+
+  public static void getDescription(Listener<String> l) {
+    StringRequest req = new StringRequest(
+            Request.Method.POST, AppLogic.getServerURL() + "/experimentDescription",
+            (response) -> l.onFinish(response, null), (error) -> l.onFinish(null, error));
     requestQueue.add(req);
   }
 }

@@ -62,8 +62,6 @@ func NewExperimentBrowser(c *gin.Context) {
 		password = utils.RandomString(127)
 	}
 
-	utils.Log("password is: %v", password)
-
 	type Response struct {
 		Password string `json:"password"`
 		Id       uint32 `json:"id"`
@@ -104,7 +102,6 @@ func AddConnectionsUnsafe(c *gin.Context) {
 		return
 	}
 
-	utils.Log("connection values are: %v", connections)
 	err = database.InsertConnectionsUnsafe(connections)
 	JsonInfer(c, len(connections.Connections), err)
 }

@@ -27,24 +27,31 @@ public class PolicyActivity extends AppCompatActivity {
     checkBox = findViewById(R.id.agree_checkbox);
     privacyPolText = findViewById(R.id.agree_policy_text);
     switch (AppLogic.getAppState()) {
-    case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
-      checkBox.setEnabled(true);
-      checkBox.setChecked(false);
-      break;
-    case AppLogic.APPSTATE_NO_EXPERIMENT:
-    case AppLogic.APPSTATE_LOGGING_IN:
-      checkBox.setEnabled(false);
-      checkBox.setChecked(false);
-      break;
-    default:
-      checkBox.setEnabled(false);
-      checkBox.setChecked(true);
+      case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+        checkBox.setEnabled(true);
+        checkBox.setChecked(false);
+        break;
+      case AppLogic.APPSTATE_NO_EXPERIMENT:
+      case AppLogic.APPSTATE_LOGGING_IN:
+        checkBox.setEnabled(false);
+        checkBox.setChecked(false);
+        break;
+      default:
+        checkBox.setEnabled(false);
+        checkBox.setChecked(true);
     }
 
     privacyPolText.setText(AppLogic.getPrivacyPolicyText());
     checkBox.setOnCheckedChangeListener((view, isChecked) -> {
-      if (isChecked)
-        finish();
+      if (isChecked) {
+        AppLogic.acceptPrivacyPolicy((error) -> {
+          if (error != null) {
+            System.err.println("Got error while accepting privacy policy: " + error);
+          } else {
+            finish();
+          }
+        });
+      }
     });
   }
 }

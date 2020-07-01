@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS experiments (
 );
 
 CREATE TABLE IF NOT EXISTS devices (
-  id          BIGINT                                NOT NULL,
-  experiment  INTEGER REFERENCES experiments (id)   NOT NULL,
-  hash        varchar                               NOT NULL UNIQUE,
+  id          BIGINT          NOT NULL,
+  experiment  INTEGER         NOT NULL,
+  hash        varchar         NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 

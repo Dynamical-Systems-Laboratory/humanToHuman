@@ -105,7 +105,7 @@ public class AppLogic {
 
   public static String getPrivacyPolicyText() {
     if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
-      return "DEFAULT PRIVACY POLICY: HELLO WORLD!\n";
+      throw new RuntimeException("We don't have a privacy policy to give!");
     return getPropText(KEY_PRIVACY_POLICY);
   }
 
@@ -119,7 +119,7 @@ public class AppLogic {
                                           Consumer<Exception> cb) {
     if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN)
       throw new RuntimeException(
-          "Can't set URL while already in an experiment!");
+              "Can't set URL while already in an experiment!");
 
     try {
       new URL(urlString); // check if the server URL parses
@@ -134,12 +134,36 @@ public class AppLogic {
     setAppState(APPSTATE_LOGGING_IN);
 
     CountdownExecutor executor = new CountdownExecutor(1, () -> {
-      setAppState(
-          APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING); // TODO change this to be
-                                                       // APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
+      setAppState(APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING);
       cb.accept(null);
     });
 
+    RunOnceExecutor<Exception> errorExecutor = new RunOnceExecutor<>((error) -> {
+      System.err.println("got error: " + error);
+      setAppState(APPSTATE_NO_EXPERIMENT);
+      cb.accept(error);
+    });
+
+    Server.getDescription((description, error) -> {
+      if (error != null) {
+        errorExecutor.run(error);
+      } else if (description != null) {
+        setPropText(KEY_EXPERIMENT_DESCRIPTION, description);
+        executor.decrement();
+      }
+    });
+
+    Server.getPrivacyPolicy((policy, error) -> {
+      if (error != null) {
+        errorExecutor.run(error);
+      } else if (policy != null) {
+        setPropText(KEY_PRIVACY_POLICY, policy);
+        executor.decrement();
+      }
+    });
+  }
+
+  public static void acceptPrivacyPolicy(Consumer<Exception> cb) {
     Server.getId((id, error) -> {
       if (error != null) {
         System.err.println("got error: " + error);
@@ -148,10 +172,10 @@ public class AppLogic {
       } else if (id != null) {
         bluetoothId = id;
         setPropNumeric(KEY_OWN_ID, bluetoothId);
-        executor.decrement();
+        setAppState(
+                APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING); // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
+        cb.accept(null);
       }
     });
-
-    // Server.getPrivacyPolicy
   }
 }

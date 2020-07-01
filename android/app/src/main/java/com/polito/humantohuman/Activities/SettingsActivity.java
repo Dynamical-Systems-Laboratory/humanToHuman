@@ -1,6 +1,7 @@
 package com.polito.humantohuman.Activities;
 
 import android.bluetooth.le.PeriodicAdvertisingParameters;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -12,6 +13,7 @@ public class SettingsActivity extends AppCompatActivity {
 
   Button exitButton;
   Button setServerButton;
+  Button privacyPolicyButton;
   TextView setServerEditText;
   TextView serverErrorText;
 
@@ -24,11 +26,28 @@ public class SettingsActivity extends AppCompatActivity {
     setServerEditText = findViewById(R.id.settingsSetServerEditText);
     setServerButton = findViewById(R.id.settingsSetServerButton);
     serverErrorText = findViewById(R.id.settingsServerErrorText);
+    privacyPolicyButton = findViewById(R.id.settingsPrivacyPolicyButton);
 
-    setServerEditText.setText("http://192.168.1.151:8080/experiment/password");
+    switch (AppLogic.getAppState()) {
+      case AppLogic.APPSTATE_NO_EXPERIMENT:
+        setServerButton.setEnabled(true);
+        privacyPolicyButton.setEnabled(false);
+        break;
+      case AppLogic.APPSTATE_LOGGING_IN:
+        setServerButton.setEnabled(false);
+        privacyPolicyButton.setEnabled(false);
+        break;
+      default:
+        setServerButton.setEnabled(false);
+        privacyPolicyButton.setEnabled(true);
+    }
+    setServerEditText.setText("http://192.168.1.151:8080/experiment/password"); // TODO remove this
 
-    setServerButton.setEnabled(AppLogic.getAppState() ==
-                               AppLogic.APPSTATE_NO_EXPERIMENT);
+    privacyPolicyButton.setOnClickListener((view) -> {
+      Intent intent = new Intent(this, PolicyActivity.class);
+      startActivity(intent);
+    });
+
     setServerButton.setOnClickListener((view) -> {
       setServerButton.setEnabled(false);
       AppLogic.setServerCredentials(
@@ -38,6 +57,9 @@ public class SettingsActivity extends AppCompatActivity {
               serverErrorText.setText(error.toString());
             } else {
               serverErrorText.setText("SUCCESS!");
+              Intent intent = new Intent(this, PolicyActivity.class);
+              startActivity(intent);
+              finish();
             }
           });
     });

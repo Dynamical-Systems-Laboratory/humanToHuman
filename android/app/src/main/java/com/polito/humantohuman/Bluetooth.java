@@ -29,7 +29,7 @@ public final class Bluetooth extends Service {
   private static final BluetoothAdapter adapter =
       BluetoothAdapter.getDefaultAdapter();
   private static final BluetoothLeAdvertiser advertiser =
-      adapter.getBluetoothLeAdvertiser();
+      adapter == null ? null : adapter.getBluetoothLeAdvertiser();
   private static final BluetoothAdapter.LeScanCallback scanCallback =
       (device, rssi, scanRecord) -> {
     Long id = getID(getUUIDs(scanRecord));

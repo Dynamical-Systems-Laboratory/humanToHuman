@@ -39,11 +39,3 @@ type ConnectionInfoUnsafe struct {
 	Id          int64              `json:"id"`
 	Connections []OneWayConnection `json:"connections"`
 }
-
-type Connection struct {
-	Time    time.Time
-	DeviceA int64
-	DeviceB int64
-	Power   int64
-	Rssi    float64
-}

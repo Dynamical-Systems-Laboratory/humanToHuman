@@ -15,6 +15,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import com.polito.humantohuman.Activities.ScanActivity;
 import com.polito.humantohuman.R;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Polyfill {
@@ -42,26 +44,21 @@ public final class Polyfill {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
-  public static void startForeground(Service service, int id,
-                                     String channelId) {
-    NotificationChannel serviceChannel =
-        new NotificationChannel(channelId, "Foreground Service Channel",
-                                NotificationManager.IMPORTANCE_DEFAULT);
+  public static class RunOnceExecutor<T> {
 
-    service.getSystemService(NotificationManager.class)
-        .createNotificationChannel(serviceChannel);
+    public final AtomicBoolean hasRun;
+    public final Consumer<T> executable;
 
-    PendingIntent pendingIntent = PendingIntent.getActivity(
-        service, 0, new Intent(service, ScanActivity.class), 0);
+    public RunOnceExecutor(Consumer<T> executable) {
+      this.hasRun = new AtomicBoolean(false);
+      this.executable = executable;
+    }
 
-    Notification notification =
-        new NotificationCompat.Builder(service, channelId)
-            .setContentTitle("Human To Human")
-            .setContentText("Sending data to server...")
-            .setSmallIcon(R.drawable.ic_stat_name)
-            .setContentIntent(pendingIntent)
-            .build();
+    public void run(T t) {
+      if (hasRun.compareAndSet(false, true)) {
+        executable.accept(t);
+      }
+    }
   }
 
   @RequiresApi(api = Build.VERSION_CODES.O)

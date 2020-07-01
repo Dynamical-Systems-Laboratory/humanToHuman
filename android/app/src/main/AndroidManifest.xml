@@ -27,8 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.PolicyActivity"></activity>
-        <activity android:name=".Activities.SettingsActivity"></activity>
+        <activity android:name=".Activities.PolicyActivity" />
+        <activity android:name=".Activities.SettingsActivity" />
 
         <service
             android:name=".Server"

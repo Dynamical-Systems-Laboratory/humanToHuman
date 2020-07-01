@@ -43,4 +43,14 @@
         app:layout_constraintEnd_toEndOf="@+id/settingsSetServerButton"
         app:layout_constraintStart_toStartOf="@+id/settingsSetServerEditText"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/settingsPrivacyPolicyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="385dp"
+        android:text="Privacy Policy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
