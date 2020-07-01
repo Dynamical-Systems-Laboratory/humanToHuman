@@ -1,13 +1,13 @@
 package com.polito.humantohuman.Activities;
 
+import static com.polito.humantohuman.AppLogic.*;
+
 import android.content.*;
 import android.os.*;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.*;
 import com.polito.humantohuman.*;
-import static com.polito.humantohuman.AppLogic.*;
 import com.polito.humantohuman.utils.Polyfill;
-
 import java.util.*;
 
 /**
@@ -32,17 +32,17 @@ public final class ScanActivity extends AppCompatActivity {
     AppLogic.startup(this);
 
     switch (getAppState()) {
-      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(true);
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(false);
-        break;
-      default:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
+    case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(true);
+      break;
+    case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(false);
+      break;
+    default:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
     }
 
     scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
@@ -67,17 +67,17 @@ public final class ScanActivity extends AppCompatActivity {
   protected void onResume() {
     super.onResume();
     switch (getAppState()) {
-      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(true);
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(false);
-        break;
-      default:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
+    case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(true);
+      break;
+    case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(false);
+      break;
+    default:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
     }
   }
 }

@@ -10,30 +10,41 @@ import android.text.Html;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
+import com.polito.humantohuman.AppLogic;
 import com.polito.humantohuman.R;
 
 public class PolicyActivity extends AppCompatActivity {
 
-    private CheckBox checkBox;
-    private TextView privacyPolText;
+  private CheckBox checkBox;
+  private TextView privacyPolText;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_policy);
-        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_policy);
+    overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
-        checkBox = findViewById(R.id.agree_checkbox);
-        privacyPolText = findViewById(R.id.agree_policy_text);
-
-        privacyPolText.setText(Html.fromHtml(getString(R.string.privacy_policy_check)));
-        checkBox.setOnCheckedChangeListener((view, isChecked) -> {
-            if (isChecked) {
-                Intent intent = new Intent(this, ScanActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+    checkBox = findViewById(R.id.agree_checkbox);
+    privacyPolText = findViewById(R.id.agree_policy_text);
+    switch (AppLogic.getAppState()) {
+    case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+      checkBox.setEnabled(true);
+      checkBox.setChecked(false);
+      break;
+    case AppLogic.APPSTATE_NO_EXPERIMENT:
+    case AppLogic.APPSTATE_LOGGING_IN:
+      checkBox.setEnabled(false);
+      checkBox.setChecked(false);
+      break;
+    default:
+      checkBox.setEnabled(false);
+      checkBox.setChecked(true);
     }
+
+    privacyPolText.setText(AppLogic.getPrivacyPolicyText());
+    checkBox.setOnCheckedChangeListener((view, isChecked) -> {
+      if (isChecked)
+        finish();
+    });
+  }
 }

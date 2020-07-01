@@ -9,11 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import org.joda.time.Instant;
-
 import java.util.ArrayList;
 import java.util.Date;
+import org.joda.time.Instant;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -25,9 +23,7 @@ public class Database extends SQLiteOpenHelper {
   public static int KEY_APPSTATE = 8;
   private static Database database;
 
-  Database(@Nullable Context context) {
-    super(context, "database", null, 1);
-  }
+  Database(@Nullable Context context) { super(context, "database", null, 1); }
 
   public static class Row {
     public final long id;
@@ -42,7 +38,9 @@ public class Database extends SQLiteOpenHelper {
     }
   }
 
-  public static void initializeDatabase(Context context) { database  = new Database(context); }
+  public static void initializeDatabase(Context context) {
+    database = new Database(context);
+  }
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -66,7 +64,8 @@ public class Database extends SQLiteOpenHelper {
   public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {}
 
   public static Long getPropNumeric(int prop) {
-    Cursor queryResult = database.getReadableDatabase().rawQuery("SELECT nvalue FROM metadata WHERE key_ = " + prop, null);
+    Cursor queryResult = database.getReadableDatabase().rawQuery(
+        "SELECT nvalue FROM metadata WHERE key_ = " + prop, null);
     if (queryResult.moveToNext()) {
       long result = queryResult.getLong(0);
       queryResult.close();
@@ -78,11 +77,13 @@ public class Database extends SQLiteOpenHelper {
 
   public static void setPropNumeric(int prop, long value) {
     SQLiteDatabase db = database.getWritableDatabase();
-    db.execSQL("INSERT OR REPLACE INTO metadata (key_, nvalue) VALUES (?, ?)", new Object[] { prop, value });
+    db.execSQL("INSERT OR REPLACE INTO metadata (key_, nvalue) VALUES (?, ?)",
+               new Object[] {prop, value});
   }
 
   public static String getPropText(int prop) {
-    Cursor queryResult = database.getReadableDatabase().rawQuery("SELECT tvalue FROM metadata WHERE key_ = " + prop, null);
+    Cursor queryResult = database.getReadableDatabase().rawQuery(
+        "SELECT tvalue FROM metadata WHERE key_ = " + prop, null);
     if (queryResult.moveToNext()) {
       String result = queryResult.getString(0);
       queryResult.close();
@@ -94,7 +95,8 @@ public class Database extends SQLiteOpenHelper {
 
   public static void setPropText(int prop, String value) {
     SQLiteDatabase db = database.getWritableDatabase();
-    db.execSQL("INSERT OR REPLACE INTO metadata (key_, tvalue) VALUES (?, ?)", new Object[] { prop, value });
+    db.execSQL("INSERT OR REPLACE INTO metadata (key_, tvalue) VALUES (?, ?)",
+               new Object[] {prop, value});
   }
 
   public static void addRow(long id, int power, int rssi) {
@@ -118,8 +120,9 @@ public class Database extends SQLiteOpenHelper {
     int rowMax = queryResult.getInt(0);
     queryResult.close();
 
-    queryResult =
-        db.rawQuery("SELECT time,source,power,rssi FROM sensor_data WHERE id <= " + rowMax, null);
+    queryResult = db.rawQuery(
+        "SELECT time,source,power,rssi FROM sensor_data WHERE id <= " + rowMax,
+        null);
     while (queryResult.moveToNext()) {
       Date time = Instant.ofEpochMilli(queryResult.getLong(0)).toDate();
       long id = queryResult.getLong(1);
