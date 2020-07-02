@@ -8,7 +8,6 @@ import android.content.Intent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class AppLogic {
 
@@ -119,7 +118,7 @@ public class AppLogic {
                                           Consumer<Exception> cb) {
     if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN)
       throw new RuntimeException(
-              "Can't set URL while already in an experiment!");
+          "Can't set URL while already in an experiment!");
 
     try {
       new URL(urlString); // check if the server URL parses
@@ -138,11 +137,12 @@ public class AppLogic {
       cb.accept(null);
     });
 
-    RunOnceExecutor<Exception> errorExecutor = new RunOnceExecutor<>((error) -> {
-      System.err.println("got error: " + error);
-      setAppState(APPSTATE_NO_EXPERIMENT);
-      cb.accept(error);
-    });
+    RunOnceExecutor<Exception> errorExecutor =
+        new RunOnceExecutor<>((error) -> {
+          System.err.println("got error: " + error);
+          setAppState(APPSTATE_NO_EXPERIMENT);
+          cb.accept(error);
+        });
 
     Server.getDescription((description, error) -> {
       if (error != null) {
@@ -172,8 +172,8 @@ public class AppLogic {
       } else if (id != null) {
         bluetoothId = id;
         setPropNumeric(KEY_OWN_ID, bluetoothId);
-        setAppState(
-                APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING); // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
+        setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
+        // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
         cb.accept(null);
       }
     });

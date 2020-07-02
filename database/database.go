@@ -23,31 +23,42 @@ var (
 	ExperimentNotStarted = errors.New("experiment hasn't started yet")
 )
 
-func GetPrivacyPolicy() (string, error) {
-	row := psql.Select("tdata").
-		From("metadata").
-		Where(sq.Eq{"id": KEY_PRIVACY_POLICY}).
-		RunWith(globalDb).
-		QueryRow()
+func GetDescription(password string) (string, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return "", err
+	}
 
-	var policy string
-	err := row.Scan(&policy)
-	return policy, err
-}
-
-func GetExperimentDescription() (string, error) {
-	row := psql.Select("tdata").
-		From("metadata").
-		Where(sq.Eq{"id": KEY_EXPERIMENT_DESCRIPTION}).
+	row := psql.Select("description").
+		From("experiments").
+		Where(sq.Eq{"hash": hashed}).
 		RunWith(globalDb).
 		QueryRow()
 
 	var description string
-	err := row.Scan(&description)
+	err = row.Scan(&description)
 	return description, err
 }
 
-func InsertExperiment(password string, openNullable sql.NullTime) (uint32, error) {
+func GetPrivacyPolicy(password string) (string, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return "", err
+	}
+
+	row := psql.Select("policy").
+		From("experiments").
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var policy string
+	err = row.Scan(&policy)
+	return policy, err
+}
+
+func InsertExperiment(password, privacyPolicy, description string,
+	openNullable sql.NullTime) (uint32, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
 		return 0, err
@@ -59,8 +70,8 @@ func InsertExperiment(password string, openNullable sql.NullTime) (uint32, error
 	}
 
 	row := psql.Insert("experiments").
-		Columns("hash", "open").
-		Values(hashed, open).
+		Columns("hash", "policy", "description", "open").
+		Values(hashed, privacyPolicy, description, open).
 		Suffix("RETURNING \"id\"").
 		RunWith(globalDb).
 		QueryRow()

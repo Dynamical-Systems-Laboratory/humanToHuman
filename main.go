@@ -35,6 +35,8 @@ func main() {
 	})
 	router.GET("/addExperiment", web.NewExperimentBrowser)
 	router.POST("/addExperiment", web.NewExperiment)
+	router.POST("/experiment/:experiment/policy", web.GetPrivacyPolicy)
+	router.POST("/experiment/:experiment/description", web.GetDescription)
 	router.POST("/experiment/:experiment/addUser", web.NewUser)
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.Run(":8080")

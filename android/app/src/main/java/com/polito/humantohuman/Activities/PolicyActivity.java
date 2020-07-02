@@ -25,7 +25,7 @@ public class PolicyActivity extends AppCompatActivity {
     overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
     checkBox = findViewById(R.id.agree_checkbox);
-    privacyPolText = findViewById(R.id.agree_policy_text);
+    privacyPolText = findViewById(R.id.privacyPolicyText);
     switch (AppLogic.getAppState()) {
       case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
         checkBox.setEnabled(true);

@@ -64,5 +64,5 @@
             </ul>
         ]]>
     </string>
-    <string name="privacy_policy_check"><![CDATA[I agree to the <b>Privacy Policy<b>]]></string>
+    <string name="privacy_policy_check">I agree to the Privacy Policy</string>
 </resources>

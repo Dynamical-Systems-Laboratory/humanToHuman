@@ -16,6 +16,7 @@
 		4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2AF248737D500059C7C /* FMDatabase.m */; };
 		4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2B5248739A300059C7C /* FMResultSet.m */; };
 		4B6AEFE524A071B200D7CC10 /* PrivacyPolicyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6AEFE424A071B200D7CC10 /* PrivacyPolicyController.swift */; };
+		4B79563A24AD1A0A00119EC9 /* AppLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B79563924AD1A0A00119EC9 /* AppLogic.swift */; };
 		4BCBFC8924997DE000BB2DDD /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCBFC8824997DE000BB2DDD /* SettingsController.swift */; };
 		4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */; };
 		4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD70A022481C6D900FE73F0 /* Wifi.swift */; };
@@ -44,6 +45,7 @@
 		4B5DD2B4248739A300059C7C /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		4B5DD2B5248739A300059C7C /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		4B6AEFE424A071B200D7CC10 /* PrivacyPolicyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyController.swift; sourceTree = "<group>"; };
+		4B79563924AD1A0A00119EC9 /* AppLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogic.swift; sourceTree = "<group>"; };
 		4BCBFC8824997DE000BB2DDD /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		4BD70A002481A30D00FE73F0 /* OverflowAreaUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverflowAreaUtils.swift; sourceTree = "<group>"; };
 		4BD70A022481C6D900FE73F0 /* Wifi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wifi.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 				4BEAE6CB24721702002B0A6B /* Assets.xcassets */,
 				4BEAE6D324721702002B0A6B /* Info.plist */,
 				4B282F22247E0F0C00114132 /* Bridging.h */,
+				4B79563924AD1A0A00119EC9 /* AppLogic.swift */,
 			);
 			path = HumanToHuman;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 				4B5DD2B3248737D500059C7C /* FMDatabase.m in Sources */,
 				4BEAE6C824721700002B0A6B /* MainController.swift in Sources */,
 				4BD70A012481A30D00FE73F0 /* OverflowAreaUtils.swift in Sources */,
+				4B79563A24AD1A0A00119EC9 /* AppLogic.swift in Sources */,
 				4B5DD2B6248739A300059C7C /* FMResultSet.m in Sources */,
 				4B5DD2B2248737D500059C7C /* FMDatabasePool.m in Sources */,
 				4BD70A052481F60500FE73F0 /* Database.swift in Sources */,

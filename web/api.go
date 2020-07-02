@@ -27,6 +27,15 @@ var (
 	TooManyAuthMethods = errors.New("gave too many authorization methods")
 )
 
+func StringInfer(c *gin.Context, value string, err error) {
+	if err != nil {
+		utils.IError(err, "Error on path %v", c.Request.URL)
+		c.JSON(400, ErrorApiMessage{400, err.Error()})
+	} else {
+		c.String(200, value)
+	}
+}
+
 func JsonInfer(c *gin.Context, object interface{}, err error) {
 	if err != nil {
 		utils.IError(err, "Error on path %v", c.Request.URL)
@@ -51,9 +60,14 @@ func ParamUint(c *gin.Context, param string) (uint32, error) {
 	return uint32(val), err
 }
 
+func GetDescription(c *gin.Context) {
+	description, err := database.GetDescription(c.Param("experiment"))
+	StringInfer(c, description, err)
+}
+
 func GetPrivacyPolicy(c *gin.Context) {
-	policy, err := database.GetPrivacyPolicy()
-	JsonInfer(c, policy, err)
+	policy, err := database.GetPrivacyPolicy(c.Param("experiment"))
+	StringInfer(c, policy, err)
 }
 
 func NewExperimentBrowser(c *gin.Context) {
@@ -62,12 +76,15 @@ func NewExperimentBrowser(c *gin.Context) {
 		password = utils.RandomString(127)
 	}
 
+	policy := c.Query("policy")
+	description := c.Query("description")
+
 	type Response struct {
 		Password string `json:"password"`
 		Id       uint32 `json:"id"`
 	}
 
-	id, err := database.InsertExperiment(password, sql.NullTime{})
+	id, err := database.InsertExperiment(password, policy, description, sql.NullTime{})
 	JsonInfer(c, Response{password, id}, err)
 }
 
@@ -77,12 +94,15 @@ func NewExperiment(c *gin.Context) {
 		password = utils.RandomString(127)
 	}
 
+	policy := c.PostForm("policy")
+	description := c.PostForm("description")
+
 	type Response struct {
 		Password string `json:"password"`
 		Id       uint32 `json:"id"`
 	}
 
-	id, err := database.InsertExperiment(password, sql.NullTime{})
+	id, err := database.InsertExperiment(password, policy, description, sql.NullTime{})
 	JsonInfer(c, Response{password, id}, err)
 }
 

@@ -32,6 +32,12 @@ public final class ScanActivity extends AppCompatActivity {
     AppLogic.startup(this);
 
     switch (getAppState()) {
+    case APPSTATE_NO_EXPERIMENT:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
+      Intent intent = new Intent(this, SettingsActivity.class);
+      startActivity(intent);
+      break;
     case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
       scanSwitch.setEnabled(true);
       scanSwitch.setChecked(true);

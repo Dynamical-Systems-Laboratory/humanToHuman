@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS metadata (
 CREATE TABLE IF NOT EXISTS experiments (
   id          SERIAL          NOT NULL,
   hash        varchar         NOT NULL UNIQUE,
+  policy      varchar         NOT NULL,
+  description varchar         NOT NULL,
   open        TIMESTAMP       NOT NULL,
   began       TIMESTAMP       ,
   ended       TIMESTAMP       ,

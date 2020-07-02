@@ -117,14 +117,14 @@ public class Server extends Service {
 
   public static void getPrivacyPolicy(Listener<String> l) {
     StringRequest req = new StringRequest(
-            Request.Method.POST, AppLogic.getServerURL() + "/privacyPolicy",
+            Request.Method.POST, AppLogic.getServerURL() + "/policy",
             (response) -> l.onFinish(response, null), (error) -> l.onFinish(null, error));
     requestQueue.add(req);
   }
 
   public static void getDescription(Listener<String> l) {
     StringRequest req = new StringRequest(
-            Request.Method.POST, AppLogic.getServerURL() + "/experimentDescription",
+            Request.Method.POST, AppLogic.getServerURL() + "/description",
             (response) -> l.onFinish(response, null), (error) -> l.onFinish(null, error));
     requestQueue.add(req);
   }

@@ -32,12 +32,11 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/policy_text"
+                android:id="@+id/privacyPolicyText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="0dp"
-                android:text="@string/privacy_policy" />
+                android:layout_marginBottom="0dp" />
         </RelativeLayout>
     </ScrollView>
 
