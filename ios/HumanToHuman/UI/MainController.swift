@@ -13,27 +13,40 @@ class MainController: UIViewController {
         
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:
-            idLabel.text = "No id yet"
+            idLabel.text = "ID: No id yet"
             break;
         case APPSTATE_LOGGING_IN:
-            idLabel.text = "No id yet"
+            idLabel.text = "ID: No id yet"
+            break;
+        case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+            idLabel.text = "ID: No id yet"
             break;
         default:
-            idLabel.text = "\(AppLogic.getBluetoothId())"
+            idLabel.text = "ID: \(AppLogic.getBluetoothId())"
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        experimentDescription.text = AppLogic.getDescription()
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:
-            idLabel.text = "No id yet"
+            idLabel.text = "ID: No id yet"
             break;
         case APPSTATE_LOGGING_IN:
-            idLabel.text = "No id yet"
+            idLabel.text = "ID: No id yet"
+            break;
+        case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+            idLabel.text = "ID: No id yet"
             break;
         default:
-            idLabel.text = "\(AppLogic.getBluetoothId())"
+            idLabel.text = "ID: \(AppLogic.getBluetoothId())"
         }
+    }
+    
+    @IBAction func goToSettings() {
+        let viewController = self.storyboard?.instantiateViewController(withIdentifier: "SettingsController") as! SettingsController
+        viewController.modalPresentationStyle = .fullScreen
+        present(viewController, animated: true, completion: nil)
     }
 }
 

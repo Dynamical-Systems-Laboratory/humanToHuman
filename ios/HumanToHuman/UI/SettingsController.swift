@@ -19,6 +19,7 @@ class SettingsController: UIViewController {
     override func viewDidLoad() {
         print("settings controller loading...")
         baseurlField.text = "http://192.168.1.151:8080/experiment/password"
+        
         switch AppLogic.getAppState() {
         case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
             toggleCollectButton.setTitle("stop collection", for: .normal)
@@ -49,6 +50,47 @@ class SettingsController: UIViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        switch AppLogic.getAppState() {
+        case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+            toggleCollectButton.setTitle("stop collection", for: .normal)
+            baseurlButton.isEnabled = false
+            baseurlField.isEnabled = false
+            toggleCollectButton.isEnabled = true
+            privacyPolicyButton.isEnabled = true
+            break
+        case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlField.isEnabled = false
+            baseurlButton.isEnabled = false
+            toggleCollectButton.isEnabled = true
+            privacyPolicyButton.isEnabled = true
+            break
+        case APPSTATE_NO_EXPERIMENT:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlButton.isEnabled = true
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = false
+            break
+        default:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlField.isEnabled = false
+            baseurlButton.isEnabled = false
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = true
+        }
+    }
+    
+    @IBAction func backToMain() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func goToPrivacyPolicy() {
+        let viewController = self.storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyController") as! PrivacyPolicyController
+        viewController.modalPresentationStyle = .fullScreen
+        present(viewController, animated: true, completion: nil)
+    }
+    
     @IBAction func toggleCollection() {
         if AppLogic.getAppState() == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             AppLogic.stopCollectingData()
@@ -70,7 +112,7 @@ class SettingsController: UIViewController {
                         return
                     }
                     
-                    self.performSegue(withIdentifier: "privacyPolicySegue", sender: self)
+                    self.goToPrivacyPolicy()
                 }
             }
         }

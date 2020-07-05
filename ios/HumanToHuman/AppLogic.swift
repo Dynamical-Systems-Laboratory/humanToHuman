@@ -164,10 +164,17 @@ class AppLogic {
         })
     }
     
+    static func leaveExperiment() {
+        if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
+            Bluetooth.stopScanning()
+            Bluetooth.stopAdvertising()
+        }
+        setAppState(APPSTATE_NO_EXPERIMENT)
+    }
+    
     static func acceptPrivacyPolicy(callback: @escaping (String?) -> Void) {
         Server.getUserId() { uid in
             guard let uid = uid else {
-                print("Failed to get uid from server")
                 callback("Failed to get uid from server")
                 setAppState(APPSTATE_NO_EXPERIMENT)
                 return
