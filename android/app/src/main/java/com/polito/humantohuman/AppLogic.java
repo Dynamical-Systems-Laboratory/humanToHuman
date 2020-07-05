@@ -50,9 +50,11 @@ public class AppLogic {
     };
     Bluetooth.delegate = Database::addRow;
 
-    if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN) {
+    if (appState != APPSTATE_NO_EXPERIMENT) {
       serverURL = getPropText(KEY_SERVER_BASE_URL);
-      bluetoothId = getPropNumeric(KEY_OWN_ID);
+      if (appState != APPSTATE_LOGGING_IN) {
+        bluetoothId = getPropNumeric(KEY_OWN_ID);
+      }
 
       if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
         context.startService(new Intent(context, Bluetooth.class));
@@ -116,7 +118,7 @@ public class AppLogic {
 
   public static void setServerCredentials(String urlString,
                                           Consumer<Exception> cb) {
-    if (appState != APPSTATE_NO_EXPERIMENT && appState != APPSTATE_LOGGING_IN)
+    if (appState != APPSTATE_NO_EXPERIMENT)
       throw new RuntimeException(
           "Can't set URL while already in an experiment!");
 

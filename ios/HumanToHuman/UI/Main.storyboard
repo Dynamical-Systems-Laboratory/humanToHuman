@@ -69,7 +69,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1z-LR-Xgk">
-                                <rect key="frame" x="33" y="341" width="81" height="30"/>
+                                <rect key="frame" x="31" y="341" width="81" height="30"/>
                                 <state key="normal" title="collect data"/>
                                 <connections>
                                     <action selector="toggleCollection" destination="m5t-BW-zxg" eventType="touchUpInside" id="J1U-OZ-mTf"/>
@@ -79,47 +79,47 @@
                                 <rect key="frame" x="33" y="376" width="95" height="30"/>
                                 <state key="normal" title="privacy policy"/>
                                 <connections>
-                                    <segue destination="m5y-20-ABg" kind="presentation" id="FG8-B3-2lU"/>
+                                    <segue destination="m5y-20-ABg" kind="presentation" identifier="privacyPolicySegue" id="FG8-B3-2lU"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3pl-aK-sjh">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3pl-aK-sjh">
                                 <rect key="frame" x="31" y="287" width="195" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QTN-4j-np4">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QTN-4j-np4">
                                 <rect key="frame" x="234" y="289" width="90" height="30"/>
                                 <state key="normal" title="set server url"/>
                                 <connections>
                                     <action selector="setBaseurl" destination="m5t-BW-zxg" eventType="touchUpInside" id="I0o-mA-4t2"/>
-                                    <action selector="toggleCollection" destination="m5t-BW-zxg" eventType="touchUpInside" id="PCz-Pg-D87"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="0Ww-Xi-LkC"/>
-                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="0v5-Ak-lsK"/>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="23B-SK-jyc"/>
-                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="top" secondItem="Rje-VJ-olw" secondAttribute="top" constant="341" id="5gn-54-9D6"/>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="p1z-LR-Xgk" secondAttribute="leading" id="NXy-wj-alt"/>
-                            <constraint firstItem="QTN-4j-np4" firstAttribute="centerY" secondItem="3pl-aK-sjh" secondAttribute="centerY" id="T1u-Sk-NF0"/>
-                            <constraint firstItem="QTN-4j-np4" firstAttribute="leading" secondItem="3pl-aK-sjh" secondAttribute="trailing" constant="8" id="U47-qA-lgp"/>
-                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="VKf-Z7-R5t"/>
-                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="top" secondItem="3pl-aK-sjh" secondAttribute="bottom" constant="20" id="bXc-cr-yjp"/>
-                            <constraint firstItem="3pl-aK-sjh" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="31" id="tYO-FS-Vll"/>
+                            <constraint firstItem="QTN-4j-np4" firstAttribute="leading" secondItem="3pl-aK-sjh" secondAttribute="trailing" constant="8" id="2Lx-Bo-Kiu"/>
+                            <constraint firstItem="3pl-aK-sjh" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="31" id="MVJ-eZ-yfg"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="Mwe-W9-78G"/>
+                            <constraint firstItem="3pl-aK-sjh" firstAttribute="top" secondItem="Rje-VJ-olw" secondAttribute="top" constant="287" id="OeX-Ty-tys"/>
+                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="top" secondItem="3pl-aK-sjh" secondAttribute="bottom" constant="20" id="QVx-2L-UE0"/>
+                            <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="VWl-zG-09n"/>
+                            <constraint firstItem="QTN-4j-np4" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="234" id="ZPd-i3-XCF"/>
+                            <constraint firstItem="QTN-4j-np4" firstAttribute="centerY" secondItem="3pl-aK-sjh" secondAttribute="centerY" id="cY9-sb-s2H"/>
+                            <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="3pl-aK-sjh" secondAttribute="leading" id="hxU-im-HJT"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Rje-VJ-olw"/>
                     </view>
                     <navigationItem key="navigationItem" id="lpI-FN-8jp"/>
                     <connections>
+                        <outlet property="baseurlButton" destination="QTN-4j-np4" id="aL8-7N-mPS"/>
                         <outlet property="baseurlField" destination="3pl-aK-sjh" id="Xsx-EG-pUq"/>
+                        <outlet property="privacyPolicyButton" destination="7Kg-5n-EgM" id="7E7-bd-i1v"/>
                         <outlet property="toggleCollectButton" destination="p1z-LR-Xgk" id="ssD-p7-xdU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="58T-Ru-EgX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="986.95652173913049" y="127.90178571428571"/>
+            <point key="canvasLocation" x="944.92753623188412" y="101.78571428571428"/>
         </scene>
         <!--Privacy Policy Controller-->
         <scene sceneID="Hus-2I-ihb">
@@ -136,18 +136,35 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I accept the privacy policy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="38E-i6-thr">
+                                <rect key="frame" x="20" y="763" width="200" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Io7-5s-epW">
+                                <rect key="frame" x="303" y="758" width="51" height="31"/>
+                                <connections>
+                                    <action selector="acceptPrivacyPolicy" destination="m5y-20-ABg" eventType="touchUpInside" id="6hr-g6-bP2"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="YRu-Ky-Nw3" firstAttribute="bottom" secondItem="tUX-j4-tIl" secondAttribute="bottom" constant="138" id="1DZ-cU-LpT"/>
+                            <constraint firstItem="YRu-Ky-Nw3" firstAttribute="bottom" secondItem="38E-i6-thr" secondAttribute="bottom" constant="24" id="55J-qJ-PKj"/>
+                            <constraint firstItem="Io7-5s-epW" firstAttribute="leading" secondItem="38E-i6-thr" secondAttribute="trailing" constant="83" id="JB7-hM-STR"/>
+                            <constraint firstItem="Io7-5s-epW" firstAttribute="centerY" secondItem="38E-i6-thr" secondAttribute="centerY" id="JO3-ow-7kh"/>
                             <constraint firstItem="tUX-j4-tIl" firstAttribute="leading" secondItem="YRu-Ky-Nw3" secondAttribute="leading" constant="20" id="Pld-ia-i4F"/>
                             <constraint firstItem="YRu-Ky-Nw3" firstAttribute="trailing" secondItem="tUX-j4-tIl" secondAttribute="trailing" constant="20" id="TuT-Ib-JEr"/>
+                            <constraint firstItem="38E-i6-thr" firstAttribute="leading" secondItem="YRu-Ky-Nw3" secondAttribute="leading" constant="20" id="YpM-pK-q0w"/>
                             <constraint firstItem="tUX-j4-tIl" firstAttribute="top" secondItem="YRu-Ky-Nw3" secondAttribute="top" constant="35" id="mIE-Yf-avZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="YRu-Ky-Nw3"/>
                     </view>
                     <connections>
                         <outlet property="privacyPolicy" destination="tUX-j4-tIl" id="Hz8-JW-rQ5"/>
+                        <outlet property="privacyPolicySwitch" destination="Io7-5s-epW" id="bjP-q5-eZV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kpR-Po-oFf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

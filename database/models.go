@@ -23,6 +23,14 @@ func (t *Time) UnmarshalJSON(j []byte) error {
 	return nil
 }
 
+type Connection struct {
+	Time       Time  `json:"time"`
+	Scanner    int64 `json:"scanner"`
+	Advertiser int64 `json:"advertiser"`
+	Power      int16 `json:"power"`
+	Rssi       int16 `json:"rssi"`
+}
+
 type OneWayConnection struct {
 	Time  Time  `json:"time"`
 	Other int64 `json:"other"`

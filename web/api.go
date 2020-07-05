@@ -2,11 +2,13 @@ package web
 
 import (
 	"database/sql"
+	"encoding/csv"
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 type ErrorApiMessage struct {
@@ -20,7 +22,10 @@ type OkApiMessage struct {
 }
 
 var (
+	Release            = false
+	PasswordHash       = ""
 	MissingLogin       = errors.New("missing login query parameter")
+	IncorrectPassword  = errors.New("incorrect password")
 	MissingPassword    = errors.New("missing password query parameter")
 	NoLoginInformation = errors.New("neither login nor password was provided")
 	MissingToken       = errors.New("missing token")
@@ -58,6 +63,52 @@ func ParamUint(c *gin.Context, param string) (uint32, error) {
 	valString := c.Param(param)
 	val, err := strconv.ParseUint(valString, 10, 64)
 	return uint32(val), err
+}
+
+func GetCSV(c *gin.Context) {
+	if Release {
+		password, ok := c.GetQuery("password")
+		if !ok {
+			JsonFail(c, MissingPassword)
+			return
+		}
+
+		hashed, err := utils.HashPassword(password)
+		if JsonFail(c, err) {
+			return
+		}
+
+		if hashed != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	connections, err := database.GetDataForExperiment(c.Param("experiment"))
+	if JsonFail(c, err) {
+		return
+	}
+
+	writer := csv.NewWriter(c.Writer)
+	err = writer.Write([]string{"time", "scanner", "advertiser", "power", "rssi"})
+	if JsonFail(c, err) {
+		return
+	}
+	for _, conn := range connections {
+		err = writer.Write([]string{
+			time.Time(conn.Time).Format(database.TimeFormat),
+			strconv.FormatInt(conn.Scanner, 10),
+			strconv.FormatInt(conn.Advertiser, 10),
+			strconv.FormatInt(int64(conn.Power), 10),
+			strconv.FormatInt(int64(conn.Rssi), 10),
+		})
+
+		if JsonFail(c, err) {
+			return
+		}
+	}
+
+	writer.Flush()
 }
 
 func GetDescription(c *gin.Context) {

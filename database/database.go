@@ -8,12 +8,6 @@ import (
 	"time"
 )
 
-const (
-	KEY_PRIVACY_POLICY         int32 = 1
-	KEY_EXPERIMENT_DESCRIPTION int32 = 2
-	KEY_SALT                   int32 = 3
-)
-
 var (
 	NewUserFailed        = errors.New("failed to make new user")
 	AuthFailed           = errors.New("failed to authenticate")
@@ -22,6 +16,68 @@ var (
 	ExperimentClosed     = errors.New("experiment has already closed")
 	ExperimentNotStarted = errors.New("experiment hasn't started yet")
 )
+
+func GetDataForExperiment(password string) ([]Connection, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := psql.Select("devices.id").
+		From("devices").
+		Join("experiments ON experiments.id = devices.experiment").
+		Where(sq.Eq{"experiments.hash": hashed}).
+		RunWith(globalDb).
+		Query()
+	if err != nil {
+		rows.Close()
+		return nil, err
+	}
+
+	users := make([]int64, 50)[:0]
+	var user int64
+	for rows.Next() {
+		err := rows.Scan(&user)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, err
+	}
+
+	rows, err = psql.Select("time", "device_a", "device_b",
+		"measured_power", "rssi").
+		From("connections").
+		Where(sq.Or{sq.Eq{"device_a": users}, sq.Eq{"device_b": users}}).
+		RunWith(globalDb).
+		Query()
+	if err != nil {
+		rows.Close()
+		return nil, err
+	}
+
+	connections := make([]Connection, 1000)[:0]
+	var connection Connection
+	for rows.Next() {
+		err = rows.Scan(&connection.Time, &connection.Scanner, &connection.Advertiser,
+			&connection.Power, &connection.Rssi)
+		if err != nil {
+			return nil, err
+		}
+
+		connections = append(connections, connection)
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, err
+	}
+
+	return connections, nil
+}
 
 func GetDescription(password string) (string, error) {
 	hashed, err := utils.HashPassword(password)
@@ -160,8 +216,8 @@ func InsertConnections(connections ConnectionInfo) error {
 		Columns("time", "device_a", "device_b", "measured_power", "rssi").
 		RunWith(globalDb)
 	for _, connection := range connections.Connections {
-		builder = builder.Values(time.Time(connection.Time), deviceId, connection.Other,
-			connection.Power, connection.Rssi)
+		builder = builder.Values(time.Time(connection.Time), deviceId,
+			connection.Other, connection.Power, connection.Rssi)
 	}
 
 	_, err = builder.Exec()
@@ -174,8 +230,8 @@ func InsertConnectionsUnsafe(connections ConnectionInfoUnsafe) error {
 		RunWith(globalDb)
 
 	for _, connection := range connections.Connections {
-		builder = builder.Values(time.Time(connection.Time), connections.Id, connection.Other,
-			connection.Power, connection.Rssi)
+		builder = builder.Values(time.Time(connection.Time), connections.Id,
+			connection.Other, connection.Power, connection.Rssi)
 	}
 
 	_, err := builder.Exec()

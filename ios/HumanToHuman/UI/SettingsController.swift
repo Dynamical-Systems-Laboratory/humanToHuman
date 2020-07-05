@@ -13,47 +13,64 @@ class SettingsController: UIViewController {
 
     @IBOutlet var toggleCollectButton: UIButton!
     @IBOutlet var baseurlField: UITextField!
+    @IBOutlet var baseurlButton: UIButton!
+    @IBOutlet var privacyPolicyButton : UIButton!
 
     override func viewDidLoad() {
         print("settings controller loading...")
-        if Bluetooth.advertising {
+        baseurlField.text = "http://192.168.1.151:8080/experiment/password"
+        switch AppLogic.getAppState() {
+        case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
             toggleCollectButton.setTitle("stop collection", for: .normal)
-        } else {
+            baseurlButton.isEnabled = false
+            baseurlField.isEnabled = false
+            toggleCollectButton.isEnabled = true
+            privacyPolicyButton.isEnabled = true
+            break
+        case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
             toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlField.isEnabled = false
+            baseurlButton.isEnabled = false
+            toggleCollectButton.isEnabled = true
+            privacyPolicyButton.isEnabled = true
+            break
+        case APPSTATE_NO_EXPERIMENT:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlButton.isEnabled = true
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = false
+            break
+        default:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlField.isEnabled = false
+            baseurlButton.isEnabled = false
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = true
         }
-        baseurlField.text = Database.getPropText(prop: KEY_SERVER_BASE_URL)
     }
     
     @IBAction func toggleCollection() {
-        if Bluetooth.advertising {
-            Bluetooth.stopAdvertising()
-            Bluetooth.stopScanning()
+        if AppLogic.getAppState() == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
+            AppLogic.stopCollectingData()
             toggleCollectButton.setTitle("collect data", for: .normal)
         } else {
-            guard Bluetooth.startAdvertising() else { return } // this fails if there's no id given
-            Bluetooth.startScanning()
+            AppLogic.startCollectingData()
             toggleCollectButton.setTitle("stop collection", for: .normal)
         }
     }
     
     @IBAction func setBaseurl() {
         if let baseurl = baseurlField.text {
-            guard URL(string: baseurl) != nil else {
-                print("error, baseurl is not properly formatted")
-                return
-            }
-            
-            Database.setPropText(prop: KEY_SERVER_BASE_URL, value: baseurl)
-            Services.popToServer(baseurl: baseurl)
-            if let id = Database.getPropNumeric(prop: KEY_OWN_ID) {
-                print("init with saved id \(id)")
-                Bluetooth.id = id
-            } else {
-                Server.getUserId(baseurl: baseurl) { id in
-                    guard let id = id else { exit(1) }
-                    print("got id \(id)")
-                    Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(bitPattern: id))
-                    Bluetooth.id = id
+            baseurlButton.isEnabled = false
+            AppLogic.setServerCredentials(urlString: baseurl) { errorString in
+                DispatchQueue.main.async {
+                    if let errorString = errorString {
+                        print("Got error: \(errorString)")
+                        self.baseurlButton.isEnabled = true
+                        return
+                    }
+                    
+                    self.performSegue(withIdentifier: "privacyPolicySegue", sender: self)
                 }
             }
         }

@@ -9,12 +9,30 @@ class MainController: UIViewController {
     override func viewDidLoad() {
         print("main controller loading...")
         experimentDescription.isEditable = false
-        experimentDescription.text = Database.getPropText(prop: KEY_EXPERIMENT_DESCRIPTION)
+        experimentDescription.text = AppLogic.getDescription()
+        
+        switch AppLogic.getAppState() {
+        case APPSTATE_NO_EXPERIMENT:
+            idLabel.text = "No id yet"
+            break;
+        case APPSTATE_LOGGING_IN:
+            idLabel.text = "No id yet"
+            break;
+        default:
+            idLabel.text = "\(AppLogic.getBluetoothId())"
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if let id = Database.getPropNumeric(prop: KEY_OWN_ID) {
-            idLabel.text = "\(id)"
+        switch AppLogic.getAppState() {
+        case APPSTATE_NO_EXPERIMENT:
+            idLabel.text = "No id yet"
+            break;
+        case APPSTATE_LOGGING_IN:
+            idLabel.text = "No id yet"
+            break;
+        default:
+            idLabel.text = "\(AppLogic.getBluetoothId())"
         }
     }
 }

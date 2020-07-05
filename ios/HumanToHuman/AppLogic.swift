@@ -18,17 +18,40 @@ let APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING = 5
 
 class AppLogic {
     
-    static var appState : Int = APPSTATE_NO_EXPERIMENT
+    private static var appState : Int = APPSTATE_NO_EXPERIMENT
+    private static var serverURL : String = ""
+    private static var bluetoothId : UInt64 = 0
     
-    func startup() {
+    static func startup() {
         guard Database.initDatabase() else { exit(1) }
+        appState = Int(Database.getPropNumeric(prop: KEY_APP_STATE) ?? UInt64(APPSTATE_NO_EXPERIMENT))
+        
+        if appState == APPSTATE_LOGGING_IN {
+            setAppState(APPSTATE_NO_EXPERIMENT)
+        }
+        
+        if appState != APPSTATE_NO_EXPERIMENT {
+            serverURL = Database.getPropText(prop: KEY_SERVER_BASE_URL)!
+            
+            if appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
+                bluetoothId = Database.getPropNumeric(prop: KEY_OWN_ID)!
+            }
+        
+            if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
+                Bluetooth.startScanning()
+                guard Bluetooth.startAdvertising() else { exit(1) } // TODO handle this condition
+                Services.popToServer()
+            }
+        }
+
+        Bluetooth.delegate = AppLogic()
     }
     
     static func getAppState() -> Int {
         return appState
     }
     
-    static func setAppState(_ state: Int) {
+    private static func setAppState(_ state: Int) {
         appState = state
         Database.setPropNumeric(prop: KEY_APP_STATE, value: Int64(state))
     }
@@ -38,7 +61,22 @@ class AppLogic {
             print("No id to get!")
             exit(1)
         }
-        return Database.getPropNumeric(prop: KEY_OWN_ID)!
+        return bluetoothId
+    }
+    
+    static func getDescription() -> String {
+        if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN {
+            return ""
+        }
+        return Database.getPropText(prop: KEY_EXPERIMENT_DESCRIPTION)!
+    }
+    
+    static func getPolicy() -> String {
+        if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN {
+            print("we don't have a privacy policy to display!")
+            exit(1)
+        }
+        return Database.getPropText(prop: KEY_PRIVACY_POLICY)!
     }
     
     static func startCollectingData() {
@@ -75,7 +113,80 @@ class AppLogic {
         return Database.getPropText(prop: KEY_SERVER_BASE_URL)!
     }
     
-    static func setServerCredentials(urlString: String, callback: (Bool) -> Void) {
-        Database.setPropText(prop: KEY_SERVER_BASE_URL, value: urlString)
+    static func setServerCredentials(urlString: String, callback: @escaping (String?) -> Void) {
+        if appState != APPSTATE_NO_EXPERIMENT {
+            print("Can't set URL while already in an experiment!")
+            exit(1)
+        }
+        
+        if URL(string: urlString) == nil {
+            callback("url failed to parse")
+            return
+        }
+        
+        serverURL = urlString
+        Database.setPropText(prop: KEY_SERVER_BASE_URL, value: serverURL)
+        setAppState(APPSTATE_LOGGING_IN)
+        
+        var countdown : Int32 = 2
+        var errorSent : Int32 = 0
+        
+        Server.getDescription(callback: { description in
+            guard let description = description else {
+                if OSAtomicCompareAndSwap32(0, 1, &errorSent) {
+                    setAppState(APPSTATE_NO_EXPERIMENT)
+                    callback("Failed to get description")
+                }
+                return
+            }
+            
+            Database.setPropText(prop: KEY_EXPERIMENT_DESCRIPTION, value: description)
+            if OSAtomicDecrement32(&countdown) == 0 {
+                setAppState(APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING)
+                callback(nil)
+            }
+        })
+        
+        Server.getPrivacyPolicy(callback: { privacyPolicy in
+            guard let privacyPolicy = privacyPolicy else {
+                if OSAtomicCompareAndSwap32(0, 1, &errorSent) {
+                    setAppState(APPSTATE_NO_EXPERIMENT)
+                    callback("Failed to get privacy policy")
+                }
+                return
+            }
+            
+            Database.setPropText(prop: KEY_PRIVACY_POLICY, value: privacyPolicy)
+            if OSAtomicDecrement32(&countdown) == 0 {
+                setAppState(APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING)
+                callback(nil)
+            }
+        })
+    }
+    
+    static func acceptPrivacyPolicy(callback: @escaping (String?) -> Void) {
+        Server.getUserId() { uid in
+            guard let uid = uid else {
+                print("Failed to get uid from server")
+                callback("Failed to get uid from server")
+                setAppState(APPSTATE_NO_EXPERIMENT)
+                return
+            }
+
+            print("Got bluetooth id: \(uid)")
+            bluetoothId = uid
+            Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(uid))
+            setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
+            callback(nil)
+        }
+    }
+}
+
+extension AppLogic: BTDelegate {
+    func discoveredDevice(_ device: Device) {
+        guard Database.writeRow(device: device) else {
+            print("something went wrong with sql")
+            return
+        }
     }
 }

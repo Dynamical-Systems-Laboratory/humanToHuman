@@ -12,7 +12,7 @@ class Services {
     private static var popToServerTimer : Timer?
     private static var queuedRows : Data?
     
-    static func popToServer(baseurl: String) {
+    static func popToServer() {
         guard popToServerTimer == nil else { return }
         popToServerTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             if queuedRows == nil {
@@ -20,7 +20,7 @@ class Services {
                 guard queuedRows != nil else { return }
             }
             
-            Server.sendConnectionData(baseurl: baseurl, data: queuedRows!) {
+            Server.sendConnectionData(data: queuedRows!) {
                 queuedRows = nil
             }
         })

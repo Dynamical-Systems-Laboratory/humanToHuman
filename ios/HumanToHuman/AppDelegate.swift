@@ -17,25 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         print("application launch")
-        guard Database.initDatabase() else { print("Database failed to init"); exit(1) }
-        Bluetooth.delegate = self
-        
-        if let baseurl = Database.getPropText(prop: KEY_SERVER_BASE_URL) { // we have a server to connect to
-            Services.popToServer(baseurl: baseurl)
-            
-            if let id = Database.getPropNumeric(prop: KEY_OWN_ID) {
-                print("init with saved id \(id)")
-                Bluetooth.id = id
-            } else {
-                Server.getUserId(baseurl: baseurl) { id in
-                    guard let id = id else { exit(1) }
-                    print("got id \(id)")
-                    Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(bitPattern: id))
-                    Bluetooth.id = id
-                }
-            }
-        }
-        
+        AppLogic.startup()
         
         // Override point for customization after application launch.
         return true
@@ -66,21 +48,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
-}
-
-extension AppDelegate: BTDelegate {
-    func discoveredDevice(_ device: Device) {
-        guard Database.writeRow(device: device) else {
-            print("something went wrong with sql")
-            return
-        }
-        
-        if let idx = rows.firstIndex(where: { row in row.device.uuid == device.uuid }) {
-            rows[idx].device.rssi = device.rssi
-            rows[idx].device.measuredPower = device.measuredPower
-            rows[idx].lastSeen = Date()
-        } else {
-            rows.append((device: device, lastSeen: Date()))
-        }
-    }
 }

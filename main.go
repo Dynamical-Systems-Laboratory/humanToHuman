@@ -24,6 +24,10 @@ func main() {
 	}
 	if flags.Release {
 		gin.SetMode(gin.ReleaseMode)
+		web.Release = true
+		var err error
+		web.PasswordHash, err = utils.HashPassword(*flags.Password)
+		utils.FailIf(err, "failed to hash provided password")
 	}
 
 	router := gin.Default()
@@ -33,10 +37,12 @@ func main() {
 	router.GET("/clear", func(ctx *gin.Context) {
 		database.Clear()
 	})
+
+	router.GET("/experiment/:experiment/data.csv", web.GetCSV)
 	router.GET("/addExperiment", web.NewExperimentBrowser)
 	router.POST("/addExperiment", web.NewExperiment)
-	router.POST("/experiment/:experiment/policy", web.GetPrivacyPolicy)
-	router.POST("/experiment/:experiment/description", web.GetDescription)
+	router.GET("/experiment/:experiment/policy", web.GetPrivacyPolicy)
+	router.GET("/experiment/:experiment/description", web.GetDescription)
 	router.POST("/experiment/:experiment/addUser", web.NewUser)
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.Run(":8080")

@@ -62,18 +62,6 @@ struct Database {
             print(shared.lastErrorMessage())
             return false
         }
-
-        if getPropNumeric(prop: KEY_HAS_INIT_DATABASE) != nil {
-            return true
-        }
-
-        setPropText(prop: KEY_SERVER_BASE_URL, value: "http://192.168.1.151:8080")
-        setPropNumeric(prop: KEY_HAS_INIT_DATABASE, value: 1)
-        setPropText(prop: KEY_PRIVACY_POLICY, value: VALUE_DEFAULT_PRIVACY_POLICY)
-        setPropText(prop: KEY_EXPERIMENT_DESCRIPTION, value: VALUE_DEFAULT_EXPERIMENT_DESCRIPTION)
-        setPropNumeric(prop: KEY_ACCEPTED_PRIVACY_POLICY, value: 0)
-        setPropNumeric(prop: KEY_IS_RUNNING, value: 0)
-        setPropNumeric(prop: KEY_CURRENT_CURSOR, value: 0)
         return true
     }
 
@@ -85,20 +73,17 @@ struct Database {
         let rs = shared.executeQuery("SELECT tvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
         if let rs = rs, rs.next() {
-            return rs.string(forColumn: "tvalue")
+            let val = rs.string(forColumn: "tvalue")
+            rs.close()
+            return val
         } else {
             return nil
         }
     }
 
     static func setPropText(prop: Int, value: String) {
-        do {
-            try shared.executeUpdate("INSERT INTO metadata (key_, tvalue) VALUES (?, ?)",
+        try? shared.executeUpdate("INSERT OR REPLACE INTO metadata (key_, tvalue) VALUES (?, ?)",
                                      values: [prop, value])
-        } catch {
-            try? shared.executeUpdate("UPDATE metadata SET tvalue = ? WHERE key_ = ?",
-                                      values: [value, prop])
-        }
     }
 
     // Gets a numeric property from the metadata table.
@@ -106,7 +91,9 @@ struct Database {
         let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
         if let rs = rs, rs.next() {
-            return UInt64(bitPattern: rs.longLongInt(forColumn: "nvalue"))
+            let val =  UInt64(bitPattern: rs.longLongInt(forColumn: "nvalue"))
+            rs.close()
+            return val
         } else {
             return nil
         }
@@ -114,13 +101,8 @@ struct Database {
 
     // Sets a numeric property in the metadata table.
     static func setPropNumeric(prop: Int, value: Int64) {
-        do {
-            try shared.executeUpdate("INSERT INTO metadata (key_, nvalue) VALUES (?, ?)",
+        try? shared.executeUpdate("INSERT OR REPLACE INTO metadata (key_, nvalue) VALUES (?, ?)",
                                      values: [prop, value])
-        } catch {
-            try? shared.executeUpdate("UPDATE metadata SET nvalue = ? WHERE key_ = ?",
-                                      values: [value, prop])
-        }
     }
 
     // Pops all rows from the sensor_data table, reading then deleting them.
