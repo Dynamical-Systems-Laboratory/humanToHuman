@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BackgroundTasks
 
 
 let APPSTATE_EXPERIMENT_RUNNING_COLLECTING = 0
@@ -21,13 +22,38 @@ class AppLogic {
     private static var appState : Int = APPSTATE_NO_EXPERIMENT
     private static var serverURL : String = ""
     private static var bluetoothId : UInt64 = 0
+    private static var data : Data? = nil
     
     static func startup() {
         guard Database.initDatabase() else { exit(1) }
         appState = Int(Database.getPropNumeric(prop: KEY_APP_STATE) ?? UInt64(APPSTATE_NO_EXPERIMENT))
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.humantohuman.fetcher", using: nil) { task in
+            let bgrequest = BGProcessingTaskRequest(identifier: "com.humantohuman.fetcher")
+            bgrequest.earliestBeginDate = Date(timeIntervalSinceNow: 5)
+            bgrequest.requiresNetworkConnectivity = true
+            try? BGTaskScheduler.shared.submit(bgrequest)
+            
+            
+            print("Sending data in the background")
+            if data == nil {
+                data = Server.formatConnectionData(id: bluetoothId, rows: Database.popRows())
+                if data == nil {
+                    task.setTaskCompleted(success: true)
+                }
+            }
+            
+            Server.sendConnectionData(data: data!) {
+                print("data finished sending")
+                data = nil
+                task.setTaskCompleted(success: true)
+            }
+        }
+        
+        Bluetooth.delegate = AppLogic()
         
         if appState == APPSTATE_LOGGING_IN {
             setAppState(APPSTATE_NO_EXPERIMENT)
+            return
         }
         
         if appState != APPSTATE_NO_EXPERIMENT {
@@ -40,11 +66,9 @@ class AppLogic {
             if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
                 Bluetooth.startScanning()
                 guard Bluetooth.startAdvertising() else { exit(1) } // TODO handle this condition
-                Services.popToServer()
             }
         }
 
-        Bluetooth.delegate = AppLogic()
     }
     
     static func getAppState() -> Int {
@@ -90,6 +114,16 @@ class AppLogic {
             exit(1)
         }
         
+        let request = BGProcessingTaskRequest(identifier: "com.humantohuman.fetcher")
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 2)
+        request.requiresNetworkConnectivity = true
+        do {
+            BGTaskScheduler.shared.cancelAllTaskRequests()
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("BGTaskScheduler errored \(error)")
+            exit(1)
+        }
         setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
     }
     

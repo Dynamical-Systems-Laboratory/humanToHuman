@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4B24AB64249990310008021F /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B24AB63249990310008021F /* Services.swift */; };
 		4B3A066B24992C4B00BA7978 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */; };
 		4B5DD2A52485E1B400059C7C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A42485E1B400059C7C /* Server.swift */; };
 		4B5DD2B0248737D500059C7C /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5DD2A7248737D500059C7C /* FMDatabaseQueue.m */; };
@@ -29,7 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4B24AB63249990310008021F /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		4B282F22247E0F0C00114132 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
 		4B3A066A24992C4B00BA7978 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4B5DD2A42485E1B400059C7C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 				4BFCDF5E2481538700C44E19 /* Bluetooth.swift */,
 				4BD70A022481C6D900FE73F0 /* Wifi.swift */,
 				4B5DD2A42485E1B400059C7C /* Server.swift */,
-				4B24AB63249990310008021F /* Services.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -217,7 +214,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4BFCDF5F2481538700C44E19 /* Bluetooth.swift in Sources */,
-				4B24AB64249990310008021F /* Services.swift in Sources */,
 				4BCBFC8924997DE000BB2DDD /* SettingsController.swift in Sources */,
 				4BEAE6C624721700002B0A6B /* AppDelegate.swift in Sources */,
 				4BD70A032481C6D900FE73F0 /* Wifi.swift in Sources */,

@@ -29,7 +29,6 @@ class Bluetooth: NSObject {
 
     static let beacon = Bluetooth()
     static var delegate: BTDelegate!
-    static var id: UInt64!
     static var peripheral: CBPeripheralManager!
     static var central: CBCentralManager!
     static var scanning: Bool = false
@@ -46,12 +45,11 @@ class Bluetooth: NSObject {
     // start advertising, using the service uuid combination that cooresponds to our id.
     private static func advertise() {
         peripheral.startAdvertising([
-            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: id),
+            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: AppLogic.getBluetoothId()),
         ])
     }
 
     static func startAdvertising() -> Bool {
-        if Bluetooth.id == nil { return false }
         if advertising { return true }
         advertising = true
         if peripheral == nil {
