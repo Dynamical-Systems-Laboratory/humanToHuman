@@ -20,7 +20,9 @@ public final class ScanActivity extends AppCompatActivity {
   Switch scanSwitch;
   Switch onlyWifiSwitch;
   Button settingsButton;
+  TextView anonymousId;
   TextView experimentDescription;
+  boolean silent = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +32,13 @@ public final class ScanActivity extends AppCompatActivity {
     settingsButton = findViewById(R.id.scanSettingsButton);
     experimentDescription = findViewById(R.id.scanExperimentDescription);
     onlyWifiSwitch = findViewById(R.id.wifi);
+    anonymousId = findViewById(R.id.scanAnonymousId);
 
     AppLogic.startup(this);
 
     scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+      if (silent) return;
+
       if (checked) {
         System.err.println("Starting bluetooth");
         startCollectingData(this);
@@ -54,45 +59,77 @@ public final class ScanActivity extends AppCompatActivity {
 
     onlyWifiSwitch.setChecked(getOnlyWifi());
 
+    silent = true;
     experimentDescription.setText(getDescriptionText());
     switch (getAppState()) {
       case APPSTATE_NO_EXPERIMENT:
         scanSwitch.setEnabled(false);
         scanSwitch.setChecked(false);
+        anonymousId.setText("ID: No ID yet");
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
         break;
       case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(true);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
         break;
       case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(false);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
         break;
-      default:
+      case APPSTATE_LOGGING_IN:
+      case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
         scanSwitch.setEnabled(false);
         scanSwitch.setChecked(false);
+        break;
+      case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        break;
+      default:
+        throw new RuntimeException("Unknown state");
     }
+    silent = false;
   }
 
   @Override
   protected void onResume() {
     super.onResume();
 
+    silent = true;
     experimentDescription.setText(getDescriptionText());
     switch (getAppState()) {
-    case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-      scanSwitch.setEnabled(true);
-      scanSwitch.setChecked(true);
-      break;
-    case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-      scanSwitch.setEnabled(true);
-      scanSwitch.setChecked(false);
-      break;
-    default:
-      scanSwitch.setEnabled(false);
-      scanSwitch.setChecked(false);
+      case APPSTATE_NO_EXPERIMENT:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+        anonymousId.setText("ID: No ID yet");
+        break;
+      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+        scanSwitch.setEnabled(true);
+        scanSwitch.setChecked(true);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        break;
+      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+        scanSwitch.setEnabled(true);
+        scanSwitch.setChecked(false);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        break;
+      case APPSTATE_LOGGING_IN:
+      case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+        break;
+      case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        break;
+      default:
+        throw new RuntimeException("Unknown state");
     }
+    silent = false;
   }
 }

@@ -18,7 +18,6 @@ class SettingsController: UIViewController {
 
     override func viewDidLoad() {
         print("settings controller loading...")
-        baseurlField.text = "http://192.168.1.151:8080/experiment/password"
         
         switch AppLogic.getAppState() {
         case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
