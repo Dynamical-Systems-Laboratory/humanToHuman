@@ -4,15 +4,20 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
+import com.polito.humantohuman.Activities.PolicyActivity;
 import com.polito.humantohuman.utils.Polyfill;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +29,7 @@ public class Server extends Service {
   public static Polyfill.Supplier<ArrayList<Database.Row>> supplier;
   public static Listener<JSONObject> listener;
   public static final SimpleDateFormat format =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
+      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US);
   public static RequestQueue requestQueue;
 
   @Nullable
@@ -46,9 +51,14 @@ public class Server extends Service {
     Runnable runner = new Runnable() {
       @Override
       public void run() {
+        if (!AppLogic.shouldUpload()) {
+          handler.postDelayed(this, 1000 * 60);
+          return;
+        }
+
         ArrayList<Database.Row> rows = supplier.get();
         if (rows == null) {
-          handler.postDelayed(this, 3000);
+          handler.postDelayed(this, 1000 * 60);
           return;
         }
 
@@ -58,17 +68,17 @@ public class Server extends Service {
             (response)
                 -> {
               listener.onFinish(response, null);
-              handler.postDelayed(this, 3000);
+              handler.postDelayed(this, 1000 * 60);
             },
             (error) -> {
               listener.onFinish(null, error);
-              handler.postDelayed(this, 3000);
+              handler.postDelayed(this, 1000 * 60);
             });
 
         requestQueue.add(request);
       }
     };
-    handler.postDelayed(runner, 3000);
+    handler.postDelayed(runner, 1000 * 60);
 
     return Service.START_STICKY;
   }

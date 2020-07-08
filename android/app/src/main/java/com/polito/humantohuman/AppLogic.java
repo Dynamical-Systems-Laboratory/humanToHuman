@@ -5,6 +5,9 @@ import static com.polito.humantohuman.utils.Polyfill.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,11 +25,16 @@ public class AppLogic {
   private static String serverURL;
   private static int appState;
   private static long bluetoothId;
+  private static boolean onlyWifi;
   private static ArrayList<Database.Row> devices;
+  private static WifiManager wifiManager;
 
   public static void startup(Context context) {
     initializeDatabase(context);
     Server.initializeServer(context);
+    wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    Long onlyWifiNullable = getPropNumeric(KEY_ONLY_WIFI);
+    onlyWifi = onlyWifiNullable != null && onlyWifiNullable == 1;
 
     Long appStateNullable = getPropNumeric(KEY_APPSTATE);
     long appStateLong =
@@ -68,6 +76,19 @@ public class AppLogic {
   private static void setAppState(int state) {
     appState = state;
     setPropNumeric(KEY_APPSTATE, appState);
+  }
+
+  public static boolean shouldUpload() {
+    return !onlyWifi || isWifiConnected();
+  }
+
+  public static boolean getOnlyWifi() {
+    return onlyWifi;
+  }
+
+  public static void setOnlyWifi(boolean value) {
+    onlyWifi = value;
+    setPropNumeric(KEY_ONLY_WIFI, onlyWifi ? 1 : 0);
   }
 
   public static long getBluetoothID() {
@@ -179,5 +200,25 @@ public class AppLogic {
         cb.accept(null);
       }
     });
+  }
+
+  public static void rejectPrivacyPolicy() {
+    if (appState == APPSTATE_LOGGING_IN || appState == APPSTATE_NO_EXPERIMENT)
+      throw new RuntimeException("no privacy policy to reject!");
+
+    setAppState(APPSTATE_NO_EXPERIMENT);
+  }
+
+
+  /**
+   * Check if the wifi is connected or not
+   * @return whether or not wifi is connected
+   */
+  public static boolean isWifiConnected() {
+    if(wifiManager.isWifiEnabled()) {
+      WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+      return wifiInfo.getNetworkId() != -1;
+    }
+    return false;
   }
 }

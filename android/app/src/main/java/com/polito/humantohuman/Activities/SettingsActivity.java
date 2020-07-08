@@ -64,4 +64,23 @@ public class SettingsActivity extends AppCompatActivity {
           });
     });
   }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    switch (AppLogic.getAppState()) {
+      case AppLogic.APPSTATE_NO_EXPERIMENT:
+        setServerButton.setEnabled(true);
+        privacyPolicyButton.setEnabled(false);
+        break;
+      case AppLogic.APPSTATE_LOGGING_IN:
+        setServerButton.setEnabled(false);
+        privacyPolicyButton.setEnabled(false);
+        break;
+      default:
+        setServerButton.setEnabled(false);
+        privacyPolicyButton.setEnabled(true);
+    }
+  }
 }

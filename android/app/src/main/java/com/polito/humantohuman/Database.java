@@ -21,6 +21,7 @@ public class Database extends SQLiteOpenHelper {
   public static int KEY_EXPERIMENT_DESCRIPTION = 6;
   public static int KEY_SERVER_BASE_URL = 7;
   public static int KEY_APPSTATE = 8;
+  public static final int KEY_ONLY_WIFI = 9;
   private static Database database;
 
   Database(@Nullable Context context) { super(context, "database", null, 1); }

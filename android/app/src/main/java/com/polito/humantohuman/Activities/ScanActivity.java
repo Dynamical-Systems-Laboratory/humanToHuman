@@ -18,6 +18,7 @@ import java.util.*;
 public final class ScanActivity extends AppCompatActivity {
 
   Switch scanSwitch;
+  Switch onlyWifiSwitch;
   Button settingsButton;
   TextView experimentDescription;
 
@@ -28,28 +29,9 @@ public final class ScanActivity extends AppCompatActivity {
     scanSwitch = findViewById(R.id.service_running);
     settingsButton = findViewById(R.id.scanSettingsButton);
     experimentDescription = findViewById(R.id.scanExperimentDescription);
+    onlyWifiSwitch = findViewById(R.id.wifi);
 
     AppLogic.startup(this);
-
-    switch (getAppState()) {
-    case APPSTATE_NO_EXPERIMENT:
-      scanSwitch.setEnabled(false);
-      scanSwitch.setChecked(false);
-      Intent intent = new Intent(this, SettingsActivity.class);
-      startActivity(intent);
-      break;
-    case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-      scanSwitch.setEnabled(true);
-      scanSwitch.setChecked(true);
-      break;
-    case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-      scanSwitch.setEnabled(true);
-      scanSwitch.setChecked(false);
-      break;
-    default:
-      scanSwitch.setEnabled(false);
-      scanSwitch.setChecked(false);
-    }
 
     scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
       if (checked) {
@@ -66,12 +48,39 @@ public final class ScanActivity extends AppCompatActivity {
       startActivity(intent);
     });
 
+    onlyWifiSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+      setOnlyWifi(checked);
+    });
+
+    onlyWifiSwitch.setChecked(getOnlyWifi());
+
     experimentDescription.setText(getDescriptionText());
+    switch (getAppState()) {
+      case APPSTATE_NO_EXPERIMENT:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        break;
+      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+        scanSwitch.setEnabled(true);
+        scanSwitch.setChecked(true);
+        break;
+      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+        scanSwitch.setEnabled(true);
+        scanSwitch.setChecked(false);
+        break;
+      default:
+        scanSwitch.setEnabled(false);
+        scanSwitch.setChecked(false);
+    }
   }
 
   @Override
   protected void onResume() {
     super.onResume();
+
+    experimentDescription.setText(getDescriptionText());
     switch (getAppState()) {
     case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
       scanSwitch.setEnabled(true);
