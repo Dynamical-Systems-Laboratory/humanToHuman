@@ -9,8 +9,8 @@
         android:id="@+id/settingsSetServerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="244dp"
-        android:layout_marginTop="155dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="220dp"
         android:text="Set URL"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,27 +29,18 @@
         android:id="@+id/settingsExitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="34dp"
-        android:layout_marginEnd="70dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/settingsServerErrorText"
-        android:layout_width="305dp"
-        android:layout_height="86dp"
-        android:layout_marginTop="228dp"
-        app:layout_constraintEnd_toEndOf="@+id/settingsSetServerButton"
-        app:layout_constraintStart_toStartOf="@+id/settingsSetServerEditText"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/settingsPrivacyPolicyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="385dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="40dp"
         android:text="Privacy Policy"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

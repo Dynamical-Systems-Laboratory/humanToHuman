@@ -15,7 +15,6 @@ public class SettingsActivity extends AppCompatActivity {
   Button setServerButton;
   Button privacyPolicyButton;
   TextView setServerEditText;
-  TextView serverErrorText;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,6 @@ public class SettingsActivity extends AppCompatActivity {
     exitButton.setOnClickListener((view) -> this.finish());
     setServerEditText = findViewById(R.id.settingsSetServerEditText);
     setServerButton = findViewById(R.id.settingsSetServerButton);
-    serverErrorText = findViewById(R.id.settingsServerErrorText);
     privacyPolicyButton = findViewById(R.id.settingsPrivacyPolicyButton);
 
     switch (AppLogic.getAppState()) {
@@ -54,9 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
           setServerEditText.getText().toString(), (error) -> {
             if (error != null) {
               setServerButton.setEnabled(true);
-              serverErrorText.setText(error.toString());
             } else {
-              serverErrorText.setText("SUCCESS!");
               Intent intent = new Intent(this, PolicyActivity.class);
               startActivity(intent);
               finish();

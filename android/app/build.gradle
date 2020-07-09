@@ -6,7 +6,7 @@ android {
         applicationId "com.polito.humantohuman"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 11
+        versionCode 13
         versionName '1.07'
     }
     buildTypes {
