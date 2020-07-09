@@ -41,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
         setServerButton.setEnabled(false);
         privacyPolicyButton.setEnabled(true);
     }
-    setServerEditText.setText("http://192.168.1.151:8080/experiment/password"); // TODO remove this
+//    setServerEditText.setText("http://192.168.1.151:8080/experiment/password"); // TODO remove this
 
     privacyPolicyButton.setOnClickListener((view) -> {
       Intent intent = new Intent(this, PolicyActivity.class);
