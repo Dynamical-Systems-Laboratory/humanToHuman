@@ -131,9 +131,9 @@ public class AppLogic {
     return getPropText(KEY_PRIVACY_POLICY);
   }
 
-  public static String getDescriptionText() {
+  public static String getDescriptionText(Context ctx) {
     if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
-      return "DEFAULT DESCRIPTION: HELLO WORLD!\n";
+      return ctx.getString(R.string.app_text);
     return getPropText(KEY_EXPERIMENT_DESCRIPTION);
   }
 

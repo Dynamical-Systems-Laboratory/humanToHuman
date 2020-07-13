@@ -5,6 +5,7 @@ import static com.polito.humantohuman.AppLogic.*;
 import android.content.*;
 import android.os.*;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.widget.*;
 import com.polito.humantohuman.*;
 import com.polito.humantohuman.utils.Polyfill;
@@ -60,14 +61,11 @@ public final class ScanActivity extends AppCompatActivity {
     onlyWifiSwitch.setChecked(getOnlyWifi());
 
     silent = true;
-    experimentDescription.setText(getDescriptionText());
     switch (getAppState()) {
       case APPSTATE_NO_EXPERIMENT:
         scanSwitch.setEnabled(false);
         scanSwitch.setChecked(false);
         anonymousId.setText("ID: No ID yet");
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
         break;
       case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
         scanSwitch.setEnabled(true);
@@ -100,7 +98,7 @@ public final class ScanActivity extends AppCompatActivity {
     super.onResume();
 
     silent = true;
-    experimentDescription.setText(getDescriptionText());
+    experimentDescription.setText(Html.fromHtml(getDescriptionText(this)));
     switch (getAppState()) {
       case APPSTATE_NO_EXPERIMENT:
         scanSwitch.setEnabled(false);
