@@ -23,7 +23,15 @@ public final class ScanActivity extends AppCompatActivity {
   Button settingsButton;
   TextView anonymousId;
   TextView experimentDescription;
-  boolean silent = false;
+  CompoundButton.OnCheckedChangeListener scanSwitchListener = (buttonView, checked) -> {
+    if (checked) {
+      System.err.println("Starting bluetooth");
+      startCollectingData(this);
+    } else {
+      System.err.println("Stopping bluetooth");
+      stopCollectingData(this);
+    }
+  };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +44,7 @@ public final class ScanActivity extends AppCompatActivity {
     anonymousId = findViewById(R.id.scanAnonymousId);
 
     AppLogic.startup(this);
-
-    scanSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
-      if (silent) return;
-
-      if (checked) {
-        System.err.println("Starting bluetooth");
-        startCollectingData(this);
-      } else {
-        System.err.println("Stopping bluetooth");
-        stopCollectingData(this);
-      }
-    });
+    scanSwitch.setOnCheckedChangeListener(scanSwitchListener);
 
     settingsButton.setOnClickListener((view) -> {
       Intent intent = new Intent(this, SettingsActivity.class);
@@ -59,46 +56,14 @@ public final class ScanActivity extends AppCompatActivity {
     });
 
     onlyWifiSwitch.setChecked(getOnlyWifi());
-
-    silent = true;
-    switch (getAppState()) {
-      case APPSTATE_NO_EXPERIMENT:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        anonymousId.setText("ID: No ID yet");
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(true);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(false);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
-        break;
-      case APPSTATE_LOGGING_IN:
-      case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        break;
-      case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
-        break;
-      default:
-        throw new RuntimeException("Unknown state");
-    }
-    silent = false;
   }
 
   @Override
   protected void onResume() {
     super.onResume();
 
-    silent = true;
     experimentDescription.setText(Html.fromHtml(getDescriptionText(this)));
+    scanSwitch.setOnCheckedChangeListener(null);
     switch (getAppState()) {
       case APPSTATE_NO_EXPERIMENT:
         scanSwitch.setEnabled(false);
@@ -128,6 +93,6 @@ public final class ScanActivity extends AppCompatActivity {
       default:
         throw new RuntimeException("Unknown state");
     }
-    silent = false;
+    scanSwitch.setOnCheckedChangeListener(scanSwitchListener);
   }
 }

@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context=".Activities.ScanActivity">
 
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="80dp"
@@ -16,22 +17,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanAnonymousId"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon1" />
 
     <TextView
         android:id="@+id/scanAnonymousId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="137dp"
+        android:layout_height="29dp"
         android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="44dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/imageView3"
+        app:layout_constraintHorizontal_bias="0.003"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -103,6 +102,7 @@
             android:layout_marginVertical="2dp">
 
             <TextView
+                android:textSize="16sp"
                 android:id="@+id/scanExperimentDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
