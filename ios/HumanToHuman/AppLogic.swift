@@ -23,6 +23,7 @@ class AppLogic {
     private static var appState : Int = APPSTATE_NO_EXPERIMENT
     private static var serverURL : String = ""
     private static var bluetoothId : UInt64 = 0
+    private static var token : String = ""
     private static var data : Data? = nil
     
     static func startup() {
@@ -37,7 +38,7 @@ class AppLogic {
             
             print("Sending data in the background")
             if data == nil {
-                data = Server.formatConnectionData(id: bluetoothId, rows: Database.popRows())
+                data = Server.formatConnectionData(id: bluetoothId, token: token, rows: Database.popRows())
                 if data == nil {
                     task.setTaskCompleted(success: true)
                 }
@@ -62,6 +63,7 @@ class AppLogic {
             
             if appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
                 bluetoothId = Database.getPropNumeric(prop: KEY_OWN_ID)!
+                token = Database.getPropText(prop: KEY_TOKEN)!
             }
         
             if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
@@ -240,16 +242,18 @@ class AppLogic {
     }
     
     static func acceptPrivacyPolicy(callback: @escaping (String?) -> Void) {
-        Server.getUserId() { uid in
+        Server.getUserId() { uid, tokenOrError in
             guard let uid = uid else {
-                callback("Failed to get uid from server")
+                callback("Failed to get uid from server (\(tokenOrError))")
                 setAppState(APPSTATE_NO_EXPERIMENT)
                 return
             }
 
             print("Got bluetooth id: \(uid)")
             bluetoothId = uid
+            token = tokenOrError
             Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(uid))
+            Database.setPropText(prop: KEY_TOKEN, value: tokenOrError)
             setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
             callback(nil)
         }

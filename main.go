@@ -1,53 +1,43 @@
 package main
 
 import (
+	"flag"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/web"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/acme/autocert"
 	"log"
+	"net/http"
 )
-
-type Flags struct {
-	Release   bool
-	Password  *string
-	Dbconnstr string
-	Port      *string
-}
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	var flags Flags
 
-	flags.Dbconnstr = "user=humantohuman password=humantohuman sslmode=disable host=localhost dbname=humantohuman"
+	release := flag.Bool("release", false, "whether or not to run in release mode")
+	password := flag.String("password", "", "password for the server")
+	dbconnstr := flag.String("dbconnstr", "user=humantohuman password=humantohuman sslmode=disable host=localhost dbname=humantohuman", "database connection string")
+	port := flag.String("port", ":443", "port of the server")
+	domain := flag.String("domain", "", "domain of the server, to use for HTTPS")
 
-	err := utils.ArgParseGlobal(&flags)
-	utils.FailIf(err, "Argument parsing failed")
+	if *release {
+		if *password == "" {
+			utils.Fail("password required for initial authentification!")
+		}
 
-	port := ":8080"
-	if flags.Port != nil {
-		port = *flags.Port
-	}
-
-	if flags.Release && flags.Password == nil {
-		utils.Fail("password required for initial authentification!")
-	}
-
-	if flags.Release {
 		gin.SetMode(gin.ReleaseMode)
 		web.Release = true
 		var err error
-		web.PasswordHash, err = utils.HashPassword(*flags.Password)
+		web.PasswordHash, err = utils.HashPassword(*password)
 		utils.FailIf(err, "failed to hash provided password")
+		*password = ""
 	}
 
 	router := gin.Default()
 
-	database.ConnectToDb(flags.Dbconnstr)
+	database.ConnectToDb(*dbconnstr)
 
-	router.GET("/clear", func(c *gin.Context) {
-		web.JsonInfer(c, nil, database.Clear())
-	})
+	router.GET("/clear", web.Clear)
 	router.GET("/clearConnections", func(c *gin.Context) {
 		web.JsonInfer(c, nil, database.ClearConnections())
 	})
@@ -61,5 +51,14 @@ func main() {
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.POST("/experiment/:experiment/addConnectionsUnsafe", web.AddConnectionsUnsafe)
 
-	router.Run(port)
+	if *port != ":443" {
+		if *domain != "" {
+			utils.Fail("can't do https encryption on port other than 443")
+		}
+		err := router.Run(*port)
+		utils.FailIf(err, "why did this fail?")
+	} else {
+		err := http.Serve(autocert.NewListener(*domain), router)
+		utils.FailIf(err, "why did this fail?")
+	}
 }

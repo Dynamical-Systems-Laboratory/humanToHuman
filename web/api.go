@@ -32,6 +32,26 @@ var (
 	TooManyAuthMethods = errors.New("gave too many authorization methods")
 )
 
+func Clear(c *gin.Context) {
+	if Release {
+		hash, err := utils.HashPassword(c.Query("password"))
+		if JsonFail(c, err) {
+			return
+		}
+		if hash != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	if c.Query("full") == "true" {
+		JsonInfer(c, nil, database.Clear())
+	} else {
+		JsonInfer(c, nil, database.ClearConnections())
+	}
+
+}
+
 func StringInfer(c *gin.Context, value string, err error) {
 	if err != nil {
 		utils.IError(err, "Error on path %v", c.Request.URL)

@@ -5,13 +5,11 @@ import Foundation
 // Property IDs. These are used in the database metadata table to store data.
 let KEY_OWN_ID = 0
 let KEY_CURRENT_CURSOR = 1
-let KEY_IS_RUNNING = 2
 let KEY_PRIVACY_POLICY = 3
-let KEY_ACCEPTED_PRIVACY_POLICY = 4
-let KEY_HAS_INIT_DATABASE = 5
 let KEY_EXPERIMENT_DESCRIPTION = 6
 let KEY_SERVER_BASE_URL = 7
 let KEY_APP_STATE = 8
+let KEY_TOKEN = 9
 
 // Default values for certain database metadata keys
 let VALUE_DEFAULT_EXPERIMENT_DESCRIPTION = "EXPERIMENT DESCRIPTION:\nHELLO WORLD!"

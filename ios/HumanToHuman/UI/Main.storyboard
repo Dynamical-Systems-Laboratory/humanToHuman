@@ -171,19 +171,25 @@
                                     <action selector="goBack" destination="m5y-20-ABg" eventType="touchUpInside" id="4Ga-fp-PkS"/>
                                 </connections>
                             </button>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RnC-LP-8Wj">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RnC-LP-8Wj">
                                 <rect key="frame" x="20" y="79" width="374" height="725"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tUX-j4-tIl">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tUX-j4-tIl">
                                         <rect key="frame" x="8" y="8" width="358" height="709"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="leading" secondItem="RnC-LP-8Wj" secondAttribute="leadingMargin" id="1w8-wd-Kzl"/>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="trailing" secondItem="RnC-LP-8Wj" secondAttribute="trailingMargin" id="EJd-Qv-KCv"/>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="top" secondItem="RnC-LP-8Wj" secondAttribute="topMargin" id="Gq2-QD-0Zm"/>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="centerX" secondItem="RnC-LP-8Wj" secondAttribute="centerX" id="XjQ-2T-07Z"/>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="centerY" secondItem="RnC-LP-8Wj" secondAttribute="centerY" id="a4h-eK-GKe"/>
+                                    <constraint firstItem="tUX-j4-tIl" firstAttribute="bottom" secondItem="RnC-LP-8Wj" secondAttribute="bottomMargin" id="hBi-vC-aUe"/>
+                                </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="DzL-sG-FbL"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="XL6-yF-WLJ"/>
                             </scrollView>
@@ -191,11 +197,15 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="YRu-Ky-Nw3" firstAttribute="bottom" secondItem="38E-i6-thr" secondAttribute="bottom" constant="24" id="55J-qJ-PKj"/>
+                            <constraint firstItem="RnC-LP-8Wj" firstAttribute="leading" secondItem="YRu-Ky-Nw3" secondAttribute="leading" constant="20" id="CAE-AC-Ib0"/>
+                            <constraint firstItem="Io7-5s-epW" firstAttribute="top" secondItem="RnC-LP-8Wj" secondAttribute="bottom" constant="8" id="ChL-GJ-3JE"/>
                             <constraint firstItem="n2z-Tr-7vV" firstAttribute="leading" secondItem="YRu-Ky-Nw3" secondAttribute="leading" constant="26" id="H4I-u5-UWG"/>
                             <constraint firstItem="Io7-5s-epW" firstAttribute="leading" secondItem="38E-i6-thr" secondAttribute="trailing" constant="83" id="JB7-hM-STR"/>
                             <constraint firstItem="Io7-5s-epW" firstAttribute="centerY" secondItem="38E-i6-thr" secondAttribute="centerY" id="JO3-ow-7kh"/>
                             <constraint firstItem="38E-i6-thr" firstAttribute="leading" secondItem="YRu-Ky-Nw3" secondAttribute="leading" constant="20" id="YpM-pK-q0w"/>
+                            <constraint firstItem="RnC-LP-8Wj" firstAttribute="top" secondItem="YRu-Ky-Nw3" secondAttribute="top" constant="35" id="ZJc-SN-AmW"/>
                             <constraint firstItem="n2z-Tr-7vV" firstAttribute="top" secondItem="YRu-Ky-Nw3" secondAttribute="top" id="rdE-bt-HSr"/>
+                            <constraint firstItem="RnC-LP-8Wj" firstAttribute="trailing" secondItem="9DI-Hb-TZb" secondAttribute="trailingMargin" id="zZi-LX-Kbc"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="YRu-Ky-Nw3"/>
                     </view>

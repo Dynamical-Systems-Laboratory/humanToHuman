@@ -24,30 +24,28 @@ struct IDInformation : Codable {
 
 struct Server {
     // Get a user id from the server asynchronously. The callback either gets a valid user id, or nil if the request failed.
-    static func getUserId(callback: @escaping (UInt64?) -> Void) {
+    static func getUserId(callback: @escaping (UInt64?, String) -> Void) {
         var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/addUser")!)
         request.httpMethod = "POST"
 
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
-                print("Server error: \(error?.localizedDescription ?? "No data")")
-                callback(nil)
+                callback(nil, "Server error: \(error?.localizedDescription ?? "No data")")
                 return
             }
 
             let decoder = JSONDecoder()
             guard let idInformation = try? decoder.decode(IDInformation.self, from: data) else {
-                print("Failed to parse data from API")
-                callback(nil)
+                callback(nil, "Failed to parse data from API")
                 return
             }
 
-            callback(idInformation.id)
+            callback(idInformation.id, idInformation.token)
         }.resume()
     }
 
     // Format connection data for use when sending a request. Returns nil if the list given is empty
-    static func formatConnectionData(id: UInt64, rows: [Row]) -> Data? {
+    static func formatConnectionData(id: UInt64, token: String, rows: [Row]) -> Data? {
         if rows.count == 0 {
             return nil
         }
@@ -63,6 +61,7 @@ struct Server {
 
         return try! JSONSerialization.data(withJSONObject: [
             "id": id,
+            "token": token,
             "connections": jsonRows,
         ])
     }
