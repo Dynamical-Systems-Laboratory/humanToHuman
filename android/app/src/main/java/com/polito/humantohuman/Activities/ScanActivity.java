@@ -64,6 +64,7 @@ public final class ScanActivity extends AppCompatActivity {
 
     experimentDescription.setText(Html.fromHtml(getDescriptionText(this)));
     scanSwitch.setOnCheckedChangeListener(null);
+    System.err.println("appstate is: " + getAppState());
     switch (getAppState()) {
       case APPSTATE_NO_EXPERIMENT:
         scanSwitch.setEnabled(false);

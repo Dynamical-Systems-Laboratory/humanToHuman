@@ -8,6 +8,7 @@
 
 import Foundation
 import BackgroundTasks
+import UIKit
 
 
 let APPSTATE_EXPERIMENT_RUNNING_COLLECTING = 0
@@ -88,19 +89,51 @@ class AppLogic {
         return bluetoothId
     }
     
-    static func getDescription() -> String {
+    static func getDescription() -> NSAttributedString {
+        let descriptionString : String
         if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN {
-            return ""
+            descriptionString = """
+            <p><strong>What is this App?</strong></p>
+            <p><span>This App has been developed by the Dynamical Systems Lab @ NYU and the PoliTo Complex System Lab to study the dynamics of close-range interaction between people. </span></p>
+            <p><span style="font-weight: 400;">Our goal is to model and identify the dynamics of interactions in real-world contexts using temporal network frameworks. </span></p>
+            <p><strong>How does it work?</strong></p>
+            <p><span style="font-weight: 400;">This App will use the Bluetooth antenna of your smartphone to infer the distance to other participants&rsquo; phones without interfering with the normal use of any other device such as earphones, smartwatches, etc. and to collect the interaction time and intensity through the analysis of the Bluetooth signal. </span></p>
+            <p><span style="font-weight: 400;">The app interface is essential and is optimized to save battery life and guarantee the normal performance of your phone. </span></p>
+            <p><span style="font-weight: 400;">All data are anonymised and securely stored in servers at the Polytechnic of Torino.</span></p>
+            <p><strong>How do I connect to a server?</strong></p>
+            <p><span style="font-weight: 400;">Please go into Settings and type in the server URL in the text box, then press the &ldquo;SET URL&rdquo; button.</span></p>
+            <p><strong>How will data be transmitted to our servers?</strong></p>
+            <p><span style="font-weight: 400;">We give you the option to turn on and off the Bluetooth data collection and the option to send data to our server only through WiFi or using your mobile plan.</span></p>
+            <p><strong>What will you do with the data?</strong></p>
+            <p><span style="font-weight: 400;">All the data will be analysed and anonymously used for research activity in the field of temporal networks and interaction dynamics.</span></p>
+            <p><strong>Contacts:</strong></p>
+            <p><span style="font-weight: 400;">PoliTo Complex System Laboratory</span></p>
+            <p><span style="font-weight: 400;">Politecnico di Torino, Corso Duca degli Abruzzi 24, Torino, Italy</span></p>
+            <p><a href="mailto:xxxxxx@xxxx.xx"><span style="font-weight: 400;">humantohuman.polito@gmail.com</span></a></p>
+            <p><span style="font-weight: 400;">Head of Laboratory: Professor Alessandro Rizzo</span></p>
+            <p><span style="font-weight: 400;">Realized by: Albert Liu, Hugo Ramon Pascual, Francesco Vincenzo Surano</span></p>
+            <p><span style="font-weight: 400;">Funded under the projects:</span></p>
+            <p style="font-weight: 400;"><em><span style="font-weight: 400;">&ldquo;Hacking a complex world: unraveling the machanism underlying complex social and technological phenomena&rdquo;, </span></em><span style="font-weight: 400;">awarded</span> <span style="font-weight: 400;">by Compagnia di San Paolo. </span></p>
+            <p style="font-weight: 400;"><span style="font-weight: 400;"><em>&ldquo;Macro to Micro: uncovering the hidden mechanisms driving network dynamics&rdquo;</em> (Mac2Mic), awarded by the Italian Ministry of Foreign Affairs and International Cooperation in the framework of the bilateral Italy-Israel scientific cooperation agreement. </span></p>
+            """
+        } else {
+            descriptionString = Database.getPropText(prop: KEY_EXPERIMENT_DESCRIPTION)!
         }
-        return Database.getPropText(prop: KEY_EXPERIMENT_DESCRIPTION)!
+        let htmlData = NSString(string: descriptionString).data(using: String.Encoding.unicode.rawValue)!
+        
+        let str = try! NSMutableAttributedString(data: htmlData, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+        str.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.label, range: NSRange(location: 0, length: str.length))
+        return str
     }
     
-    static func getPolicy() -> String {
+    static func getPolicy() -> NSAttributedString {
         if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN {
             print("we don't have a privacy policy to display!")
             exit(1)
         }
-        return Database.getPropText(prop: KEY_PRIVACY_POLICY)!
+        let policyString = Database.getPropText(prop: KEY_PRIVACY_POLICY)!
+        let htmlData = NSString(string: policyString).data(using: String.Encoding.unicode.rawValue)
+        return try! NSAttributedString(data: htmlData!, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
     }
     
     static func startCollectingData() {

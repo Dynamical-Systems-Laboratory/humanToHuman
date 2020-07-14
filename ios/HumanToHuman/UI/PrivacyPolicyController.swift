@@ -17,7 +17,7 @@ class PrivacyPolicyController: UIViewController {
     override func viewDidLoad() {
         print("privacy policy controller loading...")
         privacyPolicy.isEditable = false
-        privacyPolicy.text = AppLogic.getPolicy()
+        privacyPolicy.attributedText = AppLogic.getPolicy()
         
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:

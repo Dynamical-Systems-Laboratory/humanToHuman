@@ -8,8 +8,11 @@ class MainController: UIViewController {
 
     override func viewDidLoad() {
         print("main controller loading...")
-        experimentDescription.isEditable = false
-        experimentDescription.text = AppLogic.getDescription()
+        
+        experimentDescription.attributedText = AppLogic.getDescription()
+        if #available(iOS 13.0, *) {
+            experimentDescription.textColor = .label
+        }
         
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:
@@ -27,7 +30,7 @@ class MainController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        experimentDescription.text = AppLogic.getDescription()
+        experimentDescription.attributedText = AppLogic.getDescription()
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:
             idLabel.text = "ID: No id yet"
