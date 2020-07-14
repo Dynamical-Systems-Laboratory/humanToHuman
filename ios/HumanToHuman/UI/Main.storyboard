@@ -90,8 +90,8 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Kg-5n-EgM">
-                                <rect key="frame" x="33" y="420" width="95" height="30"/>
-                                <state key="normal" title="privacy policy"/>
+                                <rect key="frame" x="33" y="420" width="91" height="30"/>
+                                <state key="normal" title="consent form"/>
                                 <connections>
                                     <action selector="goToPrivacyPolicy" destination="m5t-BW-zxg" eventType="touchUpInside" id="Tj7-FX-2AX"/>
                                 </connections>

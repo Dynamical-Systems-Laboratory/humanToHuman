@@ -88,14 +88,14 @@ struct Server {
         }.resume()
     }
     
-    static func removeUser(callback: @escaping () -> Void) {
+    static func removeUser(callback: @escaping (String?) -> Void) {
         var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/removeUser")!)
         request.httpMethod = "POST"
         request.httpBody = "token=\(AppLogic.getToken())".data(using: .utf8)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
-                print(error?.localizedDescription ?? "No data")
+                callback(error?.localizedDescription ?? "No data")
                 return
             }
 
@@ -104,7 +104,9 @@ struct Server {
                 print("LOG `Util/Server.swift:\(#line)` got response: \(responseJSON)")
             }
             if let response = response as? HTTPURLResponse, response.statusCode == 200 {
-                callback()
+                callback(nil)
+            } else {
+                callback("got non-success response code \((response as? HTTPURLResponse)?.statusCode ?? -1)")
             }
         }.resume()
     }

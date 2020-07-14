@@ -42,13 +42,15 @@ class PrivacyPolicyController: UIViewController {
             return
         }
         
-        let refreshAlert = UIAlertController(title: "Ignore Privacy Policy",
+        let refreshAlert = UIAlertController(title: "Ignore Consent Form",
                                              message: "You'll be kicked from the experiment.",
                                              preferredStyle: UIAlertController.Style.alert)
         
         refreshAlert.addAction(UIAlertAction(title: "Leave", style: .default, handler: { (action: UIAlertAction!) in
-            AppLogic.leaveExperiment()
-            self.dismiss(animated: true, completion: nil)
+            AppLogic.ignorePrivacyPolicy()
+            DispatchQueue.main.async {
+                self.dismiss(animated: true, completion: nil)
+            }
         }))
 
         refreshAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in }))
@@ -73,13 +75,21 @@ class PrivacyPolicyController: UIViewController {
                 }
             }
         } else {
-            let refreshAlert = UIAlertController(title: "Revoke Privacy Policy",
+            let refreshAlert = UIAlertController(title: "Revoke Consent Form",
                                                  message: "You'll be kicked from the experiment.",
                                                  preferredStyle: UIAlertController.Style.alert)
             
             refreshAlert.addAction(UIAlertAction(title: "Leave", style: .default, handler: { (action: UIAlertAction!) in
-                AppLogic.leaveExperiment()
-                self.dismiss(animated: true, completion: nil)
+                AppLogic.leaveExperiment() { str in
+                    DispatchQueue.main.async {
+                        if let str = str {
+                            print("Exiting experiment failed (\(str))")
+                            self.privacyPolicySwitch.isOn = true
+                        } else {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    }
+                }
             }))
 
             refreshAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in

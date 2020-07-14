@@ -198,7 +198,7 @@ func RemoveUser(token string) error {
 		RunWith(globalDb).
 		QueryRow()
 
-	var deviceId uint32
+	var deviceId int64
 	err = row.Scan(&deviceId)
 	if err != nil {
 		return err

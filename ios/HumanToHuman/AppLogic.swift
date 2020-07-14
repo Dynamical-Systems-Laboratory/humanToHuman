@@ -134,7 +134,15 @@ class AppLogic {
         let htmlData = NSString(string: descriptionString).data(using: String.Encoding.unicode.rawValue)!
         
         let str = try! NSMutableAttributedString(data: htmlData, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
-        str.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.label, range: NSRange(location: 0, length: str.length))
+        
+        let fgColor : UIColor
+        if #available(iOS 13.0, *) {
+            fgColor = .label
+        } else {
+            fgColor = .black
+        }
+        
+        str.addAttribute(NSAttributedString.Key.foregroundColor, value: fgColor, range: NSRange(location: 0, length: str.length))
         return str
     }
     
@@ -143,9 +151,20 @@ class AppLogic {
             print("we don't have a privacy policy to display!")
             exit(1)
         }
+        
         let policyString = Database.getPropText(prop: KEY_PRIVACY_POLICY)!
-        let htmlData = NSString(string: policyString).data(using: String.Encoding.unicode.rawValue)
-        return try! NSAttributedString(data: htmlData!, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+        let htmlData = NSString(string: policyString).data(using: String.Encoding.unicode.rawValue)!
+        let str = try! NSMutableAttributedString(data: htmlData, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
+        
+        let fgColor : UIColor
+        if #available(iOS 13.0, *) {
+            fgColor = .label
+        } else {
+            fgColor = .black
+        }
+        
+        str.addAttribute(NSAttributedString.Key.foregroundColor, value: fgColor, range: NSRange(location: 0, length: str.length))
+        return str
     }
     
     static func startCollectingData() {
@@ -243,15 +262,23 @@ class AppLogic {
         })
     }
     
+    static func ignorePrivacyPolicy() {
+        if appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
+            print("should be using leave experiment, not ignorePrivacyPolicy")
+            exit(1)
+        }
+        setAppState(APPSTATE_NO_EXPERIMENT)
+    }
+    
     static func leaveExperiment(callback: @escaping (String?) -> Void) {
         if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             Bluetooth.stopScanning()
             Bluetooth.stopAdvertising()
         }
         setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
-        Server.removeUser {
+        Server.removeUser { str in
             setAppState(APPSTATE_NO_EXPERIMENT)
-            callback(nil)
+            callback(str)
         }
     }
     
