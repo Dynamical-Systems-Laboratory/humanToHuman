@@ -19,6 +19,7 @@ func main() {
 	dbconnstr := flag.String("dbconnstr", "user=humantohuman password=humantohuman sslmode=disable host=localhost dbname=humantohuman", "database connection string")
 	port := flag.String("port", ":443", "port of the server")
 	domain := flag.String("domain", "", "domain of the server, to use for HTTPS")
+	flag.Parse()
 
 	if *release {
 		if *password == "" {
@@ -50,7 +51,7 @@ func main() {
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.POST("/experiment/:experiment/addConnectionsUnsafe", web.AddConnectionsUnsafe)
 
-	if *port != ":443" {
+	if *port != ":443" || *domain == "" {
 		if *domain != "" {
 			utils.Fail("can't do https encryption on port other than 443")
 		}

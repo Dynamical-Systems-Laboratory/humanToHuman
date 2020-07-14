@@ -36,7 +36,7 @@ struct Server {
 
             let decoder = JSONDecoder()
             guard let idInformation = try? decoder.decode(IDInformation.self, from: data) else {
-                callback(nil, "Failed to parse data from API")
+                callback(nil, "Failed to parse data from API: '\(String(data: data, encoding: .utf8) ?? "")'")
                 return
             }
 
@@ -71,6 +71,27 @@ struct Server {
         var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/addConnections")!)
         request.httpMethod = "POST"
         request.httpBody = data
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print(error?.localizedDescription ?? "No data")
+                return
+            }
+
+            let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
+            if let responseJSON = responseJSON as? [String: Any] {
+                print("LOG `Util/Server.swift:\(#line)` got response: \(responseJSON)")
+            }
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                callback()
+            }
+        }.resume()
+    }
+    
+    static func removeUser(callback: @escaping () -> Void) {
+        var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/removeUser")!)
+        request.httpMethod = "POST"
+        request.httpBody = "token=\(AppLogic.getToken())".data(using: .utf8)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {

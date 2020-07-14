@@ -84,11 +84,21 @@ class AppLogic {
     }
     
     static func getBluetoothId() -> UInt64 {
-        if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN {
+        if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN
+        || appState == APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
             print("No id to get!")
             exit(1)
         }
         return bluetoothId
+    }
+    
+    static func getToken() -> String {
+        if appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN
+            || appState == APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
+            print("No token to get!")
+            exit(1)
+        }
+        return token
     }
     
     static func getDescription() -> NSAttributedString {
@@ -233,12 +243,16 @@ class AppLogic {
         })
     }
     
-    static func leaveExperiment() {
+    static func leaveExperiment(callback: @escaping (String?) -> Void) {
         if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             Bluetooth.stopScanning()
             Bluetooth.stopAdvertising()
         }
-        setAppState(APPSTATE_NO_EXPERIMENT)
+        setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
+        Server.removeUser {
+            setAppState(APPSTATE_NO_EXPERIMENT)
+            callback(nil)
+        }
     }
     
     static func acceptPrivacyPolicy(callback: @escaping (String?) -> Void) {
