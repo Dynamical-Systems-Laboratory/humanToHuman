@@ -186,6 +186,40 @@ func InsertUser(password string) (uint64, string, error) {
 	return id, token, nil
 }
 
+func RemoveUser(token string) error {
+	hashed, err := utils.HashPassword(token)
+	if err != nil {
+		return err
+	}
+
+	row := psql.Select("id").
+		From("devices").
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var deviceId uint32
+	err = row.Scan(&deviceId)
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Delete("connections").
+		Where(sq.Or{sq.Eq{"device_a": deviceId}, sq.Eq{"device_b": deviceId}}).
+		RunWith(globalDb).
+		Exec()
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Delete("devices").
+		Where(sq.Eq{"id": deviceId}).
+		RunWith(globalDb).
+		Exec()
+
+	return err
+}
+
 func InsertConnections(connections ConnectionInfo) error {
 	hashed, err := utils.HashPassword(connections.Key)
 	if err != nil {

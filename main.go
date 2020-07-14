@@ -48,6 +48,7 @@ func main() {
 	router.GET("/experiment/:experiment/policy", web.GetPrivacyPolicy)
 	router.GET("/experiment/:experiment/description", web.GetDescription)
 	router.POST("/experiment/:experiment/addUser", web.NewUser)
+	router.POST("/experiment/:experiment/removeUser", web.RemoveUser)
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.POST("/experiment/:experiment/addConnectionsUnsafe", web.AddConnectionsUnsafe)
 

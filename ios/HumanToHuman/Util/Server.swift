@@ -61,7 +61,7 @@ struct Server {
 
         return try! JSONSerialization.data(withJSONObject: [
             "id": id,
-            "token": token,
+            "key": token,
             "connections": jsonRows,
         ])
     }
