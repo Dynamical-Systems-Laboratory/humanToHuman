@@ -69,9 +69,28 @@ func RemoveUser(c *gin.Context) {
 	JsonInfer(c, nil, database.RemoveUser(c.PostForm("token")))
 }
 
-func Clear(c *gin.Context) {
+func ClearBrowser(c *gin.Context) {
 	if Release {
 		hash, err := utils.HashPassword(c.Query("password"))
+		if JsonFail(c, err) {
+			return
+		}
+		if hash != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	if c.Query("full") == "true" {
+		JsonInfer(c, nil, database.Clear())
+	} else {
+		JsonInfer(c, nil, database.ClearConnections())
+	}
+}
+
+func Clear(c *gin.Context) {
+	if Release {
+		hash, err := utils.HashPassword(c.PostForm("password"))
 		if JsonFail(c, err) {
 			return
 		}

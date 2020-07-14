@@ -37,10 +37,8 @@ func main() {
 
 	database.ConnectToDb(*dbconnstr)
 
-	router.GET("/clear", web.Clear)
-	router.GET("/clearConnections", func(c *gin.Context) {
-		web.JsonInfer(c, nil, database.ClearConnections())
-	})
+	router.GET("/clear", web.ClearBrowser)
+	router.POST("/clear", web.Clear)
 	router.GET("/addExperiment", web.NewExperimentBrowser)
 	router.POST("/addExperiment", web.NewExperiment)
 
