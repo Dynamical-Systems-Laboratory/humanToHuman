@@ -5,11 +5,54 @@ import (
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/web"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/pkger"
 	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/http"
+	"path"
+	"strings"
 )
+
+type Dir pkger.Dir
+
+func (d Dir) Open(name string) (http.File, error) {
+	return pkger.Dir(d).Open(name)
+}
+
+func (d Dir) Exists(prefix, filepath string) bool {
+	if p := strings.TrimPrefix(filepath, prefix); len(p) < len(filepath) {
+		p = "/" + p
+		file, err := d.Open(p)
+		if err != nil {
+			return false
+		}
+		defer file.Close()
+
+		stats, err := file.Stat()
+		if err != nil {
+			return false
+		}
+
+		if stats.IsDir() {
+			pDir := path.Join(p, "index.html")
+			file, err := d.Open(pDir)
+			if err != nil {
+				return false
+			}
+			defer file.Close()
+
+			_, err = file.Stat()
+			if err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+	return false
+}
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -34,12 +77,15 @@ func main() {
 		*password = ""
 	}
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
 
 	database.ConnectToDb(*dbconnstr)
 
 	router.GET("/clear", web.ClearBrowser)
 	router.POST("/clear", web.Clear)
+	router.GET("/login", web.Login)
 	router.GET("/addExperiment", web.NewExperimentBrowser)
 	router.POST("/addExperiment", web.NewExperiment)
 
@@ -50,6 +96,8 @@ func main() {
 	router.POST("/experiment/:experiment/removeUser", web.RemoveUser)
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.POST("/experiment/:experiment/addConnectionsUnsafe", web.AddConnectionsUnsafe)
+	dir := Dir(pkger.Dir("/templates"))
+	router.Use(static.Serve("/", dir))
 
 	if (*port != "" && *port != ":443") || *domain == "" {
 		if *domain != "" {

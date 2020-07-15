@@ -65,6 +65,21 @@ func ParamUint(c *gin.Context, param string) (uint32, error) {
 	return uint32(val), err
 }
 
+func Login(c *gin.Context) {
+	if Release {
+		hash, err := utils.HashPassword(c.Query("password"))
+		if JsonFail(c, err) {
+			return
+		}
+		if hash != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	JsonInfer(c, nil, nil)
+}
+
 func RemoveUser(c *gin.Context) {
 	JsonInfer(c, nil, database.RemoveUser(c.PostForm("token")))
 }
@@ -100,7 +115,7 @@ func Clear(c *gin.Context) {
 		}
 	}
 
-	if c.Query("full") == "true" {
+	if c.PostForm("full") == "true" {
 		JsonInfer(c, nil, database.Clear())
 	} else {
 		JsonInfer(c, nil, database.ClearConnections())
@@ -164,7 +179,25 @@ func GetPrivacyPolicy(c *gin.Context) {
 }
 
 func NewExperimentBrowser(c *gin.Context) {
-	password, ok := c.GetQuery("password")
+	if Release {
+		password, ok := c.GetQuery("password")
+		if !ok {
+			JsonFail(c, MissingPassword)
+			return
+		}
+
+		hashed, err := utils.HashPassword(password)
+		if JsonFail(c, err) {
+			return
+		}
+
+		if hashed != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	password, ok := c.GetQuery("id")
 	if !ok {
 		password = utils.RandomString(127)
 	}
@@ -182,7 +215,25 @@ func NewExperimentBrowser(c *gin.Context) {
 }
 
 func NewExperiment(c *gin.Context) {
-	password, ok := c.GetPostForm("password")
+	if Release {
+		password, ok := c.GetPostForm("password")
+		if !ok {
+			JsonFail(c, MissingPassword)
+			return
+		}
+
+		hashed, err := utils.HashPassword(password)
+		if JsonFail(c, err) {
+			return
+		}
+
+		if hashed != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return
+		}
+	}
+
+	password, ok := c.GetPostForm("id")
 	if !ok {
 		password = utils.RandomString(127)
 	}

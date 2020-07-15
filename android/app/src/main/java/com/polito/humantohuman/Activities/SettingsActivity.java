@@ -1,6 +1,5 @@
 package com.polito.humantohuman.Activities;
 
-import android.bluetooth.le.PeriodicAdvertisingParameters;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,6 @@ public class SettingsActivity extends AppCompatActivity {
         setServerButton.setEnabled(false);
         privacyPolicyButton.setEnabled(true);
     }
-//    setServerEditText.setText("http://192.168.1.151:8080/experiment/password"); // TODO remove this
 
     privacyPolicyButton.setOnClickListener((view) -> {
       Intent intent = new Intent(this, PolicyActivity.class);
