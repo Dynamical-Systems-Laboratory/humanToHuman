@@ -74,12 +74,13 @@ public final class ScanActivity extends AppCompatActivity {
       case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(true);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        System.err.println(AppLogic.getBluetoothID());
+        anonymousId.setText(String.format("ID: %d", AppLogic.getBluetoothID()));
         break;
       case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(false);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        anonymousId.setText(String.format("ID: %d", AppLogic.getBluetoothID()));
         break;
       case APPSTATE_LOGGING_IN:
       case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:

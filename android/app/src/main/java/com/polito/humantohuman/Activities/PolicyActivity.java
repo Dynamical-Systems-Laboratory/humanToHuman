@@ -1,15 +1,9 @@
 package com.polito.humantohuman.Activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import com.polito.humantohuman.AppLogic;
 import com.polito.humantohuman.R;
@@ -49,16 +43,14 @@ public class PolicyActivity extends AppCompatActivity {
         });
       } else {
         new AlertDialog.Builder(this)
-                .setTitle("Revoke Privacy Policy")
+                .setTitle("Revoke Consent Form")
                 .setMessage("You will be kicked from the experiment.")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
-                  AppLogic.rejectPrivacyPolicy();
+                  AppLogic.rejectPrivacyPolicy(this);
                   finish();
                 })
-                .setNegativeButton(android.R.string.no, (dialog, whichButton) -> {
-                  checkBox.setChecked(true);
-                })
+                .setNegativeButton(android.R.string.no, (dialog, whichButton) -> checkBox.setChecked(true))
                 .show();
       }
     });

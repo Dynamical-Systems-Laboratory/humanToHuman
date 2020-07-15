@@ -137,7 +137,9 @@ public final class Bluetooth extends Service {
     long id = 0;
     boolean foundSentinel = false;
     for (UUID uuid : uuids) {
-      int index = SERVICE_UUIDS_TO_BITS.get(uuid);
+      Integer indexNull = SERVICE_UUIDS_TO_BITS.get(uuid);
+      if (indexNull == null) return null;
+      int index = indexNull;
       if (index == 0) {
         foundSentinel = true;
         continue;

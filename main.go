@@ -17,7 +17,7 @@ func main() {
 	release := flag.Bool("release", false, "whether or not to run in release mode")
 	password := flag.String("password", "", "password for the server")
 	dbconnstr := flag.String("dbconnstr", "user=humantohuman password=humantohuman sslmode=disable host=localhost dbname=humantohuman", "database connection string")
-	port := flag.String("port", ":443", "port of the server")
+	port := flag.String("port", "", "port of the server")
 	domain := flag.String("domain", "", "domain of the server, to use for HTTPS")
 	flag.Parse()
 
@@ -51,10 +51,14 @@ func main() {
 	router.POST("/experiment/:experiment/addConnections", web.AddConnectionsUnsafe)
 	router.POST("/experiment/:experiment/addConnectionsUnsafe", web.AddConnectionsUnsafe)
 
-	if *port != ":443" || *domain == "" {
+	if (*port != "" && *port != ":443") || *domain == "" {
 		if *domain != "" {
 			utils.Fail("can't do https encryption on port other than 443")
 		}
+		if *port == "" {
+			*port = ":8080"
+		}
+
 		err := router.Run(*port)
 		utils.FailIf(err, "why did this fail?")
 	} else {

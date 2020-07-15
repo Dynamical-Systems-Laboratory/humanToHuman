@@ -202,9 +202,14 @@ public class AppLogic {
     });
   }
 
-  public static void rejectPrivacyPolicy() {
+  public static void rejectPrivacyPolicy(Context context) {
     if (appState == APPSTATE_LOGGING_IN || appState == APPSTATE_NO_EXPERIMENT)
       throw new RuntimeException("no privacy policy to reject!");
+
+    if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
+      context.stopService(new Intent(context, Bluetooth.class));
+      context.stopService(new Intent(context, Server.class));
+    }
 
     setAppState(APPSTATE_NO_EXPERIMENT);
   }

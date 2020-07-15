@@ -9,26 +9,13 @@
     tools:context=".Activities.ScanActivity">
 
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon1" />
-
     <TextView
         android:id="@+id/scanAnonymousId"
-        android:layout_width="137dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="44dp"
+        android:layout_width="385dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="32dp"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView3"
-        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,10 +68,10 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="32dp"
         android:background="@drawable/border_shape"
@@ -92,7 +79,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3">
+        app:layout_constraintTop_toBottomOf="@+id/scanAnonymousId">
 
         <RelativeLayout
             android:id="@+id/relative_layout"
@@ -102,11 +89,11 @@
             android:layout_marginVertical="2dp">
 
             <TextView
-                android:textSize="16sp"
                 android:id="@+id/scanExperimentDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                android:textSize="16sp" />
         </RelativeLayout>
     </ScrollView>
 
