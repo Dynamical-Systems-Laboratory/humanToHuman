@@ -100,8 +100,6 @@ public final class Polyfill {
             .setSmallIcon(R.drawable.ic_stat_name)
             .setPriority(NotificationManager.IMPORTANCE_UNSPECIFIED)
             .setCategory(Notification.CATEGORY_SERVICE)
-            .setCustomContentView(new RemoteViews(service.getPackageName(),
-                                                  R.layout.not_collapsed))
             .setContentIntent(pendingIntent)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(
                 "HTH is scanning"))

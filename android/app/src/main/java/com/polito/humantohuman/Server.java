@@ -83,7 +83,8 @@ public class Server extends Service {
     return Service.START_STICKY;
   }
 
-  public interface Listener<T> { void onFinish(T data, VolleyError error); }
+  public interface Listener<T> { void onFinish(T data, Exception error); }
+  public interface IDTokenListener { void onFinish(Long id, String token, Exception error); }
 
   public static void initializeServer(Context ctx) {
     if (requestQueue != null)
@@ -105,22 +106,23 @@ public class Server extends Service {
 
       return new JSONObject()
           .put("id", AppLogic.getBluetoothID())
+          .put("token", AppLogic.getToken())
           .put("connections", jsonArray);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public static void getId(Listener<Long> l) {
+  public static void getId(IDTokenListener l) {
     JsonObjectRequest req = new JsonObjectRequest(
         Request.Method.POST, AppLogic.getServerURL() + "/addUser",
         new JSONObject(), (response) -> {
           try {
-            l.onFinish(response.getLong("id"), null);
+            l.onFinish(response.getLong("id"), response.getString("token"), null);
           } catch (JSONException e) {
-            throw new RuntimeException(e);
+            l.onFinish(null, null, e);
           }
-        }, (error) -> l.onFinish(null, error));
+        }, (error) -> l.onFinish(null, null, error));
 
     requestQueue.add(req);
   }

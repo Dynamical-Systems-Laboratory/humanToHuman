@@ -28,6 +28,7 @@ public class AppLogic {
   private static boolean onlyWifi;
   private static ArrayList<Database.Row> devices;
   private static WifiManager wifiManager;
+  private static String token;
 
   public static void startup(Context context) {
     initializeDatabase(context);
@@ -62,6 +63,7 @@ public class AppLogic {
       serverURL = getPropText(KEY_SERVER_BASE_URL);
       if (appState != APPSTATE_LOGGING_IN) {
         bluetoothId = getPropNumeric(KEY_OWN_ID);
+        token = getPropText(KEY_TOKEN);
       }
 
       if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
@@ -97,6 +99,13 @@ public class AppLogic {
 
     return bluetoothId;
   }
+
+  public static String getToken() {
+    if (appState == APPSTATE_NO_EXPERIMENT || appState == APPSTATE_LOGGING_IN)
+      throw new RuntimeException("We don't have a token to give!");
+    return token;
+  }
+
 
   public static void startCollectingData(Context context) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
@@ -187,7 +196,7 @@ public class AppLogic {
   }
 
   public static void acceptPrivacyPolicy(Consumer<Exception> cb) {
-    Server.getId((id, error) -> {
+    Server.getId((id, tok, error) -> {
       if (error != null) {
         System.err.println("got error: " + error);
         setAppState(APPSTATE_NO_EXPERIMENT);
@@ -195,8 +204,9 @@ public class AppLogic {
       } else if (id != null) {
         bluetoothId = id;
         setPropNumeric(KEY_OWN_ID, bluetoothId);
+        token = tok;
+        setPropText(KEY_TOKEN, token);
         setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
-        // TODO change this to be APPSTATE_EXPERIMENT_JOINED_NOT_RUNNING
         cb.accept(null);
       }
     });
@@ -214,6 +224,13 @@ public class AppLogic {
     setAppState(APPSTATE_NO_EXPERIMENT);
   }
 
+  public static void ignorePrivacyPolicy() {
+    if (appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING)
+      throw new RuntimeException("use rejectPrivacyPolicy instead");
+
+    setAppState(APPSTATE_NO_EXPERIMENT);
+
+  }
 
   /**
    * Check if the wifi is connected or not
