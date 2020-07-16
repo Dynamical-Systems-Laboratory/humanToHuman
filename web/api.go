@@ -1,7 +1,6 @@
 package web
 
 import (
-	"database/sql"
 	"encoding/csv"
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/database"
@@ -59,6 +58,26 @@ func JsonFail(c *gin.Context, err error) bool {
 	return false
 }
 
+func AuthFail(c *gin.Context, password string) bool {
+	if Release {
+		if password == "" {
+			return JsonFail(c, MissingPassword)
+		}
+
+		hash, err := utils.HashPassword(password)
+		if JsonFail(c, err) {
+			return true
+		}
+
+		if hash != PasswordHash {
+			JsonFail(c, IncorrectPassword)
+			return true
+		}
+	}
+
+	return false
+}
+
 func ParamUint(c *gin.Context, param string) (uint32, error) {
 	valString := c.Param(param)
 	val, err := strconv.ParseUint(valString, 10, 64)
@@ -66,17 +85,9 @@ func ParamUint(c *gin.Context, param string) (uint32, error) {
 }
 
 func Login(c *gin.Context) {
-	if Release {
-		hash, err := utils.HashPassword(c.Query("password"))
-		if JsonFail(c, err) {
-			return
-		}
-		if hash != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
+	if AuthFail(c, c.PostForm("password")) {
+		return
 	}
-
 	JsonInfer(c, nil, nil)
 }
 
@@ -84,35 +95,9 @@ func RemoveUser(c *gin.Context) {
 	JsonInfer(c, nil, database.RemoveUser(c.PostForm("token")))
 }
 
-func ClearBrowser(c *gin.Context) {
-	if Release {
-		hash, err := utils.HashPassword(c.Query("password"))
-		if JsonFail(c, err) {
-			return
-		}
-		if hash != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
-	}
-
-	if c.Query("full") == "true" {
-		JsonInfer(c, nil, database.Clear())
-	} else {
-		JsonInfer(c, nil, database.ClearConnections())
-	}
-}
-
 func Clear(c *gin.Context) {
-	if Release {
-		hash, err := utils.HashPassword(c.PostForm("password"))
-		if JsonFail(c, err) {
-			return
-		}
-		if hash != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
+	if AuthFail(c, c.PostForm("password")) {
+		return
 	}
 
 	if c.PostForm("full") == "true" {
@@ -122,23 +107,34 @@ func Clear(c *gin.Context) {
 	}
 }
 
-func GetCSV(c *gin.Context) {
-	if Release {
-		password, ok := c.GetQuery("password")
-		if !ok {
-			JsonFail(c, MissingPassword)
-			return
-		}
+func GetDevicesCSV(c *gin.Context) {
+	if AuthFail(c, c.Query("password")) {
+		return
+	}
+	users, err := database.GetDevicesForExperiment(c.Query("experiment"))
+	if JsonFail(c, err) {
+		return
+	}
 
-		hashed, err := utils.HashPassword(password)
+	writer := csv.NewWriter(c.Writer)
+	err = writer.Write([]string{"device_id"})
+	if JsonFail(c, err) {
+		return
+	}
+
+	for _, user := range users {
+		err = writer.Write([]string{strconv.FormatInt(user, 10)})
 		if JsonFail(c, err) {
 			return
 		}
+	}
 
-		if hashed != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
+	writer.Flush()
+}
+
+func GetCSV(c *gin.Context) {
+	if AuthFail(c, c.Query("password")) {
+		return
 	}
 
 	connections, err := database.GetDataForExperiment(c.Param("experiment"))
@@ -151,6 +147,7 @@ func GetCSV(c *gin.Context) {
 	if JsonFail(c, err) {
 		return
 	}
+
 	for _, conn := range connections {
 		err = writer.Write([]string{
 			time.Time(conn.Time).Format(database.TimeFormat),
@@ -178,76 +175,34 @@ func GetPrivacyPolicy(c *gin.Context) {
 	StringInfer(c, policy, err)
 }
 
-func NewExperimentBrowser(c *gin.Context) {
-	if Release {
-		password, ok := c.GetQuery("password")
-		if !ok {
-			JsonFail(c, MissingPassword)
-			return
-		}
-
-		hashed, err := utils.HashPassword(password)
-		if JsonFail(c, err) {
-			return
-		}
-
-		if hashed != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
-	}
-
-	password, ok := c.GetQuery("id")
-	if !ok {
-		password = utils.RandomString(127)
-	}
-
-	policy := c.Query("policy")
-	description := c.Query("description")
-
-	type Response struct {
-		Password string `json:"password"`
-		Id       uint32 `json:"id"`
-	}
-
-	id, err := database.InsertExperiment(password, policy, description, sql.NullTime{})
-	JsonInfer(c, Response{password, id}, err)
-}
-
 func NewExperiment(c *gin.Context) {
-	if Release {
-		password, ok := c.GetPostForm("password")
-		if !ok {
-			JsonFail(c, MissingPassword)
-			return
-		}
-
-		hashed, err := utils.HashPassword(password)
-		if JsonFail(c, err) {
-			return
-		}
-
-		if hashed != PasswordHash {
-			JsonFail(c, IncorrectPassword)
-			return
-		}
+	if AuthFail(c, c.PostForm("password")) {
+		return
 	}
 
-	password, ok := c.GetPostForm("id")
+	id, ok := c.GetPostForm("id")
 	if !ok {
-		password = utils.RandomString(127)
+		id = utils.RandomString(127)
 	}
 
 	policy := c.PostForm("policy")
 	description := c.PostForm("description")
 
 	type Response struct {
-		Password string `json:"password"`
-		Id       uint32 `json:"id"`
+		Id    string `json:"id"`
+		RowId uint32 `json:"rowId"`
 	}
 
-	id, err := database.InsertExperiment(password, policy, description, sql.NullTime{})
-	JsonInfer(c, Response{password, id}, err)
+	rowId, err := database.InsertExperiment(id, policy, description)
+	JsonInfer(c, Response{id, rowId}, err)
+}
+
+func DeleteExperiment(c *gin.Context) {
+	if AuthFail(c, c.PostForm("password")) {
+		return
+	}
+
+	JsonInfer(c, nil, database.DeleteExperiment(c.PostForm("experiment")))
 }
 
 func NewUser(c *gin.Context) {

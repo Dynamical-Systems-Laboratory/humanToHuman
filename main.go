@@ -83,12 +83,12 @@ func main() {
 
 	database.ConnectToDb(*dbconnstr)
 
-	router.GET("/clear", web.ClearBrowser)
 	router.POST("/clear", web.Clear)
 	router.GET("/login", web.Login)
-	router.GET("/addExperiment", web.NewExperimentBrowser)
 	router.POST("/addExperiment", web.NewExperiment)
+	router.POST("/deleteExperiment", web.DeleteExperiment)
 
+	router.GET("/experiment/:experiment/devices.csv", web.GetDevicesCSV)
 	router.GET("/experiment/:experiment/data.csv", web.GetCSV)
 	router.GET("/experiment/:experiment/policy", web.GetPrivacyPolicy)
 	router.GET("/experiment/:experiment/description", web.GetDescription)

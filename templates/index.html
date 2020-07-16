@@ -38,6 +38,7 @@
     </div>
 
     <div id="controlPanel" class="row invisible">
+
       <div class="col-4">
         <h2>Clear Database</h2>
         <form>
@@ -55,6 +56,31 @@
           <button id="addExperimentButton">Add</button>
         </form>
       </div>
+
+      <div class="col-4">
+        <h2>Delete Experiment</h2>
+        <form>
+          <input id="deleteExperimentID" type="text" placeholder="identifer" />
+          <button id="deleteExperimentButton">Add</button>
+        </form>
+      </div>
+
+      <div class="col-4">
+        <h2>Download Experiment Nodes</h2>
+        <form>
+          <input id="downloadExperimentNodesID" type="text" placeholder="identifer" />
+          <button id="downloadExperimentNodesButton">Download</button>
+        </form>
+      </div>
+
+      <div class="col-4">
+        <h2>Download Experiment Edges</h2>
+        <form>
+          <input id="downloadExperimentEdgesID" type="text" placeholder="identifer" />
+          <button id="downloadExperimentEdgesButton">Download</button>
+        </form>
+      </div>
+
     </div>
 
   </div>
@@ -64,13 +90,23 @@
     let serverPassword;
     const serverURLInput = document.getElementById("serverURLInput");
     const passwordInput = document.getElementById("passwordInput");
+
     const controlPanel = document.getElementById("controlPanel");
+
     const errorMessageRow = document.getElementById("errorMessageRow");
     const errorMessage = document.getElementById("errorMessage");
+
     const addExperimentIDInput = document.getElementById("addExperimentIDInput");
     const addExperimentConsentFormInput = document.getElementById("addExperimentConsentFormInput");
     const addExperimentDescriptionInput = document.getElementById("addExperimentDescriptionInput");
+
     const clearFullInput = document.getElementById("clearFullInput");
+
+    const deleteExperimentIDInput = document.getElementById("deleteExperimentID");
+
+    const downloadExperimentNodesIDInput = document.getElementById("downloadExperimentNodesID");
+
+    const downloadExperimentEdgesIDInput = document.getElementById("downloadExperimentEdgesID");
 
 
     async function openServerConnection(url, password) {
@@ -137,14 +173,55 @@
       }
     }
 
+    async function deleteExperiment() {
+      try {
+        const params = new URLSearchParams({
+          password: serverPassword,
+          experiment: deleteExperimentIDInput.value,
+        });
+        const resp = await fetch(serverURL + "/deleteExperiment", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded", },
+          body: params,
+        });
+
+        if (resp.status != 200) {
+          const data = await resp.json();
+          errorMessageRow.classList.remove("invisible");
+          errorMessage.innerHTML = "couldn't delete experiment: " + data.message;
+        } else {
+          errorMessageRow.classList.add("invisible");
+        }
+      } catch (e) {
+        errorMessageRow.classList.remove("invisible");
+        errorMessage.innerHTML = "couldn't delete experiment: " + e;
+        console.log(e);
+      }
+    }
+
+    document.getElementById("downloadExperimentNodesButton").onclick = function(e) {
+      e.preventDefault();
+    };
+
+    document.getElementById("downloadExperimentEdgesButton").onclick = function(e) {
+      e.preventDefault();
+    };
+
+    document.getElementById("deleteExperimentButton").onclick = function(e) {
+      e.preventDefault();
+      deleteExperiment();
+    };
+
     document.getElementById("addExperimentButton").onclick = function(e) {
       e.preventDefault();
-      addExperiment(serverURLInput.value, passwordInput.value);
+      addExperiment();
     };
+
     document.getElementById("clearServerButton").onclick = function(e) {
       e.preventDefault();
-      clearServer(serverURLInput.value, passwordInput.value);
+      clearServer();
     };
+
     document.getElementById("setServerButton").onclick = function(e) {
       e.preventDefault();
       openServerConnection(serverURLInput.value, passwordInput.value);

@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"errors"
 	"github.com/Dynamical-Systems-Laboratory/humanToHuman/utils"
 	sq "github.com/Masterminds/squirrel"
@@ -9,15 +8,13 @@ import (
 )
 
 var (
-	NewUserFailed        = errors.New("failed to make new user")
-	AuthFailed           = errors.New("failed to authenticate")
-	IncorrectPassword    = errors.New("provided password was incorrect")
-	ExperimentOver       = errors.New("experiment has already completed")
-	ExperimentClosed     = errors.New("experiment has already closed")
-	ExperimentNotStarted = errors.New("experiment hasn't started yet")
+	NewUserFailed       = errors.New("failed to make new user")
+	AuthFailed          = errors.New("failed to authenticate")
+	IncorrectPassword   = errors.New("provided password was incorrect")
+	InvalidExperimentId = errors.New("invalid experiment id")
 )
 
-func GetDataForExperiment(password string) ([]Connection, error) {
+func GetDevicesForExperiment(password string) ([]int64, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
 		return nil, err
@@ -49,8 +46,12 @@ func GetDataForExperiment(password string) ([]Connection, error) {
 		return nil, err
 	}
 
-	rows, err = psql.Select("time", "device_a", "device_b",
-		"measured_power", "rssi").
+	return users, nil
+}
+
+func GetDataForExperiment(password string) ([]Connection, error) {
+	users, err := GetDevicesForExperiment(password)
+	rows, err := psql.Select("time", "device_a", "device_b", "measured_power", "rssi").
 		From("connections").
 		Where(sq.Or{sq.Eq{"device_a": users}, sq.Eq{"device_b": users}}).
 		RunWith(globalDb).
@@ -113,21 +114,61 @@ func GetPrivacyPolicy(password string) (string, error) {
 	return policy, err
 }
 
-func InsertExperiment(password, privacyPolicy, description string,
-	openNullable sql.NullTime) (uint32, error) {
+func DeleteExperiment(password string) error {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	row := psql.Select("id").
+		From("experiments").
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var experimentId uint64
+	err = row.Scan(&experimentId)
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Delete("experiments").
+		Where(sq.Eq{"id": experimentId}).
+		RunWith(globalDb).
+		Exec()
+	if err != nil {
+		return err
+	}
+
+	users, err := GetDevicesForExperiment(password)
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Delete("devices").
+		Where(sq.Eq{"experiment": experimentId}).
+		RunWith(globalDb).
+		Exec()
+	if err != nil {
+		return err
+	}
+
+	_, err = psql.Delete("connections").
+		Where(sq.Or{sq.Eq{"device_a": users}, sq.Eq{"device_b": users}}).
+		RunWith(globalDb).
+		Exec()
+	return err
+}
+
+func InsertExperiment(password, privacyPolicy, description string) (uint32, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
 		return 0, err
 	}
 
-	open := time.Now()
-	if openNullable.Valid {
-		open = openNullable.Time
-	}
-
 	row := psql.Insert("experiments").
-		Columns("hash", "policy", "description", "open").
-		Values(hashed, privacyPolicy, description, open).
+		Columns("hash", "policy", "description").
+		Values(hashed, privacyPolicy, description).
 		Suffix("RETURNING \"id\"").
 		RunWith(globalDb).
 		QueryRow()
@@ -147,24 +188,16 @@ func InsertUser(password string) (uint64, string, error) {
 		return 0, "", err
 	}
 
-	row := psql.Select("id", "began", "ended").
+	row := psql.Select("id").
 		From("experiments").
 		Where(sq.Eq{"hash": hashed}).
 		RunWith(globalDb).
 		QueryRow()
 
 	var experimentId uint32
-	var began, ended sql.NullTime
-	err = row.Scan(&experimentId, &began, &ended)
+	err = row.Scan(&experimentId)
 	if err != nil {
 		return 0, "", err
-	}
-
-	now := time.Now()
-	if began.Valid && now.After(began.Time) {
-		return 0, "", ExperimentClosed
-	} else if ended.Valid && now.After(ended.Time) {
-		return 0, "", ExperimentOver
 	}
 
 	token := utils.RandomString(127)
@@ -226,24 +259,16 @@ func InsertConnections(connections ConnectionInfo) error {
 		return err
 	}
 
-	row := psql.Select("devices.id", "experiments.began", "experiments.ended").
+	row := psql.Select("devices.id").
 		From("devices").
 		Where(sq.Eq{"hash": hashed}).
 		RunWith(globalDb).
 		QueryRow()
 
 	var deviceId int64
-	var began, ended sql.NullTime
-	err = row.Scan(&deviceId, &began, &ended)
+	err = row.Scan(&deviceId)
 	if err != nil {
 		return err
-	}
-
-	now := time.Now()
-	if !began.Valid || now.Before(began.Time) {
-		return ExperimentNotStarted
-	} else if ended.Valid && now.After(ended.Time) {
-		return ExperimentOver
 	}
 
 	builder := psql.Insert("connections").
