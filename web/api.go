@@ -31,6 +31,7 @@ var (
 	TooManyAuthMethods = errors.New("gave too many authorization methods")
 )
 
+// https://stackoverflow.com/questions/29418478/go-gin-framework-cors
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
