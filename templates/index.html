@@ -61,7 +61,7 @@
         <h2>Delete Experiment</h2>
         <form>
           <input id="deleteExperimentID" type="text" placeholder="identifer" />
-          <button id="deleteExperimentButton">Add</button>
+          <button id="deleteExperimentButton">Delete</button>
         </form>
       </div>
 
@@ -111,6 +111,7 @@
 
     async function openServerConnection(url, password) {
       try {
+        url = url.replace(new RegExp('[/]+$', 'g'), '');
         const hello = await fetch(url + "/login");
         const data = await hello.json();
         serverURL = url;
@@ -128,12 +129,14 @@
     async function clearServer() {
       try {
         const params = new URLSearchParams({
-            full: clearFullInput.value,
-            password: serverPassword,
+          full: clearFullInput.value,
+          password: serverPassword,
         });
         const resp = await fetch(serverURL + "/clear", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded", },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
           body: params,
         });
         const data = await resp.json();
@@ -155,7 +158,9 @@
         });
         const resp = await fetch(serverURL + "/addExperiment", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded", },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
           body: params,
         });
 
@@ -181,7 +186,9 @@
         });
         const resp = await fetch(serverURL + "/deleteExperiment", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded", },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
           body: params,
         });
 
@@ -195,16 +202,55 @@
       } catch (e) {
         errorMessageRow.classList.remove("invisible");
         errorMessage.innerHTML = "couldn't delete experiment: " + e;
-        console.log(e);
+      }
+    }
+
+    async function getNodesCSV() {
+      const experimentURL = serverURL + "/experiment/" + downloadExperimentNodesIDInput.value;
+      try {
+        const resp = await fetch(experimentURL + "/exists");
+        const exists = await resp.json();
+        if (!exists) {
+          errorMessageRow.classList.remove("invisible");
+          errorMessage.innerHTML = "couldn't download experiment nodes: experiment doesn't exist";
+          return;
+        }
+
+        const url = experimentURL + "/devices.csv?password=" + serverPassword;
+        window.location.href = url;
+      } catch (e) {
+        errorMessageRow.classList.remove("invisible");
+        errorMessage.innerHTML = "couldn't download experiment nodes: " + e;
+      }
+    }
+
+    async function getEdgesCSV() {
+      const experimentURL = serverURL + "/experiment/" + downloadExperimentEdgesIDInput.value;
+      try {
+        const resp = await fetch(experimentURL + "/exists");
+        const exists = await resp.json();
+        if (!exists) {
+          errorMessageRow.classList.remove("invisible");
+          errorMessage.innerHTML = "couldn't download experiment edges: experiment doesn't exist";
+          return;
+        }
+
+        const url = experimentURL + "/connections.csv?password=" + serverPassword;
+        window.location.href = url;
+      } catch (e) {
+        errorMessageRow.classList.remove("invisible");
+        errorMessage.innerHTML = "couldn't download experiment edges: " + e;
       }
     }
 
     document.getElementById("downloadExperimentNodesButton").onclick = function(e) {
       e.preventDefault();
+      getNodesCSV();
     };
 
     document.getElementById("downloadExperimentEdgesButton").onclick = function(e) {
       e.preventDefault();
+      getEdgesCSV();
     };
 
     document.getElementById("deleteExperimentButton").onclick = function(e) {

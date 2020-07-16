@@ -88,8 +88,9 @@ func main() {
 	router.POST("/addExperiment", web.NewExperiment)
 	router.POST("/deleteExperiment", web.DeleteExperiment)
 
+	router.GET("experiment/:experiment/exists", web.ExperimentExists)
 	router.GET("/experiment/:experiment/devices.csv", web.GetDevicesCSV)
-	router.GET("/experiment/:experiment/data.csv", web.GetCSV)
+	router.GET("/experiment/:experiment/connections.csv", web.GetCSV)
 	router.GET("/experiment/:experiment/policy", web.GetPrivacyPolicy)
 	router.GET("/experiment/:experiment/description", web.GetDescription)
 	router.POST("/experiment/:experiment/addUser", web.NewUser)

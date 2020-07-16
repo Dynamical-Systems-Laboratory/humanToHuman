@@ -14,6 +14,27 @@ var (
 	InvalidExperimentId = errors.New("invalid experiment id")
 )
 
+func ExperimentExists(password string) (bool, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return false, err
+	}
+
+	row := psql.Select("COUNT(*)").
+		From("experiments").
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var experimentCount uint
+	err = row.Scan(&experimentCount)
+	if err != nil {
+		return false, err
+	}
+
+	return experimentCount != 0, nil
+}
+
 func GetDevicesForExperiment(password string) ([]int64, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {

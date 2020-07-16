@@ -91,6 +91,11 @@ func Login(c *gin.Context) {
 	JsonInfer(c, nil, nil)
 }
 
+func ExperimentExists(c *gin.Context) {
+	exists, err := database.ExperimentExists(c.Param("experiment"))
+	JsonInfer(c, exists, err)
+}
+
 func RemoveUser(c *gin.Context) {
 	JsonInfer(c, nil, database.RemoveUser(c.PostForm("token")))
 }
@@ -111,11 +116,13 @@ func GetDevicesCSV(c *gin.Context) {
 	if AuthFail(c, c.Query("password")) {
 		return
 	}
+
 	users, err := database.GetDevicesForExperiment(c.Query("experiment"))
 	if JsonFail(c, err) {
 		return
 	}
 
+	c.Header("Content-Type", "text/csv")
 	writer := csv.NewWriter(c.Writer)
 	err = writer.Write([]string{"device_id"})
 	if JsonFail(c, err) {
@@ -142,6 +149,7 @@ func GetCSV(c *gin.Context) {
 		return
 	}
 
+	c.Header("Content-Type", "text/csv")
 	writer := csv.NewWriter(c.Writer)
 	err = writer.Write([]string{"time", "scanner", "advertiser", "power", "rssi"})
 	if JsonFail(c, err) {
