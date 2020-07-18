@@ -10,9 +10,6 @@ class MainController: UIViewController {
         print("main controller loading...")
         
         experimentDescription.attributedText = AppLogic.getDescription()
-        if #available(iOS 13.0, *) {
-            experimentDescription.textColor = .label
-        }
         
         switch AppLogic.getAppState() {
         case APPSTATE_NO_EXPERIMENT:

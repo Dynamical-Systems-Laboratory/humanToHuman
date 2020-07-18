@@ -114,15 +114,20 @@
         url = url.replace(new RegExp('[/]+$', 'g'), '');
         const hello = await fetch(url + "/login");
         const data = await hello.json();
-        serverURL = url;
-        serverPassword = password;
-        errorMessageRow.classList.add("invisible");
-        controlPanel.classList.remove("invisible");
+        if (data === true) {
+          serverURL = url;
+          serverPassword = password;
+          errorMessageRow.classList.add("invisible");
+          controlPanel.classList.remove("invisible");
+        } else {
+          controlPanel.classList.add("invisible");
+          errorMessageRow.classList.remove("invisible");
+          errorMessage.innerHTML = "couldn't login to server: " + e;
+        }
       } catch (e) {
         controlPanel.classList.add("invisible");
         errorMessageRow.classList.remove("invisible");
-        errorMessage.innerHTML = "couldn't open server connection: " + e;
-        console.log(e);
+        errorMessage.innerHTML = "couldn't login to server: " + e;
       }
     }
 

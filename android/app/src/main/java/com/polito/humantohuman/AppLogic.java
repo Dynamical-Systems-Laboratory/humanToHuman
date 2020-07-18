@@ -30,7 +30,7 @@ public class AppLogic {
   private static WifiManager wifiManager;
   private static String token;
 
-  public static void startup(Context context) {
+  public static boolean startup(Context context) {
     initializeDatabase(context);
     Server.initializeServer(context);
     wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -67,10 +67,15 @@ public class AppLogic {
       }
 
       if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
+        if (!Bluetooth.isEnabled())
+          return false;
         context.startService(new Intent(context, Bluetooth.class));
         context.startService(new Intent(context, Server.class));
       }
+
     }
+
+    return true;
   }
 
   public static int getAppState() { return appState; }
@@ -107,14 +112,17 @@ public class AppLogic {
   }
 
 
-  public static void startCollectingData(Context context) {
+  public static boolean startCollectingData(Context context) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
       throw new RuntimeException(
           "Can't start collecting data while not in an experiment!");
 
+    if (!Bluetooth.isEnabled())
+      return false;
     context.startService(new Intent(context, Bluetooth.class));
     context.startService(new Intent(context, Server.class));
     setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING);
+    return true;
   }
 
   public static void stopCollectingData(Context context) {
@@ -123,7 +131,6 @@ public class AppLogic {
           "Can't stop collecting data while not currently collecting!");
 
     context.stopService(new Intent(context, Bluetooth.class));
-    context.stopService(new Intent(context, Server.class));
     setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
   }
 

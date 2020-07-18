@@ -26,10 +26,8 @@ public final class Bluetooth extends Service {
   public static final String SCAN_CHANNEL_NAME = "HumanToHuman Scanning";
   public static final int SCAN_FOREGROUND_ID = 1;
 
-  private static final BluetoothAdapter adapter =
-      BluetoothAdapter.getDefaultAdapter();
-  private static final BluetoothLeAdvertiser advertiser =
-      adapter == null ? null : adapter.getBluetoothLeAdvertiser();
+  private static BluetoothAdapter adapter;
+  private static BluetoothLeAdvertiser advertiser;
   private static final BluetoothAdapter.LeScanCallback scanCallback =
       (device, rssi, scanRecord) -> {
     Long id = getID(getUUIDs(scanRecord));
@@ -85,6 +83,16 @@ public final class Bluetooth extends Service {
   public void onDestroy() {
     advertiser.stopAdvertising(advertiseCallback);
     adapter.stopLeScan(scanCallback);
+  }
+
+  public static boolean isEnabled() {
+    adapter = BluetoothAdapter.getDefaultAdapter();
+    if (adapter == null) {
+      return false;
+    }
+
+    advertiser = adapter.getBluetoothLeAdvertiser();
+    return advertiser != null;
   }
 
   static ArrayList<UUID> getUUIDs(byte[] bytes) {

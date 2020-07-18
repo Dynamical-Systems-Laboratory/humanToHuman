@@ -105,7 +105,7 @@ func Login(c *gin.Context) {
 	if AuthFail(c, c.PostForm("password")) {
 		return
 	}
-	JsonInfer(c, nil, nil)
+	JsonInfer(c, true, nil)
 }
 
 func ExperimentExists(c *gin.Context) {
