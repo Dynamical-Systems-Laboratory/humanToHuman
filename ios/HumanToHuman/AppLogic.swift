@@ -262,15 +262,17 @@ class AppLogic {
         })
     }
     
-    static func ignorePrivacyPolicy() {
-        if appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING {
+    static func leaveExperiment() {
+        if appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING
+            && appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING
+            && appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             print("should be using leave experiment, not ignorePrivacyPolicy")
             exit(1)
         }
         setAppState(APPSTATE_NO_EXPERIMENT)
     }
     
-    static func leaveExperiment(callback: @escaping (String?) -> Void) {
+    static func rejectPrivacyPolicy(callback: @escaping (String?) -> Void) {
         if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             Bluetooth.stopScanning()
             Bluetooth.stopAdvertising()

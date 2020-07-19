@@ -37,25 +37,7 @@ class PrivacyPolicyController: UIViewController {
     }
     
     @IBAction func goBack() {
-        guard AppLogic.getAppState() == APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING else {
-            self.dismiss(animated: true, completion: nil)
-            return
-        }
-        
-        let refreshAlert = UIAlertController(title: "Ignore Consent Form",
-                                             message: "You'll be kicked from the experiment.",
-                                             preferredStyle: UIAlertController.Style.alert)
-        
-        refreshAlert.addAction(UIAlertAction(title: "Leave", style: .default, handler: { (action: UIAlertAction!) in
-            AppLogic.ignorePrivacyPolicy()
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-        }))
-
-        refreshAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in }))
-
-        present(refreshAlert, animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func togglePrivacyPolicy() {
@@ -80,7 +62,7 @@ class PrivacyPolicyController: UIViewController {
                                                  preferredStyle: UIAlertController.Style.alert)
             
             refreshAlert.addAction(UIAlertAction(title: "Leave", style: .default, handler: { (action: UIAlertAction!) in
-                AppLogic.leaveExperiment() { str in
+                AppLogic.rejectPrivacyPolicy() { str in
                     DispatchQueue.main.async {
                         if let str = str {
                             print("Exiting experiment failed (\(str))")

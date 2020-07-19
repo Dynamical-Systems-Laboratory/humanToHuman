@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -83,15 +83,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1z-LR-Xgk">
-                                <rect key="frame" x="31" y="385" width="81" height="30"/>
-                                <state key="normal" title="collect data"/>
+                                <rect key="frame" x="31" y="385" width="83" height="30"/>
+                                <state key="normal" title="Collect data"/>
                                 <connections>
                                     <action selector="toggleCollection" destination="m5t-BW-zxg" eventType="touchUpInside" id="J1U-OZ-mTf"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Kg-5n-EgM">
-                                <rect key="frame" x="33" y="420" width="91" height="30"/>
-                                <state key="normal" title="consent form"/>
+                                <rect key="frame" x="33" y="420" width="94" height="30"/>
+                                <state key="normal" title="Consent form"/>
                                 <connections>
                                     <action selector="goToPrivacyPolicy" destination="m5t-BW-zxg" eventType="touchUpInside" id="Tj7-FX-2AX"/>
                                 </connections>
@@ -102,8 +102,8 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QTN-4j-np4">
-                                <rect key="frame" x="234" y="333" width="90" height="30"/>
-                                <state key="normal" title="set server url"/>
+                                <rect key="frame" x="234" y="333" width="92" height="30"/>
+                                <state key="normal" title="Set server url"/>
                                 <connections>
                                     <action selector="setBaseurl" destination="m5t-BW-zxg" eventType="touchUpInside" id="I0o-mA-4t2"/>
                                 </connections>
@@ -115,10 +115,18 @@
                                     <action selector="backToMain" destination="m5t-BW-zxg" eventType="touchUpInside" id="mbj-tD-0NI"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONK-Z6-knD">
+                                <rect key="frame" x="33" y="458" width="121" height="30"/>
+                                <state key="normal" title="Leave experiment"/>
+                                <connections>
+                                    <action selector="leaveExperiment" destination="m5t-BW-zxg" eventType="touchUpInside" id="l0S-0V-LEg"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="QTN-4j-np4" firstAttribute="leading" secondItem="3pl-aK-sjh" secondAttribute="trailing" constant="8" id="2Lx-Bo-Kiu"/>
+                            <constraint firstItem="ONK-Z6-knD" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="5li-6w-JsP"/>
                             <constraint firstItem="lIa-Yp-svk" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="20" id="J4u-R1-tHG"/>
                             <constraint firstItem="3pl-aK-sjh" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="31" id="MVJ-eZ-yfg"/>
                             <constraint firstItem="7Kg-5n-EgM" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="33" id="Mwe-W9-78G"/>
@@ -127,6 +135,7 @@
                             <constraint firstItem="7Kg-5n-EgM" firstAttribute="top" secondItem="p1z-LR-Xgk" secondAttribute="bottom" constant="5" id="VWl-zG-09n"/>
                             <constraint firstItem="QTN-4j-np4" firstAttribute="leading" secondItem="Rje-VJ-olw" secondAttribute="leading" constant="234" id="ZPd-i3-XCF"/>
                             <constraint firstItem="QTN-4j-np4" firstAttribute="centerY" secondItem="3pl-aK-sjh" secondAttribute="centerY" id="cY9-sb-s2H"/>
+                            <constraint firstItem="ONK-Z6-knD" firstAttribute="top" secondItem="7Kg-5n-EgM" secondAttribute="bottom" constant="8" id="dTj-Tx-ls8"/>
                             <constraint firstItem="lIa-Yp-svk" firstAttribute="top" secondItem="Rje-VJ-olw" secondAttribute="top" id="eid-UN-Ebe"/>
                             <constraint firstItem="p1z-LR-Xgk" firstAttribute="leading" secondItem="3pl-aK-sjh" secondAttribute="leading" id="hxU-im-HJT"/>
                         </constraints>
@@ -136,6 +145,7 @@
                     <connections>
                         <outlet property="baseurlButton" destination="QTN-4j-np4" id="aL8-7N-mPS"/>
                         <outlet property="baseurlField" destination="3pl-aK-sjh" id="Xsx-EG-pUq"/>
+                        <outlet property="leaveExperimentButton" destination="ONK-Z6-knD" id="3Ga-ng-u7h"/>
                         <outlet property="privacyPolicyButton" destination="7Kg-5n-EgM" id="7E7-bd-i1v"/>
                         <outlet property="toggleCollectButton" destination="p1z-LR-Xgk" id="ssD-p7-xdU"/>
                     </connections>

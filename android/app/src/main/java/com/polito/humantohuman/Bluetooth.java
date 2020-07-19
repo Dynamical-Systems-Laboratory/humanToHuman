@@ -76,7 +76,7 @@ public final class Bluetooth extends Service {
     advertiser.startAdvertising(settings, data, advertiseCallback);
     adapter.startLeScan(scanCallback);
 
-    return Service.START_STICKY;
+    return Service.START_NOT_STICKY;
   }
 
   @Override

@@ -14,6 +14,7 @@ public class SettingsActivity extends AppCompatActivity {
   Button setServerButton;
   Button privacyPolicyButton;
   TextView setServerEditText;
+  Button leaveExperimentButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -24,20 +25,10 @@ public class SettingsActivity extends AppCompatActivity {
     setServerEditText = findViewById(R.id.settingsSetServerEditText);
     setServerButton = findViewById(R.id.settingsSetServerButton);
     privacyPolicyButton = findViewById(R.id.settingsPrivacyPolicyButton);
+    leaveExperimentButton = findViewById(R.id.settingsLeaveExperimentButton);
 
-    switch (AppLogic.getAppState()) {
-      case AppLogic.APPSTATE_NO_EXPERIMENT:
-        setServerButton.setEnabled(true);
-        privacyPolicyButton.setEnabled(false);
-        break;
-      case AppLogic.APPSTATE_LOGGING_IN:
-        setServerButton.setEnabled(false);
-        privacyPolicyButton.setEnabled(false);
-        break;
-      default:
-        setServerButton.setEnabled(false);
-        privacyPolicyButton.setEnabled(true);
-    }
+    // setServerEditText.setText(
+    //     "https://dslserver05.poly.edu/experiment/experiment-");
 
     privacyPolicyButton.setOnClickListener((view) -> {
       Intent intent = new Intent(this, PolicyActivity.class);
@@ -57,6 +48,11 @@ public class SettingsActivity extends AppCompatActivity {
             }
           });
     });
+
+    leaveExperimentButton.setOnClickListener((view) -> {
+      this.onResume();
+      AppLogic.leaveExperiment(this);
+    });
   }
 
   @Override
@@ -64,17 +60,20 @@ public class SettingsActivity extends AppCompatActivity {
     super.onResume();
 
     switch (AppLogic.getAppState()) {
-      case AppLogic.APPSTATE_NO_EXPERIMENT:
-        setServerButton.setEnabled(true);
-        privacyPolicyButton.setEnabled(false);
-        break;
-      case AppLogic.APPSTATE_LOGGING_IN:
-        setServerButton.setEnabled(false);
-        privacyPolicyButton.setEnabled(false);
-        break;
-      default:
-        setServerButton.setEnabled(false);
-        privacyPolicyButton.setEnabled(true);
+    case AppLogic.APPSTATE_NO_EXPERIMENT:
+      setServerButton.setEnabled(true);
+      privacyPolicyButton.setEnabled(false);
+      leaveExperimentButton.setEnabled(false);
+      break;
+    case AppLogic.APPSTATE_LOGGING_IN:
+      setServerButton.setEnabled(false);
+      privacyPolicyButton.setEnabled(false);
+      leaveExperimentButton.setEnabled(true);
+      break;
+    default:
+      setServerButton.setEnabled(false);
+      privacyPolicyButton.setEnabled(true);
+      leaveExperimentButton.setEnabled(true);
     }
   }
 }

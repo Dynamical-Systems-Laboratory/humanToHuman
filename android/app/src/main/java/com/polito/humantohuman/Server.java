@@ -48,6 +48,9 @@ public class Server extends Service {
     Runnable runner = new Runnable() {
       @Override
       public void run() {
+        if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT)
+          return;
+
         if (!AppLogic.shouldUpload()) {
           handler.postDelayed(this, 1000 * 60);
           return;
@@ -77,7 +80,7 @@ public class Server extends Service {
     };
     handler.postDelayed(runner, 1000 * 60);
 
-    return Service.START_STICKY;
+    return Service.START_NOT_STICKY;
   }
 
   public interface Listener<T> { void onFinish(T data, Exception error); }

@@ -10,15 +10,21 @@ import Foundation
 import UIKit
 
 class SettingsController: UIViewController {
-
     @IBOutlet var toggleCollectButton: UIButton!
     @IBOutlet var baseurlField: UITextField!
     @IBOutlet var baseurlButton: UIButton!
-    @IBOutlet var privacyPolicyButton : UIButton!
+    @IBOutlet var privacyPolicyButton: UIButton!
+    @IBOutlet var leaveExperimentButton: UIButton!
 
     override func viewDidLoad() {
         print("settings controller loading...")
-        
+
+        // baseurlField.text = "https://dslserver05.poly.edu/experiment/experiment-"
+    }
+
+    override func viewDidAppear(_: Bool) {
+        print("settings controller appearing...")
+
         switch AppLogic.getAppState() {
         case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
             toggleCollectButton.setTitle("stop collection", for: .normal)
@@ -26,70 +32,51 @@ class SettingsController: UIViewController {
             baseurlField.isEnabled = false
             toggleCollectButton.isEnabled = true
             privacyPolicyButton.isEnabled = true
-            break
+            leaveExperimentButton.isEnabled = true
         case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
             toggleCollectButton.setTitle("collect data", for: .normal)
             baseurlField.isEnabled = false
             baseurlButton.isEnabled = false
             toggleCollectButton.isEnabled = true
             privacyPolicyButton.isEnabled = true
-            break
+            leaveExperimentButton.isEnabled = true
+        case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlButton.isEnabled = false
+            baseurlField.isEnabled = false
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = true
+            leaveExperimentButton.isEnabled = true
+        case APPSTATE_LOGGING_IN:
+            toggleCollectButton.setTitle("collect data", for: .normal)
+            baseurlButton.isEnabled = false
+            baseurlField.isEnabled = false
+            toggleCollectButton.isEnabled = false
+            privacyPolicyButton.isEnabled = false
+            leaveExperimentButton.isEnabled = false
         case APPSTATE_NO_EXPERIMENT:
             toggleCollectButton.setTitle("collect data", for: .normal)
             baseurlButton.isEnabled = true
             toggleCollectButton.isEnabled = false
+            baseurlField.isEnabled = true
             privacyPolicyButton.isEnabled = false
-            break
+            leaveExperimentButton.isEnabled = false
         default:
-            toggleCollectButton.setTitle("collect data", for: .normal)
-            baseurlField.isEnabled = false
-            baseurlButton.isEnabled = false
-            toggleCollectButton.isEnabled = false
-            privacyPolicyButton.isEnabled = true
+            print("got unexpected state")
+            exit(1)
         }
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        switch AppLogic.getAppState() {
-        case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-            toggleCollectButton.setTitle("stop collection", for: .normal)
-            baseurlButton.isEnabled = false
-            baseurlField.isEnabled = false
-            toggleCollectButton.isEnabled = true
-            privacyPolicyButton.isEnabled = true
-            break
-        case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-            toggleCollectButton.setTitle("collect data", for: .normal)
-            baseurlField.isEnabled = false
-            baseurlButton.isEnabled = false
-            toggleCollectButton.isEnabled = true
-            privacyPolicyButton.isEnabled = true
-            break
-        case APPSTATE_NO_EXPERIMENT:
-            toggleCollectButton.setTitle("collect data", for: .normal)
-            baseurlButton.isEnabled = true
-            toggleCollectButton.isEnabled = false
-            privacyPolicyButton.isEnabled = false
-            break
-        default:
-            toggleCollectButton.setTitle("collect data", for: .normal)
-            baseurlField.isEnabled = false
-            baseurlButton.isEnabled = false
-            toggleCollectButton.isEnabled = false
-            privacyPolicyButton.isEnabled = true
-        }
-    }
-    
+
     @IBAction func backToMain() {
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
-    
+
     @IBAction func goToPrivacyPolicy() {
-        let viewController = self.storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyController") as! PrivacyPolicyController
+        let viewController = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyController") as! PrivacyPolicyController
         viewController.modalPresentationStyle = .fullScreen
         present(viewController, animated: true, completion: nil)
     }
-    
+
     @IBAction func toggleCollection() {
         if AppLogic.getAppState() == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             AppLogic.stopCollectingData()
@@ -99,7 +86,7 @@ class SettingsController: UIViewController {
             toggleCollectButton.setTitle("stop collection", for: .normal)
         }
     }
-    
+
     @IBAction func setBaseurl() {
         if let baseurl = baseurlField.text {
             baseurlButton.isEnabled = false
@@ -110,10 +97,15 @@ class SettingsController: UIViewController {
                         self.baseurlButton.isEnabled = true
                         return
                     }
-                    
+
                     self.goToPrivacyPolicy()
                 }
             }
         }
+    }
+
+    @IBAction func leaveExperiment() {
+        AppLogic.leaveExperiment()
+        viewDidAppear(false)
     }
 }

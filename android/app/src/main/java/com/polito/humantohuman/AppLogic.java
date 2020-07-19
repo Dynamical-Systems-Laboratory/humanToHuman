@@ -3,6 +3,7 @@ package com.polito.humantohuman;
 import static com.polito.humantohuman.Database.*;
 import static com.polito.humantohuman.utils.Polyfill.*;
 
+import android.bluetooth.le.PeriodicAdvertisingParameters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
@@ -128,7 +129,7 @@ public class AppLogic {
   public static void stopCollectingData(Context context) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
       throw new RuntimeException(
-          "Can't stop collecting data while not currently collecting!");
+              "Can't stop collecting data while not currently collecting!");
 
     context.stopService(new Intent(context, Bluetooth.class));
     setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
@@ -136,8 +137,7 @@ public class AppLogic {
 
   public static String getServerURL() {
     if (appState == APPSTATE_NO_EXPERIMENT)
-      throw new RuntimeException(
-          "Can't get server URL when there's no experiment!");
+      throw new RuntimeException("Can't get server URL when there's no experiment!");
     return serverURL;
   }
 
@@ -236,7 +236,21 @@ public class AppLogic {
       throw new RuntimeException("use rejectPrivacyPolicy instead");
 
     setAppState(APPSTATE_NO_EXPERIMENT);
+  }
 
+  public static void leaveExperiment(Context ctx) {
+    if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING
+            && appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING
+            && appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING) {
+      throw new RuntimeException("use privacy policy-related methods instead");
+    }
+
+    if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
+      ctx.stopService(new Intent(ctx, Bluetooth.class));
+      ctx.stopService(new Intent(ctx, Server.class));
+    }
+
+    setAppState(APPSTATE_NO_EXPERIMENT);
   }
 
   /**
