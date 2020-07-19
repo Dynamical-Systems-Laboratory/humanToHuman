@@ -50,8 +50,8 @@ public class SettingsActivity extends AppCompatActivity {
     });
 
     leaveExperimentButton.setOnClickListener((view) -> {
-      this.onResume();
       AppLogic.leaveExperiment(this);
+      this.onResume();
     });
   }
 
