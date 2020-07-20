@@ -30,6 +30,7 @@ public class AppLogic {
   private static ArrayList<Database.Row> devices;
   private static WifiManager wifiManager;
   private static String token;
+  private static boolean serverServiceIsRunning = false;
 
   public static boolean startup(Context context) {
     initializeDatabase(context);
@@ -51,6 +52,7 @@ public class AppLogic {
       if (error != null)
         System.err.println("got error " + error.toString());
     };
+
     Server.supplier = () -> {
       if (devices == null || devices.isEmpty())
         devices = popRows();
@@ -60,20 +62,22 @@ public class AppLogic {
     };
     Bluetooth.delegate = Database::addRow;
 
-    if (appState != APPSTATE_NO_EXPERIMENT) {
-      serverURL = getPropText(KEY_SERVER_BASE_URL);
-      if (appState != APPSTATE_LOGGING_IN) {
-        bluetoothId = getPropNumeric(KEY_OWN_ID);
-        token = getPropText(KEY_TOKEN);
-      }
+    if (appState == APPSTATE_NO_EXPERIMENT) {
+      return true;
+    }
 
-      if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
-        if (!Bluetooth.isEnabled())
-          return false;
-        context.startService(new Intent(context, Bluetooth.class));
-        context.startService(new Intent(context, Server.class));
-      }
+    serverURL = getPropText(KEY_SERVER_BASE_URL);
+    if (appState != APPSTATE_LOGGING_IN) {
+      bluetoothId = getPropNumeric(KEY_OWN_ID);
+      token = getPropText(KEY_TOKEN);
+    }
 
+    if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
+      if (!Bluetooth.isEnabled())
+        return false;
+      context.startService(new Intent(context, Bluetooth.class));
+      context.startService(new Intent(context, Server.class));
+      serverServiceIsRunning = true;
     }
 
     return true;
@@ -121,7 +125,9 @@ public class AppLogic {
     if (!Bluetooth.isEnabled())
       return false;
     context.startService(new Intent(context, Bluetooth.class));
-    context.startService(new Intent(context, Server.class));
+    if (!serverServiceIsRunning)
+      context.startService(new Intent(context, Server.class));
+    serverServiceIsRunning = true;
     setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING);
     return true;
   }
@@ -226,6 +232,7 @@ public class AppLogic {
     if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
       context.stopService(new Intent(context, Bluetooth.class));
       context.stopService(new Intent(context, Server.class));
+      serverServiceIsRunning = false;
     }
 
     setAppState(APPSTATE_NO_EXPERIMENT);
@@ -248,6 +255,7 @@ public class AppLogic {
     if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
       ctx.stopService(new Intent(ctx, Bluetooth.class));
       ctx.stopService(new Intent(ctx, Server.class));
+      serverServiceIsRunning = false;
     }
 
     setAppState(APPSTATE_NO_EXPERIMENT);
@@ -262,6 +270,7 @@ public class AppLogic {
       WifiInfo wifiInfo = wifiManager.getConnectionInfo();
       return wifiInfo.getNetworkId() != -1;
     }
+
     return false;
   }
 }

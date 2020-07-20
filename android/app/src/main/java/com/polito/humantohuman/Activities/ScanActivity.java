@@ -23,15 +23,7 @@ public final class ScanActivity extends AppCompatActivity {
   Button settingsButton;
   TextView anonymousId;
   TextView experimentDescription;
-  CompoundButton.OnCheckedChangeListener scanSwitchListener = (buttonView, checked) -> {
-    if (checked) {
-      System.err.println("Starting bluetooth");
-      startCollectingData(this);
-    } else {
-      System.err.println("Stopping bluetooth");
-      stopCollectingData(this);
-    }
-  };
+  CompoundButton.OnCheckedChangeListener scanSwitchListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +35,24 @@ public final class ScanActivity extends AppCompatActivity {
     onlyWifiSwitch = findViewById(R.id.wifi);
     anonymousId = findViewById(R.id.scanAnonymousId);
 
+    ScanActivity self = this;
+    scanSwitchListener = new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+          System.err.println("Starting bluetooth");
+          if (!startCollectingData(self)) {
+            self.scanSwitch.setOnCheckedChangeListener(null);
+            buttonView.setChecked(false);
+            self.scanSwitch.setOnCheckedChangeListener(this);
+          }
+        } else {
+          System.err.println("Stopping bluetooth");
+          stopCollectingData(self);
+        }
+      }
+    };
+
     AppLogic.startup(this);
     scanSwitch.setOnCheckedChangeListener(scanSwitchListener);
 
@@ -51,11 +61,10 @@ public final class ScanActivity extends AppCompatActivity {
       startActivity(intent);
     });
 
+    onlyWifiSwitch.setChecked(getOnlyWifi());
     onlyWifiSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
       setOnlyWifi(checked);
     });
-
-    onlyWifiSwitch.setChecked(getOnlyWifi());
   }
 
   @Override
