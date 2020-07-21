@@ -178,7 +178,7 @@ func DeleteExperiment(password string) error {
 func DeleteExperimentData(experimentId uint32) {
 	users, err := getDevicesForExperiment(experimentId)
 	if err != nil {
-		return
+		utils.Log("got error while processing experimentId %v: %v", experimentId, err)
 	}
 
 	_, err = psql.Delete("devices").
@@ -186,13 +186,16 @@ func DeleteExperimentData(experimentId uint32) {
 		RunWith(globalDb).
 		Exec()
 	if err != nil {
-		return
+		utils.Log("got error while processing experimentId %v: %v", experimentId, err)
 	}
 
 	_, err = psql.Delete("connections").
 		Where(sq.Eq{"device_a": users}).
 		RunWith(globalDb).
 		Exec()
+	if err != nil {
+		utils.Log("got error while processing users %v: %v", users, err)
+	}
 }
 
 func InsertExperiment(password, privacyPolicy, description string) (uint32, error) {
