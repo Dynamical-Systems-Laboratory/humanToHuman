@@ -23,7 +23,9 @@ public final class ScanActivity extends AppCompatActivity {
   Button settingsButton;
   TextView anonymousId;
   TextView experimentDescription;
+
   CompoundButton.OnCheckedChangeListener scanSwitchListener;
+  CompoundButton.OnCheckedChangeListener onlyWifiSwitchListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +63,10 @@ public final class ScanActivity extends AppCompatActivity {
       startActivity(intent);
     });
 
-    onlyWifiSwitch.setChecked(getOnlyWifi());
-    onlyWifiSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+    onlyWifiSwitchListener = (buttonView, checked) -> {
       setOnlyWifi(checked);
-    });
+    };
+    onlyWifiSwitch.setOnCheckedChangeListener(onlyWifiSwitchListener);
   }
 
   @Override
@@ -72,6 +74,11 @@ public final class ScanActivity extends AppCompatActivity {
     super.onResume();
 
     experimentDescription.setText(Html.fromHtml(getDescriptionText(this)));
+
+    onlyWifiSwitch.setOnCheckedChangeListener(null);
+    onlyWifiSwitch.setChecked(getOnlyWifi());
+    onlyWifiSwitch.setOnCheckedChangeListener(onlyWifiSwitchListener);
+
     scanSwitch.setOnCheckedChangeListener(null);
     System.err.println("appstate is: " + getAppState());
     switch (getAppState()) {

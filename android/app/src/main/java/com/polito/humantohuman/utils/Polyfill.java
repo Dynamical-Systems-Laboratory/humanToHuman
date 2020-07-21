@@ -102,7 +102,7 @@ public final class Polyfill {
             .setCategory(Notification.CATEGORY_SERVICE)
             .setContentIntent(pendingIntent)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(
-                "HTH is scanning"))
+                "HTH is running service: " + channelName))
             .build();
 
     service.startForeground(id, notification);

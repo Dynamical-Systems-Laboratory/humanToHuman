@@ -91,7 +91,10 @@ public class AppLogic {
   }
 
   public static boolean shouldUpload() {
-    return !onlyWifi || isWifiConnected();
+    if (!onlyWifi) return true;
+    if (wifiManager.isWifiEnabled())
+      return wifiManager.getConnectionInfo().getNetworkId() != -1;
+    return false;
   }
 
   public static boolean getOnlyWifi() {
@@ -177,7 +180,7 @@ public class AppLogic {
     setPropText(KEY_SERVER_BASE_URL, serverURL);
     setAppState(APPSTATE_LOGGING_IN);
 
-    CountdownExecutor executor = new CountdownExecutor(1, () -> {
+    CountdownExecutor executor = new CountdownExecutor(2, () -> {
       setAppState(APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING);
       cb.accept(null);
     });
@@ -238,13 +241,6 @@ public class AppLogic {
     setAppState(APPSTATE_NO_EXPERIMENT);
   }
 
-  public static void ignorePrivacyPolicy() {
-    if (appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING)
-      throw new RuntimeException("use rejectPrivacyPolicy instead");
-
-    setAppState(APPSTATE_NO_EXPERIMENT);
-  }
-
   public static void leaveExperiment(Context ctx) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING
             && appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING
@@ -259,18 +255,5 @@ public class AppLogic {
     }
 
     setAppState(APPSTATE_NO_EXPERIMENT);
-  }
-
-  /**
-   * Check if the wifi is connected or not
-   * @return whether or not wifi is connected
-   */
-  public static boolean isWifiConnected() {
-    if(wifiManager.isWifiEnabled()) {
-      WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-      return wifiInfo.getNetworkId() != -1;
-    }
-
-    return false;
   }
 }
