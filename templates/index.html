@@ -33,7 +33,7 @@
 
     <div id="errorMessageRow" class="row invisible">
       <div class="col-10">
-        <div id="errorMessage">hello</div>
+        <div id="errorMessage"></div>
       </div>
     </div>
 
@@ -111,18 +111,22 @@
 
     async function openServerConnection(url, password) {
       try {
-        url = url.replace(new RegExp('[/]+$', 'g'), '');
-        const hello = await fetch(url + "/login");
-        const data = await hello.json();
+        urlString = url.replace(new RegExp('[/]+$', 'g'), ''); 
+        url = new URL(urlString + + '/login');
+        url.search = new URLSearchParams({
+          password: password,
+        });
+        const resp = await fetch(url);
+        const data = await resp.json();
         if (data === true) {
-          serverURL = url;
+          serverURL = urlString;
           serverPassword = password;
           errorMessageRow.classList.add("invisible");
           controlPanel.classList.remove("invisible");
         } else {
           controlPanel.classList.add("invisible");
           errorMessageRow.classList.remove("invisible");
-          errorMessage.innerHTML = "couldn't login to server: " + e;
+          errorMessage.innerHTML = "couldn't login to server: login didn't work";
         }
       } catch (e) {
         controlPanel.classList.add("invisible");
