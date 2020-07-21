@@ -14,6 +14,23 @@ var (
 	InvalidExperimentId = errors.New("invalid experiment id")
 )
 
+func getExperimentIdForPassword(password string) (uint32, error) {
+	hashed, err := utils.HashPassword(password)
+	if err != nil {
+		return 0, err
+	}
+
+	row := psql.Select("id").
+		From("experiments").
+		Where(sq.Eq{"hash": hashed}).
+		RunWith(globalDb).
+		QueryRow()
+
+	var experimentId uint32
+	err = row.Scan(&experimentId)
+	return experimentId, err
+}
+
 func ExperimentExists(password string) (bool, error) {
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
@@ -36,15 +53,19 @@ func ExperimentExists(password string) (bool, error) {
 }
 
 func GetDevicesForExperiment(password string) ([]int64, error) {
-	hashed, err := utils.HashPassword(password)
+	id, err := getExperimentIdForPassword(password)
 	if err != nil {
 		return nil, err
 	}
 
+	return getDevicesForExperiment(id)
+}
+
+func getDevicesForExperiment(id uint32) ([]int64, error) {
 	rows, err := psql.Select("devices.id").
 		From("devices").
 		Join("experiments ON experiments.id = devices.experiment").
-		Where(sq.Eq{"experiments.hash": hashed}).
+		Where(sq.Eq{"devices.experiment": id}).
 		RunWith(globalDb).
 		Query()
 	if err != nil {
@@ -71,7 +92,8 @@ func GetDevicesForExperiment(password string) ([]int64, error) {
 }
 
 func GetDataForExperiment(password string) ([]Connection, error) {
-	users, err := GetDevicesForExperiment(password)
+	id, err := getExperimentIdForPassword(password)
+	users, err := getDevicesForExperiment(id)
 	rows, err := psql.Select("time", "device_a", "device_b", "measured_power", "rssi").
 		From("connections").
 		Where(sq.Eq{"device_a": users}).
@@ -136,19 +158,7 @@ func GetPrivacyPolicy(password string) (string, error) {
 }
 
 func DeleteExperiment(password string) error {
-	hashed, err := utils.HashPassword(password)
-	if err != nil {
-		return err
-	}
-
-	row := psql.Select("id").
-		From("experiments").
-		Where(sq.Eq{"hash": hashed}).
-		RunWith(globalDb).
-		QueryRow()
-
-	var experimentId uint64
-	err = row.Scan(&experimentId)
+	experimentId, err := getExperimentIdForPassword(password)
 	if err != nil {
 		return err
 	}
@@ -161,9 +171,14 @@ func DeleteExperiment(password string) error {
 		return err
 	}
 
-	users, err := GetDevicesForExperiment(password)
+	go DeleteExperimentData(experimentId)
+	return nil
+}
+
+func DeleteExperimentData(experimentId uint32) {
+	users, err := getDevicesForExperiment(experimentId)
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = psql.Delete("devices").
@@ -171,14 +186,13 @@ func DeleteExperiment(password string) error {
 		RunWith(globalDb).
 		Exec()
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = psql.Delete("connections").
-		Where(sq.Or{sq.Eq{"device_a": users}, sq.Eq{"device_b": users}}).
+		Where(sq.Eq{"device_a": users}).
 		RunWith(globalDb).
 		Exec()
-	return err
 }
 
 func InsertExperiment(password, privacyPolicy, description string) (uint32, error) {
@@ -258,20 +272,27 @@ func RemoveUser(token string) error {
 		return err
 	}
 
-	_, err = psql.Delete("connections").
+	go RemoveUserData(deviceId)
+	return nil
+}
+
+func RemoveUserData(deviceId int64) {
+	_, err := psql.Delete("connections").
 		Where(sq.Or{sq.Eq{"device_a": deviceId}, sq.Eq{"device_b": deviceId}}).
 		RunWith(globalDb).
 		Exec()
 	if err != nil {
-		return err
+		utils.Log("got error while processing user %v: %v", deviceId, err)
+		return
 	}
 
 	_, err = psql.Delete("devices").
 		Where(sq.Eq{"id": deviceId}).
 		RunWith(globalDb).
 		Exec()
-
-	return err
+	if err != nil {
+		utils.Log("got error while processing user %v: %v", deviceId, err)
+	}
 }
 
 func InsertConnections(connections ConnectionInfo) error {
