@@ -23,7 +23,7 @@ class AppLogic {
     private static var appState : Int = APPSTATE_NO_EXPERIMENT
     private static var serverURL : String = ""
     private static var bluetoothId : UInt64 = 0
-    private static var token : String = ""
+    private static var token : String! = ""
     private static var data : Data? = nil
     private static var serverSendTimer : Timer!
     
@@ -31,9 +31,8 @@ class AppLogic {
         guard Database.initDatabase() else { exit(1) }
         appState = Int(Database.getPropNumeric(prop: KEY_APP_STATE) ?? UInt64(APPSTATE_NO_EXPERIMENT))
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.humantohuman.fetcher", using: nil) { task in
-            let bgrequest = BGProcessingTaskRequest(identifier: "com.humantohuman.fetcher")
+            let bgrequest = BGAppRefreshTaskRequest(identifier: "com.humantohuman.fetcher")
             bgrequest.earliestBeginDate = Date(timeIntervalSinceNow: 5)
-            bgrequest.requiresNetworkConnectivity = true
             try? BGTaskScheduler.shared.submit(bgrequest)
             
             
@@ -174,9 +173,9 @@ class AppLogic {
             exit(1)
         }
         
-        let request = BGProcessingTaskRequest(identifier: "com.humantohuman.fetcher")
+        print("making bgprocessing request")
+        let request = BGAppRefreshTaskRequest(identifier: "com.humantohuman.fetcher")
         request.earliestBeginDate = Date(timeIntervalSinceNow: 2)
-        request.requiresNetworkConnectivity = true
         do {
             BGTaskScheduler.shared.cancelAllTaskRequests()
             try BGTaskScheduler.shared.submit(request)
@@ -289,6 +288,7 @@ class AppLogic {
         
         setAppState(APPSTATE_NO_EXPERIMENT)
         data = nil
+        token = nil
         BGTaskScheduler.shared.cancelAllTaskRequests()
         serverSendTimer.invalidate()
         serverSendTimer = nil
@@ -316,10 +316,11 @@ class AppLogic {
             }
 
             print("Got bluetooth id: \(uid)")
-            bluetoothId = uid
-            token = tokenOrError
-            Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(uid))
-            Database.setPropText(prop: KEY_TOKEN, value: tokenOrError)
+            print("Got token: \(tokenOrError)")
+            self.bluetoothId = uid
+            self.token = tokenOrError
+            Database.setPropNumeric(prop: KEY_OWN_ID, value: Int64(self.bluetoothId))
+            Database.setPropText(prop: KEY_TOKEN, value: self.token)
             setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
             callback(nil)
         }
