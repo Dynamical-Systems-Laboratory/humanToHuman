@@ -74,7 +74,7 @@ func GetDataForExperiment(password string) ([]Connection, error) {
 	users, err := GetDevicesForExperiment(password)
 	rows, err := psql.Select("time", "device_a", "device_b", "measured_power", "rssi").
 		From("connections").
-		Where(sq.Or{sq.Eq{"device_a": users}, sq.Eq{"device_b": users}}).
+		Where(sq.Eq{"device_a": users}).
 		RunWith(globalDb).
 		Query()
 	if err != nil {

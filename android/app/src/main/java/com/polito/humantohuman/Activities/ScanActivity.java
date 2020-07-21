@@ -84,12 +84,12 @@ public final class ScanActivity extends AppCompatActivity {
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(true);
         System.err.println(AppLogic.getBluetoothID());
-        anonymousId.setText(String.format("ID: %d", AppLogic.getBluetoothID()));
+        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
         break;
       case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
         scanSwitch.setEnabled(true);
         scanSwitch.setChecked(false);
-        anonymousId.setText(String.format("ID: %d", AppLogic.getBluetoothID()));
+        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
         break;
       case APPSTATE_LOGGING_IN:
       case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
@@ -99,7 +99,7 @@ public final class ScanActivity extends AppCompatActivity {
       case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
         scanSwitch.setEnabled(false);
         scanSwitch.setChecked(false);
-        anonymousId.setText("ID: " + AppLogic.getBluetoothID());
+        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
         break;
       default:
         throw new RuntimeException("Unknown state");
