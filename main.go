@@ -85,7 +85,7 @@ func main() {
 	database.ConnectToDb(*dbconnstr)
 
 	router.POST("/clear", web.Clear)
-	router.GET("/login", web.Login)
+	router.POST("/login", web.Login)
 	router.POST("/addExperiment", web.NewExperiment)
 	router.POST("/deleteExperiment", web.DeleteExperiment)
 

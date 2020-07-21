@@ -111,12 +111,15 @@
 
     async function openServerConnection(url, password) {
       try {
-        urlString = url.replace(new RegExp('[/]+$', 'g'), ''); 
-        url = new URL(urlString + + '/login');
-        url.search = new URLSearchParams({
+        urlString = url.replace(new RegExp('[/]+$', 'g'), '');
+        url = new URL(urlString + '/login');
+        params = new URLSearchParams({
           password: password,
         });
-        const resp = await fetch(url);
+        const resp = await fetch(url,{
+          method: 'POST',
+          body: params,
+        });
         const data = await resp.json();
         if (data === true) {
           serverURL = urlString;
