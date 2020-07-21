@@ -25,6 +25,7 @@ class AppLogic {
     private static var bluetoothId : UInt64 = 0
     private static var token : String = ""
     private static var data : Data? = nil
+    private static var serverSendTimer : Timer!
     
     static func startup() {
         guard Database.initDatabase() else { exit(1) }
@@ -67,8 +68,7 @@ class AppLogic {
             }
         
             if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
-                Bluetooth.startScanning()
-                guard Bluetooth.startAdvertising() else { exit(1) } // TODO handle this condition
+                startCollectingDataStateless()
             }
         }
 
@@ -167,11 +167,7 @@ class AppLogic {
         return str
     }
     
-    static func startCollectingData() {
-        if appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING {
-            print("Can't start collecting data while not in an experiment!")
-        }
-        
+    private static func startCollectingDataStateless() {
         Bluetooth.startScanning()
         guard Bluetooth.startAdvertising() else {
             print("advertising failed somehow")
@@ -188,6 +184,27 @@ class AppLogic {
             print("BGTaskScheduler errored \(error)")
             exit(1)
         }
+
+        guard serverSendTimer == nil else { return }
+        
+        
+        serverSendTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+            if data == nil {
+                data = Server.formatConnectionData(id: getBluetoothId(), token: getToken(), rows: Database.popRows())
+                guard data != nil else { return }
+            }
+            
+            Server.sendConnectionData(data: data!) {
+                data = nil
+            }
+        }
+    }
+    
+    static func startCollectingData() {
+        if appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING {
+            print("Can't start collecting data while not in an experiment!")
+        }
+        startCollectingDataStateless()
         setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
     }
     
@@ -269,7 +286,13 @@ class AppLogic {
             print("should be using leave experiment, not ignorePrivacyPolicy")
             exit(1)
         }
+        
         setAppState(APPSTATE_NO_EXPERIMENT)
+        data = nil
+        BGTaskScheduler.shared.cancelAllTaskRequests()
+        serverSendTimer.invalidate()
+        serverSendTimer = nil
+        Database.popRows()
     }
     
     static func rejectPrivacyPolicy(callback: @escaping (String?) -> Void) {
