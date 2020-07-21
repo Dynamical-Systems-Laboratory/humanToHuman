@@ -9,6 +9,7 @@
 import Foundation
 import BackgroundTasks
 import UIKit
+import CoreBluetooth
 
 
 let APPSTATE_EXPERIMENT_RUNNING_COLLECTING = 0
@@ -67,10 +68,12 @@ class AppLogic {
             }
         
             if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
-                startCollectingDataStateless()
+                guard startCollectingDataStateless() else {
+                    setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
+                    return
+                }
             }
         }
-
     }
     
     static func getAppState() -> Int {
@@ -166,11 +169,9 @@ class AppLogic {
         return str
     }
     
-    private static func startCollectingDataStateless() {
-        Bluetooth.startScanning()
-        guard Bluetooth.startAdvertising() else {
-            print("advertising failed somehow")
-            exit(1)
+    private static func startCollectingDataStateless() -> Bool {
+        guard Bluetooth.startScanning() == .poweredOn && Bluetooth.startAdvertising() == .poweredOn else {
+            return false
         }
         
         print("making bgprocessing request")
@@ -184,7 +185,7 @@ class AppLogic {
             exit(1)
         }
 
-        guard serverSendTimer == nil else { return }
+        guard serverSendTimer == nil else { return true }
         
         
         serverSendTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
@@ -197,14 +198,18 @@ class AppLogic {
                 data = nil
             }
         }
+        
+        return true
     }
     
-    static func startCollectingData() {
+    static func startCollectingData() -> Bool {
         if appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING {
             print("Can't start collecting data while not in an experiment!")
+            exit(1)
         }
-        startCollectingDataStateless()
+        guard startCollectingDataStateless() else { return false }
         setAppState(APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
+        return true
     }
     
     static func stopCollectingData() {

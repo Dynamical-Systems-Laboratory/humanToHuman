@@ -23,6 +23,7 @@ let shared: FMDatabase = {
     let database = FMDatabase(url: fileURL)
     return database
 }()
+let mutex = DispatchSemaphore(value: 1)
 
 // A row in the sensor_data table.
 struct Row {
@@ -64,48 +65,62 @@ struct Database {
     }
 
     static func clearProp(prop: Int) {
+        mutex.wait()
         try? shared.executeUpdate("DELETE FROM metadata where key_ = ?", values: [prop])
+        mutex.signal()
     }
 
     static func getPropText(prop: Int) -> String? {
+        mutex.wait()
         let rs = shared.executeQuery("SELECT tvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
+
         if let rs = rs, rs.next() {
             let val = rs.string(forColumn: "tvalue")
             rs.close()
+            mutex.signal()
             return val
         } else {
+            mutex.signal()
             return nil
         }
     }
 
     static func setPropText(prop: Int, value: String) {
+        mutex.wait()
         try? shared.executeUpdate("INSERT OR REPLACE INTO metadata (key_, tvalue) VALUES (?, ?)",
                                      values: [prop, value])
+        mutex.signal()
     }
 
     // Gets a numeric property from the metadata table.
     static func getPropNumeric(prop: Int) -> UInt64? {
+        mutex.wait()
         let rs = shared.executeQuery("SELECT nvalue from metadata WHERE key_ = ?",
                                      withArgumentsIn: [prop])
         if let rs = rs, rs.next() {
             let val =  UInt64(bitPattern: rs.longLongInt(forColumn: "nvalue"))
             rs.close()
+            mutex.signal()
             return val
         } else {
+            mutex.signal()
             return nil
         }
     }
 
     // Sets a numeric property in the metadata table.
     static func setPropNumeric(prop: Int, value: Int64) {
+        mutex.wait()
         try? shared.executeUpdate("INSERT OR REPLACE INTO metadata (key_, nvalue) VALUES (?, ?)",
                                      values: [prop, value])
+        mutex.signal()
     }
 
     // Pops all rows from the sensor_data table, reading then deleting them.
     static func popRows() -> [Row] {
         do {
+            mutex.wait()
             var rs = try shared.executeQuery("SELECT MAX(id) as max_id FROM sensor_data LIMIT 1", values: nil)
             rs.next()
             let rowMax = rs.longLongInt(forColumn: "max_id")
@@ -126,27 +141,33 @@ struct Database {
             }
             rs.close()
             shared.executeUpdate("DELETE FROM sensor_data WHERE id <= ?", withArgumentsIn: [rowMax])
+            mutex.signal()
             return list
         } catch {
             print(shared.lastErrorMessage())
+            mutex.signal()
             return []
         }
     }
 
     // Write a row to the database.
     static func writeRow(device: Device) -> Bool {
-        return shared.executeUpdate(
+        mutex.wait()
+        let val = shared.executeUpdate(
             """
             insert into sensor_data (time, source, power, rssi)
             values (strftime('%s','now') || substr(strftime('%f','now'),4), ?, ?, ?)
             """,
             withArgumentsIn: [device.uuid, device.measuredPower, device.rssi]
         )
+        mutex.signal()
+        return val
     }
 
     // Read all rows from the database.
     static func rowCount() -> Int {
         do {
+            mutex.wait()
             // Get a resultset from the database cooresponding to all rows in the sensor_data table
             let rs = try shared.executeQuery("SELECT COUNT(id) AS row_count FROM sensor_data", values: nil)
             guard rs.next() else {
@@ -155,9 +176,11 @@ struct Database {
 
             let rowCount = rs.long(forColumn: "row_count")
             rs.close()
+            mutex.signal()
             return rowCount
         } catch {
             print(shared.lastErrorMessage())
+            mutex.signal()
             return 0
         }
     }

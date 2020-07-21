@@ -49,27 +49,28 @@ class Bluetooth: NSObject {
         ])
     }
 
-    static func startAdvertising() -> Bool {
-        if advertising { return true }
+    static func startAdvertising() -> CBManagerState {
+        if advertising { return .poweredOn }
         advertising = true
         if peripheral == nil {
             peripheral = CBPeripheralManager(delegate: beacon, queue: nil)
-            return true
+            return peripheral.state
         }
 
         advertise()
-        return true
+        return peripheral.state
     }
 
-    static func startScanning() {
-        if scanning { return }
+    static func startScanning() -> CBManagerState {
+        if scanning { return .poweredOn }
         scanning = true
         if central == nil {
             central = CBCentralManager(delegate: beacon, queue: nil)
-            return
+            return central.state
         }
 
         scan()
+        return central.state
     }
 
     static func stopScanning() {
@@ -90,12 +91,14 @@ class Bluetooth: NSObject {
 extension Bluetooth: CBPeripheralManagerDelegate {
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         if peripheral.state == .poweredOn, Bluetooth.advertising { Bluetooth.advertise() }
+        // Handle the case where the user shuts off bluetooth while the app is scanning
     }
 }
 
 extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn, Bluetooth.scanning { Bluetooth.scan() }
+        // Handle the case where the user shuts off bluetooth while the app is advertising
     }
 
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as

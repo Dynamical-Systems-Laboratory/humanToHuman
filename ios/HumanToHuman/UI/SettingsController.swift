@@ -27,35 +27,35 @@ class SettingsController: UIViewController {
 
         switch AppLogic.getAppState() {
         case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-            toggleCollectButton.setTitle("stop collection", for: .normal)
+            toggleCollectButton.setTitle("Stop collection", for: .normal)
             baseurlButton.isEnabled = false
             baseurlField.isEnabled = false
             toggleCollectButton.isEnabled = true
             privacyPolicyButton.isEnabled = true
             leaveExperimentButton.isEnabled = true
         case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-            toggleCollectButton.setTitle("collect data", for: .normal)
+            toggleCollectButton.setTitle("Collect data", for: .normal)
             baseurlField.isEnabled = false
             baseurlButton.isEnabled = false
             toggleCollectButton.isEnabled = true
             privacyPolicyButton.isEnabled = true
             leaveExperimentButton.isEnabled = true
         case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
-            toggleCollectButton.setTitle("collect data", for: .normal)
+            toggleCollectButton.setTitle("Collect data", for: .normal)
             baseurlButton.isEnabled = false
             baseurlField.isEnabled = false
             toggleCollectButton.isEnabled = false
             privacyPolicyButton.isEnabled = true
             leaveExperimentButton.isEnabled = true
         case APPSTATE_LOGGING_IN:
-            toggleCollectButton.setTitle("collect data", for: .normal)
+            toggleCollectButton.setTitle("Collect data", for: .normal)
             baseurlButton.isEnabled = false
             baseurlField.isEnabled = false
             toggleCollectButton.isEnabled = false
             privacyPolicyButton.isEnabled = false
             leaveExperimentButton.isEnabled = false
         case APPSTATE_NO_EXPERIMENT:
-            toggleCollectButton.setTitle("collect data", for: .normal)
+            toggleCollectButton.setTitle("Collect data", for: .normal)
             baseurlButton.isEnabled = true
             toggleCollectButton.isEnabled = false
             baseurlField.isEnabled = true
@@ -80,10 +80,19 @@ class SettingsController: UIViewController {
     @IBAction func toggleCollection() {
         if AppLogic.getAppState() == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
             AppLogic.stopCollectingData()
-            toggleCollectButton.setTitle("collect data", for: .normal)
+            toggleCollectButton.setTitle("Collect data", for: .normal)
         } else {
-            AppLogic.startCollectingData()
-            toggleCollectButton.setTitle("stop collection", for: .normal)
+            guard AppLogic.startCollectingData() else {
+                let refreshAlert = UIAlertController(title: "Bluetooth not on",
+                                                     message: "This app requires bluetooth to work properly.",
+                                                     preferredStyle: UIAlertController.Style.alert)
+                
+                refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+
+                present(refreshAlert, animated: true, completion: nil)
+                return
+            }
+            toggleCollectButton.setTitle("Stop collection", for: .normal)
         }
     }
 
