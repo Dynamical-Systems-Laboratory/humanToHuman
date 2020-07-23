@@ -14,6 +14,8 @@ import com.polito.humantohuman.utils.Polyfill;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.TimeZone;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +26,6 @@ public class Server extends Service {
   private static final int SEND_FOREGROUND_ID = 3;
   public static Polyfill.Supplier<ArrayList<Database.Row>> supplier;
   public static Listener<JSONObject> listener;
-  public static final SimpleDateFormat format =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US);
   public static RequestQueue requestQueue;
 
   @Nullable
@@ -102,6 +102,10 @@ public class Server extends Service {
   }
 
   public static JSONObject serializeRows(ArrayList<Database.Row> rows) {
+    SimpleDateFormat format =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US);
+    format.setTimeZone(TimeZone.getDefault());
+
     try {
       JSONArray jsonArray = new JSONArray();
       for (Database.Row row : rows) {
