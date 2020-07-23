@@ -1,14 +1,9 @@
 package com.polito.humantohuman;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 import org.joda.time.Instant;
@@ -16,7 +11,6 @@ import org.joda.time.Instant;
 public class Database extends SQLiteOpenHelper {
 
   public static int KEY_OWN_ID = 0;
-  public static int KEY_CURRENT_CURSOR = 1;
   public static int KEY_PRIVACY_POLICY = 3;
   public static int KEY_EXPERIMENT_DESCRIPTION = 6;
   public static int KEY_SERVER_BASE_URL = 7;
@@ -25,7 +19,7 @@ public class Database extends SQLiteOpenHelper {
   public static final int KEY_TOKEN =  10;
   private static Database database;
 
-  Database(@Nullable Context context) { super(context, "database", null, 1); }
+  Database(Context context) { super(context, "database", null, 1); }
 
   public static class Row {
     public final long id;

@@ -9,13 +9,7 @@
 import Foundation
 
 // Date formatter
-let formatter = { () -> DateFormatter in
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    return formatter
-}()
+
 
 struct IDInformation : Codable {
     var token: String
@@ -49,7 +43,12 @@ struct Server {
         if rows.count == 0 {
             return nil
         }
-
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        formatter.timeZone = TimeZone.current
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        
         let jsonRows = rows.map { row in
             [
                 "time": formatter.string(from: row.time),
