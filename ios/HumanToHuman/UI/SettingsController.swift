@@ -83,13 +83,13 @@ class SettingsController: UIViewController {
             toggleCollectButton.setTitle("Collect data", for: .normal)
         } else {
             guard AppLogic.startCollectingData() else {
-                let refreshAlert = UIAlertController(title: "Bluetooth not on",
-                                                     message: "This app requires bluetooth to work properly.",
-                                                     preferredStyle: UIAlertController.Style.alert)
-                
-                refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-
-                present(refreshAlert, animated: true, completion: nil)
+//                let refreshAlert = UIAlertController(title: "Bluetooth not on",
+//                                                     message: "This app requires bluetooth to work properly.",
+//                                                     preferredStyle: UIAlertController.Style.alert)
+//
+//                refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+//
+//                present(refreshAlert, animated: true, completion: nil)
                 return
             }
             toggleCollectButton.setTitle("Stop collection", for: .normal)

@@ -12,7 +12,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class AppLogic {
   public static boolean startup(Context context) {
     initializeDatabase(context);
     Server.initializeServer(context);
-    wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    wifiManager = (WifiManager)context.getApplicationContext().getSystemService(
+        Context.WIFI_SERVICE);
     Long onlyWifiNullable = getPropNumeric(KEY_ONLY_WIFI);
     onlyWifi = onlyWifiNullable != null && onlyWifiNullable == 1;
 
@@ -95,15 +95,14 @@ public class AppLogic {
   }
 
   public static boolean shouldUpload() {
-    if (!onlyWifi) return true;
+    if (!onlyWifi)
+      return true;
     if (wifiManager.isWifiEnabled())
       return wifiManager.getConnectionInfo().getNetworkId() != -1;
     return false;
   }
 
-  public static boolean getOnlyWifi() {
-    return onlyWifi;
-  }
+  public static boolean getOnlyWifi() { return onlyWifi; }
 
   public static void setOnlyWifi(boolean value) {
     onlyWifi = value;
@@ -123,17 +122,16 @@ public class AppLogic {
     return token;
   }
 
-
   public static boolean startCollectingData(Context context) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
       throw new RuntimeException(
           "Can't start collecting data while not in an experiment!");
 
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+    if (ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION) !=
+        PackageManager.PERMISSION_GRANTED) {
       return false;
     }
-
 
     if (!Bluetooth.isEnabled())
       return false;
@@ -148,7 +146,7 @@ public class AppLogic {
   public static void stopCollectingData(Context context) {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING)
       throw new RuntimeException(
-              "Can't stop collecting data while not currently collecting!");
+          "Can't stop collecting data while not currently collecting!");
 
     context.stopService(new Intent(context, Bluetooth.class));
     setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING);
@@ -156,7 +154,8 @@ public class AppLogic {
 
   public static String getServerURL() {
     if (appState == APPSTATE_NO_EXPERIMENT)
-      throw new RuntimeException("Can't get server URL when there's no experiment!");
+      throw new RuntimeException(
+          "Can't get server URL when there's no experiment!");
     return serverURL;
   }
 
@@ -252,9 +251,9 @@ public class AppLogic {
   }
 
   public static void leaveExperiment(Context ctx) {
-    if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING
-            && appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING
-            && appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING) {
+    if (appState != APPSTATE_EXPERIMENT_RUNNING_COLLECTING &&
+        appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING &&
+        appState != APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING) {
       throw new RuntimeException("use privacy policy-related methods instead");
     }
 
