@@ -2,12 +2,17 @@ package com.polito.humantohuman.Activities;
 
 import static com.polito.humantohuman.AppLogic.*;
 
+import android.Manifest;
 import android.content.*;
+import android.content.pm.PackageManager;
 import android.os.*;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.widget.*;
 import com.polito.humantohuman.*;
+import com.polito.humantohuman.utils.PermissionUtils;
 import com.polito.humantohuman.utils.Polyfill;
 import java.util.*;
 
@@ -47,6 +52,14 @@ public final class ScanActivity extends AppCompatActivity {
             self.scanSwitch.setOnCheckedChangeListener(null);
             buttonView.setChecked(false);
             self.scanSwitch.setOnCheckedChangeListener(this);
+
+            if (ContextCompat.checkSelfPermission(self, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+              // Bluetooth is off
+              return;
+            }
+
+            PermissionUtils.requestPermission(self, 1, Manifest.permission.ACCESS_FINE_LOCATION, false);
           }
         } else {
           System.err.println("Stopping bluetooth");

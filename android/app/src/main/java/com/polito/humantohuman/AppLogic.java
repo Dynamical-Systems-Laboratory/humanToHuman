@@ -3,11 +3,15 @@ package com.polito.humantohuman;
 import static com.polito.humantohuman.Database.*;
 import static com.polito.humantohuman.utils.Polyfill.*;
 
+import android.Manifest;
 import android.bluetooth.le.PeriodicAdvertisingParameters;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -124,6 +128,12 @@ public class AppLogic {
     if (appState != APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
       throw new RuntimeException(
           "Can't start collecting data while not in an experiment!");
+
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+      return false;
+    }
+
 
     if (!Bluetooth.isEnabled())
       return false;

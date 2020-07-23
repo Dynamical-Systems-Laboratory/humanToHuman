@@ -14,6 +14,8 @@ import com.polito.humantohuman.utils.Polyfill;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +30,8 @@ public class Server extends Service {
   public static final SimpleDateFormat format =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US);
   public static RequestQueue requestQueue;
+
+  private Timer timer = new Timer();
 
   @Nullable
   @Override
@@ -44,42 +48,38 @@ public class Server extends Service {
       startForeground(SEND_FOREGROUND_ID, new Notification());
     }
 
-    Handler handler = new Handler();
-    Runnable runner = new Runnable() {
+    timer.scheduleAtFixedRate(new TimerTask() {
+
       @Override
       public void run() {
         if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT)
           return;
 
         if (!AppLogic.shouldUpload()) {
-          handler.postDelayed(this, 1000 * 60);
           return;
         }
 
         ArrayList<Database.Row> rows = supplier.get();
+        System.err.println(rows);
         if (rows == null) {
-          handler.postDelayed(this, 1000 * 60);
           return;
         }
 
+        System.err.println("Sending data to server...");
         JsonObjectRequest request = new JsonObjectRequest(
-            Request.Method.POST, AppLogic.getServerURL() + "/addConnections",
-            serializeRows(rows),
-            (response)
-                -> {
-              listener.onFinish(response, null);
-              handler.postDelayed(this, 1000 * 60);
-            },
-            (error) -> {
-              listener.onFinish(null, error);
-              handler.postDelayed(this, 1000 * 60);
-            });
+                Request.Method.POST, AppLogic.getServerURL() + "/addConnections",
+                serializeRows(rows),
+                (response)
+                        -> {
+                  listener.onFinish(response, null);
+                },
+                (error) -> {
+                  listener.onFinish(null, error);
+                });
 
         requestQueue.add(request);
       }
-    };
-    handler.postDelayed(runner, 1000 * 60);
-
+    }, 0L, 60L * 1000L);
     return Service.START_NOT_STICKY;
   }
 
