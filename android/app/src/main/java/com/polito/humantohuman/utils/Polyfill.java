@@ -12,10 +12,8 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
 import com.polito.humantohuman.Activities.ScanActivity;
 import com.polito.humantohuman.R;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 

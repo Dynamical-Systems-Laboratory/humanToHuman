@@ -25,22 +25,26 @@ public class PolicyActivity extends AppCompatActivity {
       if (isChecked) {
         AppLogic.acceptPrivacyPolicy((error) -> {
           if (error != null) {
-            System.err.println("Got error while accepting privacy policy: " + error);
+            System.err.println("Got error while accepting privacy policy: " +
+                               error);
           } else {
             this.finish();
           }
         });
       } else {
         new AlertDialog.Builder(this)
-                .setTitle("Revoke Consent Form")
-                .setMessage("You will be kicked from the experiment.")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
-                  AppLogic.rejectPrivacyPolicy(this);
-                  finish();
-                })
-                .setNegativeButton(android.R.string.no, (dialog, whichButton) -> checkBox.setChecked(true))
-                .show();
+            .setTitle("Revoke Consent Form")
+            .setMessage("You will be kicked from the experiment.")
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setPositiveButton(android.R.string.yes,
+                               (dialog, whichButton) -> {
+                                 AppLogic.rejectPrivacyPolicy(this);
+                                 finish();
+                               })
+            .setNegativeButton(
+                android.R.string.no,
+                (dialog, whichButton) -> checkBox.setChecked(true))
+            .show();
       }
     });
   }
@@ -50,13 +54,13 @@ public class PolicyActivity extends AppCompatActivity {
     super.onResume();
 
     switch (AppLogic.getAppState()) {
-      case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
-      case AppLogic.APPSTATE_NO_EXPERIMENT:
-      case AppLogic.APPSTATE_LOGGING_IN:
-        checkBox.setChecked(false);
-        break;
-      default:
-        checkBox.setChecked(true);
+    case AppLogic.APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+    case AppLogic.APPSTATE_NO_EXPERIMENT:
+    case AppLogic.APPSTATE_LOGGING_IN:
+      checkBox.setChecked(false);
+      break;
+    default:
+      checkBox.setChecked(true);
     }
 
     privacyPolText.setText(AppLogic.getPrivacyPolicyText());

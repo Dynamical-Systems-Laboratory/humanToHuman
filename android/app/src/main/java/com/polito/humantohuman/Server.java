@@ -48,8 +48,8 @@ public class Server extends Service {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT
-                || AppLogic.getAppState() == AppLogic.APPSTATE_LOGGING_IN)
+        if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT ||
+            AppLogic.getAppState() == AppLogic.APPSTATE_LOGGING_IN)
           return;
 
         if (!AppLogic.shouldUpload()) {
