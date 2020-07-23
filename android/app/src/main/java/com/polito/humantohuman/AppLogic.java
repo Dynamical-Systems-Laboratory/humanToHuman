@@ -243,6 +243,9 @@ public class AppLogic {
 
     if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
       context.stopService(new Intent(context, Bluetooth.class));
+    }
+
+    if (serverServiceIsRunning) {
       context.stopService(new Intent(context, Server.class));
       serverServiceIsRunning = false;
     }
@@ -259,6 +262,9 @@ public class AppLogic {
 
     if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
       ctx.stopService(new Intent(ctx, Bluetooth.class));
+    }
+
+    if (serverServiceIsRunning) {
       ctx.stopService(new Intent(ctx, Server.class));
       serverServiceIsRunning = false;
     }

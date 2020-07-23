@@ -14,9 +14,6 @@ import com.polito.humantohuman.utils.Polyfill;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,8 +27,6 @@ public class Server extends Service {
   public static final SimpleDateFormat format =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US);
   public static RequestQueue requestQueue;
-
-  private Timer timer = new Timer();
 
   @Nullable
   @Override
@@ -48,43 +43,56 @@ public class Server extends Service {
       startForeground(SEND_FOREGROUND_ID, new Notification());
     }
 
-    timer.scheduleAtFixedRate(new TimerTask() {
+    Handler handler = new Handler();
 
+    Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT)
+        if (AppLogic.getAppState() == AppLogic.APPSTATE_NO_EXPERIMENT
+                || AppLogic.getAppState() == AppLogic.APPSTATE_LOGGING_IN)
           return;
 
         if (!AppLogic.shouldUpload()) {
+          handler.postDelayed(this, 1000 * 60);
           return;
         }
 
         ArrayList<Database.Row> rows = supplier.get();
         System.err.println(rows);
         if (rows == null) {
+          if (AppLogic.getAppState() !=
+              AppLogic.APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
+            handler.postDelayed(this, 1000 * 60);
           return;
         }
 
         System.err.println("Sending data to server...");
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST, AppLogic.getServerURL() + "/addConnections",
-                serializeRows(rows),
-                (response)
-                        -> {
-                  listener.onFinish(response, null);
-                },
-                (error) -> {
-                  listener.onFinish(null, error);
-                });
+            Request.Method.POST, AppLogic.getServerURL() + "/addConnections",
+            serializeRows(rows),
+            (response)
+                -> {
+              listener.onFinish(response, null);
+              handler.postDelayed(this, 1000 * 60);
+            },
+            (error) -> {
+              listener.onFinish(null, error);
+              handler.postDelayed(this, 1000 * 60);
+            });
 
         requestQueue.add(request);
       }
-    }, 0L, 60L * 1000L);
+    };
+
+    handler.postDelayed(runnable, 1000 * 60);
+
     return Service.START_NOT_STICKY;
   }
 
   public interface Listener<T> { void onFinish(T data, Exception error); }
-  public interface IDTokenListener { void onFinish(Long id, String token, Exception error); }
+  public interface IDTokenListener {
+    void onFinish(Long id, String token, Exception error);
+  }
 
   public static void initializeServer(Context ctx) {
     if (requestQueue != null)
@@ -118,7 +126,8 @@ public class Server extends Service {
         Request.Method.POST, AppLogic.getServerURL() + "/addUser",
         new JSONObject(), (response) -> {
           try {
-            l.onFinish(response.getLong("id"), response.getString("token"), null);
+            l.onFinish(response.getLong("id"), response.getString("token"),
+                       null);
           } catch (JSONException e) {
             l.onFinish(null, null, e);
           }

@@ -3,6 +3,7 @@ package com.polito.humantohuman.Activities;
 import static com.polito.humantohuman.AppLogic.*;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.os.*;
@@ -45,22 +46,29 @@ public final class ScanActivity extends AppCompatActivity {
     ScanActivity self = this;
     scanSwitchListener = new CompoundButton.OnCheckedChangeListener() {
       @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+      public void onCheckedChanged(CompoundButton buttonView,
+                                   boolean isChecked) {
         if (isChecked) {
           System.err.println("Starting bluetooth");
-          if (!startCollectingData(self)) {
-            self.scanSwitch.setOnCheckedChangeListener(null);
-            buttonView.setChecked(false);
-            self.scanSwitch.setOnCheckedChangeListener(this);
-
-            if (ContextCompat.checkSelfPermission(self, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-              // Bluetooth is off
-              return;
-            }
-
-            PermissionUtils.requestPermission(self, 1, Manifest.permission.ACCESS_FINE_LOCATION, false);
+          if (startCollectingData(self)) {
+            return;
           }
+          self.scanSwitch.setOnCheckedChangeListener(null);
+          buttonView.setChecked(false);
+          self.scanSwitch.setOnCheckedChangeListener(this);
+
+          if (ContextCompat.checkSelfPermission(
+                  self, Manifest.permission.ACCESS_FINE_LOCATION) ==
+              PackageManager.PERMISSION_GRANTED) {
+            Intent enableBtIntent =
+                new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 0);
+            // Bluetooth is off
+            return;
+          }
+
+          PermissionUtils.requestPermission(
+              self, 1, Manifest.permission.ACCESS_FINE_LOCATION, false);
         } else {
           System.err.println("Stopping bluetooth");
           stopCollectingData(self);
@@ -76,9 +84,7 @@ public final class ScanActivity extends AppCompatActivity {
       startActivity(intent);
     });
 
-    onlyWifiSwitchListener = (buttonView, checked) -> {
-      setOnlyWifi(checked);
-    };
+    onlyWifiSwitchListener = (buttonView, checked) -> { setOnlyWifi(checked); };
     onlyWifiSwitch.setOnCheckedChangeListener(onlyWifiSwitchListener);
   }
 
@@ -95,34 +101,37 @@ public final class ScanActivity extends AppCompatActivity {
     scanSwitch.setOnCheckedChangeListener(null);
     System.err.println("appstate is: " + getAppState());
     switch (getAppState()) {
-      case APPSTATE_NO_EXPERIMENT:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        anonymousId.setText("ID: No ID yet");
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(true);
-        System.err.println(AppLogic.getBluetoothID());
-        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
-        break;
-      case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
-        scanSwitch.setEnabled(true);
-        scanSwitch.setChecked(false);
-        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
-        break;
-      case APPSTATE_LOGGING_IN:
-      case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        break;
-      case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
-        scanSwitch.setEnabled(false);
-        scanSwitch.setChecked(false);
-        anonymousId.setText(String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
-        break;
-      default:
-        throw new RuntimeException("Unknown state");
+    case APPSTATE_NO_EXPERIMENT:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
+      anonymousId.setText("ID: No ID yet");
+      break;
+    case APPSTATE_EXPERIMENT_RUNNING_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(true);
+      System.err.println(AppLogic.getBluetoothID());
+      anonymousId.setText(
+          String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
+      break;
+    case APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING:
+      scanSwitch.setEnabled(true);
+      scanSwitch.setChecked(false);
+      anonymousId.setText(
+          String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
+      break;
+    case APPSTATE_LOGGING_IN:
+    case APPSTATE_EXPERIMENT_JOINED_NOT_ACCEPTED_NOT_RUNNING:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
+      break;
+    case APPSTATE_EXPERIMENT_JOINED_ACCEPTED_NOT_RUNNING:
+      scanSwitch.setEnabled(false);
+      scanSwitch.setChecked(false);
+      anonymousId.setText(
+          String.format(Locale.ENGLISH, "ID: %d", AppLogic.getBluetoothID()));
+      break;
+    default:
+      throw new RuntimeException("Unknown state");
     }
     scanSwitch.setOnCheckedChangeListener(scanSwitchListener);
   }

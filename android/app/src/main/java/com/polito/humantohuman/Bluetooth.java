@@ -91,6 +91,9 @@ public final class Bluetooth extends Service {
       return false;
     }
 
+    if (!adapter.isEnabled())
+      return false;
+
     advertiser = adapter.getBluetoothLeAdvertiser();
     return advertiser != null;
   }
