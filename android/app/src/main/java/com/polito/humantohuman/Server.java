@@ -58,7 +58,6 @@ public class Server extends Service {
         }
 
         ArrayList<Database.Row> rows = supplier.get();
-        System.err.println(rows);
         if (rows == null) {
           if (AppLogic.getAppState() !=
               AppLogic.APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
@@ -84,12 +83,12 @@ public class Server extends Service {
       }
     };
 
-    handler.postDelayed(runnable, 1000 * 60);
+    handler.postDelayed(runnable, 0);
 
     return Service.START_NOT_STICKY;
   }
 
-  public interface Listener<T> { void onFinish(T data, Exception error); }
+  public interface Listener<T> { void onFinish(T data, VolleyError error); }
   public interface IDTokenListener {
     void onFinish(Long id, String token, Exception error);
   }

@@ -27,9 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
     privacyPolicyButton = findViewById(R.id.settingsPrivacyPolicyButton);
     leaveExperimentButton = findViewById(R.id.settingsLeaveExperimentButton);
 
-    //    setServerEditText.setText(
-    //         "https://dslserver05.poly.edu/experiment/albert-debug");
-
+//        setServerEditText.setText(
+//                "http://192.168.10.102:8080/experiment/albert-debug");
     privacyPolicyButton.setOnClickListener((view) -> {
       Intent intent = new Intent(this, PolicyActivity.class);
       startActivity(intent);

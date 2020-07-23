@@ -250,6 +250,9 @@ public class AppLogic {
       serverServiceIsRunning = false;
     }
 
+    popRows();
+    devices = null;
+
     setAppState(APPSTATE_NO_EXPERIMENT);
   }
 
@@ -263,6 +266,9 @@ public class AppLogic {
     if (appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING) {
       ctx.stopService(new Intent(ctx, Bluetooth.class));
     }
+
+    popRows();
+    devices = null;
 
     if (serverServiceIsRunning) {
       ctx.stopService(new Intent(ctx, Server.class));

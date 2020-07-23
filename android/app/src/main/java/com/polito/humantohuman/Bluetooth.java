@@ -8,6 +8,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -27,15 +30,11 @@ public final class Bluetooth extends Service {
   public static final int SCAN_FOREGROUND_ID = 1;
 
   private static BluetoothAdapter adapter;
+  private static BluetoothLeScanner scanner;
   private static BluetoothLeAdvertiser advertiser;
-  private static final BluetoothAdapter.LeScanCallback scanCallback =
-      (device, rssi, scanRecord) -> {
-    Long id = getID(getUUIDs(scanRecord));
-    Integer powerLevel = getTxPowerLevel(scanRecord);
-    if (id != null && powerLevel != null)
-      delegate.foundDevice(id, powerLevel, rssi);
-  };
-  ;
+  private static final ScanCallback scanCallback = new ScanCallback();
+
+
   private static final AdvertiseCallback advertiseCallback =
       new AdvertiseCallback();
 
@@ -63,7 +62,7 @@ public final class Bluetooth extends Service {
       overflowData[i + 2] = getReversedByte(AppLogic.getBluetoothID(), i);
     }
 
-    AdvertiseSettings settings =
+    AdvertiseSettings advertiseSettings =
         new AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
             .build();
@@ -73,8 +72,22 @@ public final class Bluetooth extends Service {
                              .addManufacturerData(0x4C, overflowData)
                              .build();
 
-    advertiser.startAdvertising(settings, data, advertiseCallback);
-    adapter.startLeScan(scanCallback);
+    ScanSettings scanSettings;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+      scanSettings = new ScanSettings.Builder()
+              .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+              .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+              .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+              .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
+              .build();
+    } else {
+      scanSettings = new ScanSettings.Builder()
+              .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+              .build();
+    }
+
+    advertiser.startAdvertising(advertiseSettings, data, advertiseCallback);
+    scanner.startScan(null, scanSettings, scanCallback);
 
     return Service.START_NOT_STICKY;
   }
@@ -82,11 +95,11 @@ public final class Bluetooth extends Service {
   @Override
   public void onDestroy() {
     advertiser.stopAdvertising(advertiseCallback);
-    adapter.stopLeScan(scanCallback);
+    scanner.stopScan(scanCallback);
   }
 
   public static boolean isEnabled() {
-    adapter = BluetoothAdapter.getDefaultAdapter();
+    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
     if (adapter == null) {
       return false;
     }
@@ -95,7 +108,8 @@ public final class Bluetooth extends Service {
       return false;
 
     advertiser = adapter.getBluetoothLeAdvertiser();
-    return advertiser != null;
+    scanner = adapter.getBluetoothLeScanner();
+    return advertiser != null && scanner != null;
   }
 
   static ArrayList<UUID> getUUIDs(byte[] bytes) {
@@ -201,5 +215,28 @@ public final class Bluetooth extends Service {
     public void onStartSuccess(AdvertiseSettings settingsInEffect) {}
     @Override
     public void onStartFailure(int errorCode) {}
+  }
+
+  static class ScanCallback extends android.bluetooth.le.ScanCallback {
+    public ScanCallback() {}
+
+    @Override
+    public void onScanResult(int callbackType, ScanResult result) {
+      byte[] scanRecord = result.getScanRecord().getBytes();
+        Long id = getID(getUUIDs(scanRecord));
+        Integer powerLevel = getTxPowerLevel(scanRecord);
+        if (id != null && powerLevel != null)
+          delegate.foundDevice(id, powerLevel, result.getRssi());
+    }
+
+    @Override
+    public void onBatchScanResults(List<ScanResult> results) {
+      for (ScanResult result : results) {
+        onScanResult(-1, result);
+      }
+    }
+
+    @Override
+    public void onScanFailed(int errorCode) {}
   }
 }

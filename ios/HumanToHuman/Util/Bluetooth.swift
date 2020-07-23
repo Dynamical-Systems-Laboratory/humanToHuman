@@ -38,7 +38,8 @@ class Bluetooth: NSObject {
     private static func scan() {
         central.scanForPeripherals(
             withServices: OverflowAreaUtils.allOverflowServiceUuids(),
-            options: [CBCentralManagerScanOptionAllowDuplicatesKey: true]
+            options: [CBCentralManagerScanOptionAllowDuplicatesKey: true,
+                      CBCentralManagerScanOptionSolicitedServiceUUIDsKey: OverflowAreaUtils.allOverflowServiceUuids()]
         )
     }
 
@@ -104,7 +105,7 @@ extension Bluetooth: CBCentralManagerDelegate {
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
     // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
     // each device as a collection of service UUIDs.
-    func centralManager(_: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+    func centralManager(_ localCentral: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
         let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {

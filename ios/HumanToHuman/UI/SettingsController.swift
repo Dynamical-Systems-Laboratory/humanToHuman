@@ -19,7 +19,7 @@ class SettingsController: UIViewController {
     override func viewDidLoad() {
         print("settings controller loading...")
 
-        baseurlField.text = "https://dslserver05.poly.edu/experiment/albert-debug"
+//        baseurlField.text = "http://192.168.10.102:8080/experiment/albert-debug"
     }
 
     override func viewDidAppear(_: Bool) {

@@ -42,6 +42,7 @@ class AppLogic {
                 data = Server.formatConnectionData(id: bluetoothId, token: token, rows: Database.popRows())
                 if data == nil {
                     task.setTaskCompleted(success: true)
+                    return
                 }
             }
             
@@ -170,7 +171,12 @@ class AppLogic {
     }
     
     private static func startCollectingDataStateless() -> Bool {
-        guard Bluetooth.startScanning() == .poweredOn && Bluetooth.startAdvertising() == .poweredOn else {
+        let scanState = Bluetooth.startScanning()
+        let advertiseState = Bluetooth.startAdvertising()
+        guard scanState != .poweredOff && scanState != .unsupported else {
+            return false
+        }
+        guard advertiseState != .poweredOff && advertiseState != .unsupported else {
             return false
         }
         
@@ -186,7 +192,6 @@ class AppLogic {
         }
 
         guard serverSendTimer == nil else { return true }
-        
         
         serverSendTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
             if data == nil {
@@ -295,8 +300,10 @@ class AppLogic {
         data = nil
         token = nil
         BGTaskScheduler.shared.cancelAllTaskRequests()
-        serverSendTimer.invalidate()
-        serverSendTimer = nil
+        if serverSendTimer != nil {
+            serverSendTimer.invalidate()
+            serverSendTimer = nil
+        }
         Database.popRows()
     }
     

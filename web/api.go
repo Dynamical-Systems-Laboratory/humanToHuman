@@ -246,8 +246,12 @@ func AddConnectionsUnsafe(c *gin.Context) {
 		return
 	}
 
+	type Response struct {
+		Len int
+	}
+
 	err = database.InsertConnectionsUnsafe(connections)
-	JsonInfer(c, len(connections.Connections), err)
+	JsonInfer(c, Response{len(connections.Connections)}, err)
 }
 
 func AddConnections(c *gin.Context) {
