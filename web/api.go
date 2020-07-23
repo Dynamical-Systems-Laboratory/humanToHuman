@@ -134,7 +134,7 @@ func GetDevicesCSV(c *gin.Context) {
 		return
 	}
 
-	users, err := database.GetDevicesForExperiment(c.Query("experiment"))
+	users, err := database.GetDevicesForExperiment(c.Param("experiment"))
 	if JsonFail(c, err) {
 		return
 	}
