@@ -17,6 +17,7 @@ public class Database extends SQLiteOpenHelper {
   public static int KEY_APPSTATE = 8;
   public static final int KEY_ONLY_WIFI = 9;
   public static final int KEY_TOKEN = 10;
+  public static final int KEY_NOISE = 11;
   private static Database database;
 
   Database(Context context) { super(context, "database", null, 1); }

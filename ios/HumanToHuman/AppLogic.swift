@@ -26,6 +26,8 @@ class AppLogic {
     private static var bluetoothId : UInt64 = 0
     private static var token : String! = ""
     private static var data : Data? = nil
+    private static var noise: UInt64 = 0
+    private static var lastModifiedTime: Date = Date()
     private static var serverSendTimer : Timer!
     
     static func startup() {
@@ -54,6 +56,7 @@ class AppLogic {
         }
         
         Bluetooth.delegate = AppLogic()
+        noise = Database.getPropNumeric(prop: KEY_NOISE) ?? 0
         
         if appState == APPSTATE_LOGGING_IN {
             setAppState(APPSTATE_NO_EXPERIMENT)
@@ -84,6 +87,22 @@ class AppLogic {
     private static func setAppState(_ state: Int) {
         appState = state
         Database.setPropNumeric(prop: KEY_APP_STATE, value: Int64(state))
+    }
+    
+    static func getNoise() -> UInt64 {
+        let n = noise
+        let currentTime = Date()
+        if lastModifiedTime.addingTimeInterval(1.0).compare(currentTime) == .orderedAscending {
+            noise += 1
+            Database.setPropNumeric(prop: KEY_NOISE, value: Int64(noise))
+            lastModifiedTime = currentTime
+        }
+        return n
+    }
+    
+    static func resetNoise() {
+        noise = 0
+        Database.setPropNumeric(prop: KEY_NOISE, value: Int64(noise))
     }
     
     static func getBluetoothId() -> UInt64 {
@@ -171,12 +190,7 @@ class AppLogic {
     }
     
     private static func startCollectingDataStateless() -> Bool {
-        let scanState = Bluetooth.startScanning()
-        let advertiseState = Bluetooth.startAdvertising()
-        guard scanState != .poweredOff && scanState != .unsupported else {
-            return false
-        }
-        guard advertiseState != .poweredOff && advertiseState != .unsupported else {
+        guard Bluetooth.start() else {
             return false
         }
         
@@ -223,8 +237,7 @@ class AppLogic {
             exit(1)
         }
         
-        Bluetooth.stopScanning()
-        Bluetooth.stopAdvertising()
+        Bluetooth.stop()
         setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
     }
     
@@ -309,8 +322,7 @@ class AppLogic {
     
     static func rejectPrivacyPolicy(callback: @escaping (String?) -> Void) {
         if appState == APPSTATE_EXPERIMENT_RUNNING_COLLECTING {
-            Bluetooth.stopScanning()
-            Bluetooth.stopAdvertising()
+            Bluetooth.stop()
         }
         setAppState(APPSTATE_EXPERIMENT_RUNNING_NOT_COLLECTING)
         Server.removeUser { str in

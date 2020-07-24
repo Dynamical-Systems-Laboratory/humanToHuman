@@ -10,11 +10,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AppLogic {
 
@@ -33,6 +38,8 @@ public class AppLogic {
   private static ArrayList<Database.Row> devices;
   private static WifiManager wifiManager;
   private static String token;
+  private static long noise;
+  private static Date lastModifiedTime;
   private static boolean serverServiceIsRunning = false;
 
   public static boolean startup(Context context) {
@@ -42,6 +49,9 @@ public class AppLogic {
         Context.WIFI_SERVICE);
     Long onlyWifiNullable = getPropNumeric(KEY_ONLY_WIFI);
     onlyWifi = onlyWifiNullable != null && onlyWifiNullable == 1;
+    Long noiseNullable = getPropNumeric(KEY_NOISE);
+    noise = noiseNullable == null ? 0 : noiseNullable;
+    lastModifiedTime = Calendar.getInstance().getTime();
 
     Long appStateNullable = getPropNumeric(KEY_APPSTATE);
     long appStateLong =
@@ -88,6 +98,23 @@ public class AppLogic {
   }
 
   public static int getAppState() { return appState; }
+
+  public static long getNoise() {
+    long n = noise;
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.SECOND, -1);
+    if (lastModifiedTime.before(calendar.getTime())) {
+      noise += 1;
+      setPropNumeric(KEY_NOISE, noise);
+    }
+
+    return n;
+  }
+
+  public static void resetNoise() {
+    noise = 0;
+    setPropNumeric(KEY_NOISE, noise);
+  }
 
   private static void setAppState(int state) {
     appState = state;
