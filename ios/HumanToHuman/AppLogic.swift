@@ -35,22 +35,25 @@ class AppLogic {
         appState = Int(Database.getPropNumeric(prop: KEY_APP_STATE) ?? UInt64(APPSTATE_NO_EXPERIMENT))
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.humantohuman.fetcher", using: nil) { task in
             let bgrequest = BGAppRefreshTaskRequest(identifier: "com.humantohuman.fetcher")
-            bgrequest.earliestBeginDate = Date(timeIntervalSinceNow: 5)
+            bgrequest.earliestBeginDate = Date(timeIntervalSinceNow: 60)
             try? BGTaskScheduler.shared.submit(bgrequest)
             
             
-            print("Sending data in the background")
+            print("sending data in the background")
             if data == nil {
                 data = Server.formatConnectionData(id: bluetoothId, token: token, rows: Database.popRows())
                 if data == nil {
                     task.setTaskCompleted(success: true)
+                    print("no data to send")
                     return
                 }
             }
             
-            Server.sendConnectionData(data: data!) {
+            Server.sendConnectionData(data: data!) { error in
                 print("data finished sending")
-                data = nil
+                if error == nil {
+                    data = nil
+                }
                 task.setTaskCompleted(success: true)
             }
         }
@@ -196,7 +199,7 @@ class AppLogic {
         
         print("making bgprocessing request")
         let request = BGAppRefreshTaskRequest(identifier: "com.humantohuman.fetcher")
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 2)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
         do {
             BGTaskScheduler.shared.cancelAllTaskRequests()
             try BGTaskScheduler.shared.submit(request)
@@ -207,14 +210,16 @@ class AppLogic {
 
         guard serverSendTimer == nil else { return true }
         
-        serverSendTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+        serverSendTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
             if data == nil {
                 data = Server.formatConnectionData(id: getBluetoothId(), token: getToken(), rows: Database.popRows())
                 guard data != nil else { return }
             }
             
-            Server.sendConnectionData(data: data!) {
-                data = nil
+            Server.sendConnectionData(data: data!) { error in
+                if error == nil {
+                    data = nil
+                }
             }
         }
         

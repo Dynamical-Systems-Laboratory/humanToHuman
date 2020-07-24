@@ -16,6 +16,10 @@ struct IDInformation : Codable {
     var id: UInt64
 }
 
+struct EMessage : Error {
+    var message: String
+}
+
 struct Server {
     // Get a user id from the server asynchronously. The callback either gets a valid user id, or nil if the request failed.
     static func getUserId(callback: @escaping (UInt64?, String) -> Void) {
@@ -66,7 +70,7 @@ struct Server {
     }
 
     // Send connection data to the server asynchronously. Calls the given callback if the request succeeded.
-    static func sendConnectionData(data: Data, callback: @escaping () -> Void) {
+    static func sendConnectionData(data: Data, callback: @escaping (Error?) -> Void) {
         var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/addConnections")!)
         request.httpMethod = "POST"
         request.httpBody = data
@@ -74,15 +78,25 @@ struct Server {
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print(error?.localizedDescription ?? "No data")
+                callback(error)
                 return
             }
 
-            let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
+            var responseJSON : Any? = nil
+            do {
+                responseJSON = try JSONSerialization.jsonObject(with: data, options: [])
+            } catch {
+                callback(error)
+                return
+            }
+        
             if let responseJSON = responseJSON as? [String: Any] {
                 print("LOG `Util/Server.swift:\(#line)` got response: \(responseJSON)")
             }
             if let response = response as? HTTPURLResponse, response.statusCode == 200 {
-                callback()
+                callback(nil)
+            } else {
+                callback(EMessage(message: "hello"))
             }
         }.resume()
     }

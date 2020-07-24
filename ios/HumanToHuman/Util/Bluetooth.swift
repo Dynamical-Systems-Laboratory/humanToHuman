@@ -45,7 +45,6 @@ class Bluetooth: NSObject {
     // start advertising, using the service uuid combination that cooresponds to our id.
     private static func advertise() {
         let noise = AppLogic.getNoise()
-        print(noise)
         peripheral.startAdvertising([
             CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: AppLogic.getBluetoothId(), noise: noise),
         ])
@@ -84,7 +83,6 @@ class Bluetooth: NSObject {
         running = false
         central.stopScan()
         peripheral.stopAdvertising()
-        peripheral.removeAllServices()
     }
 }
 
@@ -104,13 +102,14 @@ extension Bluetooth: CBCentralManagerDelegate {
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
     // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
     // each device as a collection of service UUIDs.
-    func centralManager(_ localCentral: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+    func centralManager(_ localCentral: CBCentralManager, didDiscover p: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
         let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-                Bluetooth.peripheral.removeAllServices()
+                print(p)
+                Bluetooth.peripheral.stopAdvertising()
                 Bluetooth.advertise()
                 Bluetooth.delegate.discoveredDevice(Device(
                     uuid: uuid,
