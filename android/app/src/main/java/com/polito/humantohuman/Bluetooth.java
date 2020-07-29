@@ -34,6 +34,7 @@ public final class Bluetooth extends Service {
   private static BluetoothLeAdvertiser advertiser;
   private static final ScanCallback scanCallback = new ScanCallback();
   private static final AdvertiseCallback advertiseCallback = new AdvertiseCallback();
+  private static boolean running = false;
 
   @Nullable
   @Override
@@ -44,6 +45,7 @@ public final class Bluetooth extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     System.err.println("bluetooth advertiser service started");
+    running = true;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       Polyfill.startForeground(this, SCAN_FOREGROUND_ID, SCAN_CHANNEL_ID,
@@ -68,7 +70,7 @@ public final class Bluetooth extends Service {
               .build();
     }
 
-    advertise();
+    Bluetooth.advertise();
     scanner.startScan(null, scanSettings, scanCallback);
 
     return Service.START_NOT_STICKY;
@@ -76,8 +78,9 @@ public final class Bluetooth extends Service {
 
   @Override
   public void onDestroy() {
-    advertiser.stopAdvertising(advertiseCallback);
+    running = false;
     scanner.stopScan(scanCallback);
+    stopAdvertising();
   }
 
   public static boolean isEnabled() {
@@ -93,8 +96,17 @@ public final class Bluetooth extends Service {
     return advertiser != null && scanner != null;
   }
 
+  static void stopAdvertising() {
+    advertiser.stopAdvertising(advertiseCallback);
+    advertiser.stopAdvertising(advertiseCallback);
+    advertiser.stopAdvertising(advertiseCallback);
+    advertiser.stopAdvertising(advertiseCallback);
+    advertiser.stopAdvertising(advertiseCallback);
+  }
+
   static void advertise() {
     long noise = AppLogic.getNoise(), bluetoothId = AppLogic.getBluetoothID();
+    System.err.println("noise is: "+ noise);
     byte[] overflowData = new byte[17];
     overflowData[0] = 1;
     overflowData[1] = -1 << 7;
@@ -232,26 +244,43 @@ public final class Bluetooth extends Service {
 
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
+      if (!running) {
+          stopAdvertising();
+          return;
+      }
+
       byte[] scanRecord = result.getScanRecord().getBytes();
         Long id = getID(getUUIDs(scanRecord));
 
         Integer powerLevel = getTxPowerLevel(scanRecord);
         if (id != null && powerLevel != null) {
-          advertiser.stopAdvertising(advertiseCallback);
-          advertise();
-          System.err.print(id + " ");
-          for (byte b : scanRecord)
-            System.err.print(b + " ");
-          System.err.println();
+          try { Thread.sleep(5); } catch (InterruptedException e) {}
+          stopAdvertising();
+          Bluetooth.advertise();
           delegate.foundDevice(id, powerLevel, result.getRssi());
         }
     }
 
     @Override
     public void onBatchScanResults(List<ScanResult> results) {
-      for (ScanResult result : results) {
-        onScanResult(-1, result);
+      if (!running){
+        stopAdvertising();
+        return;
       }
+
+      for (ScanResult result : results) {
+        byte[] scanRecord = result.getScanRecord().getBytes();
+        Long id = getID(getUUIDs(scanRecord));
+
+        Integer powerLevel = getTxPowerLevel(scanRecord);
+        if (id != null && powerLevel != null) {
+          delegate.foundDevice(id, powerLevel, result.getRssi());
+        }
+      }
+
+      try { Thread.sleep(5); } catch (InterruptedException e) {}
+      stopAdvertising();
+      Bluetooth.advertise();
     }
 
     @Override

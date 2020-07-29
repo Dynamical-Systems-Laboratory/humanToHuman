@@ -37,7 +37,7 @@ class Bluetooth: NSObject {
     private static func scan() {
         central.scanForPeripherals(
             withServices: OverflowAreaUtils.allOverflowServiceUuids(),
-            options: [CBCentralManagerScanOptionAllowDuplicatesKey: true,
+            options: [ //CBCentralManagerScanOptionAllowDuplicatesKey: true,
                       CBCentralManagerScanOptionSolicitedServiceUUIDsKey: OverflowAreaUtils.allOverflowServiceUuids()]
         )
     }
@@ -108,7 +108,7 @@ extension Bluetooth: CBCentralManagerDelegate {
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-                print(p)
+//                print(p)
                 Bluetooth.peripheral.stopAdvertising()
                 Bluetooth.advertise()
                 Bluetooth.delegate.discoveredDevice(Device(
@@ -116,6 +116,9 @@ extension Bluetooth: CBCentralManagerDelegate {
                     rssi: rssi.floatValue,
                     measuredPower: measuredPower ?? -1
                 ))
+                
+                localCentral.stopScan()
+                Bluetooth.central = CBCentralManager(delegate: self, queue: nil)
             }
         }
     }
