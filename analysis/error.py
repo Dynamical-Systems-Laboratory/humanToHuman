@@ -64,9 +64,9 @@ def box_plots_normal_ignore_0_with_fit(meters, rssi2d, description, fit=True):
     Xmin = min(x.min() for x in rssi2d)
     Xmax = max(x.max() for x in rssi2d)
 
-    plt.xlabel('RSSI (dBm)')
-    plt.ylabel('Distance (meters)')
-    plt.title('Distance vs Measured RSSI ' + description)
+    plt.xlabel('RSSI (dBm)', fontsize=16)
+    plt.ylabel('Distance (meters)', fontsize=16)
+    # plt.title('Distance vs Measured RSSI ' + description)
 
     plt.boxplot(rssi2d, positions=meters, vert=False)
 
@@ -79,14 +79,17 @@ def box_plots_normal_ignore_0_with_fit(meters, rssi2d, description, fit=True):
     xsmall = np.arange(Xmin, Xmax, .001)
     plt.plot(xsmall, n_exp(xsmall, a, n), mfc='b', mec='b', marker=',')
     plt.ylim([-1, 10])
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.rcParams.update({'font.size': 16})
     text = f"""
     a= {round(a, 2)} ± {round(a_stdev, 2)}
     n= {round(n, 2)} ± {round(n_stdev, 2)}
     r2= {round(r2, 2)}
     """.strip().replace('    ', '')
 
-    plt.text(-60, 8, text)
-    plt.xscale('log')
+    plt.text(-60, 7, text)
+    print(description)
     plt.savefig(f"box_plots_{description}.png")
     plt.show()
 
@@ -142,8 +145,8 @@ def stdev_for_dist(meters, rssi2d, description):
     plt.savefig(f"stdev_for_dist_{description}.png")
     plt.show()
 
-# (data, name) = all_phones[3]
-# box_plots_normal_ignore_0_with_fit(meters[::-1], data, name)
+(data, name) = all_phones[1]
+box_plots_normal_ignore_0_with_fit(meters, data, name)
 # stdev_for_dist(meters, data, name)
 # shaded_area(meters[::-1], data, name)
 # stdev_for_dist(meters, data, name)

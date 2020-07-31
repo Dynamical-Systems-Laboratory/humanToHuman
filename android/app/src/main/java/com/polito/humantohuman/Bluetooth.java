@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.polito.humantohuman.utils.Polyfill;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class Bluetooth extends Service {
   public interface BluetoothDelegate {
@@ -79,8 +78,11 @@ public final class Bluetooth extends Service {
   @Override
   public void onDestroy() {
     running = false;
-    scanner.stopScan(scanCallback);
-    stopAdvertising();
+    try {
+      scanner.stopScan(scanCallback);
+      stopAdvertising();
+    } catch (IllegalStateException e) // BT Adapter is not turned on
+    { }
   }
 
   public static boolean isEnabled() {
@@ -105,16 +107,12 @@ public final class Bluetooth extends Service {
   }
 
   static void advertise() {
-    long noise = AppLogic.getNoise(), bluetoothId = AppLogic.getBluetoothID();
-    System.err.println("noise is: "+ noise);
+    long bluetoothId = AppLogic.getBluetoothID();
     byte[] overflowData = new byte[17];
     overflowData[0] = 1;
     overflowData[1] = -1 << 7;
     for (int i = 0; i < 8; i++) {
       overflowData[i + 2] = getReversedByte(bluetoothId, i);
-    }
-    for (int i = 0; i < 7; i++) {
-      overflowData[i + 10] = getReversedByte(noise, i);
     }
 
     AdvertiseSettings advertiseSettings =
@@ -254,19 +252,12 @@ public final class Bluetooth extends Service {
 
         Integer powerLevel = getTxPowerLevel(scanRecord);
         if (id != null && powerLevel != null) {
-          try { Thread.sleep(5); } catch (InterruptedException e) {}
-          stopAdvertising();
-          Bluetooth.advertise();
           delegate.foundDevice(id, powerLevel, result.getRssi());
         }
     }
 
     @Override
     public void onBatchScanResults(List<ScanResult> results) {
-      if (!running){
-        stopAdvertising();
-        return;
-      }
 
       for (ScanResult result : results) {
         byte[] scanRecord = result.getScanRecord().getBytes();
@@ -277,10 +268,6 @@ public final class Bluetooth extends Service {
           delegate.foundDevice(id, powerLevel, result.getRssi());
         }
       }
-
-      try { Thread.sleep(5); } catch (InterruptedException e) {}
-      stopAdvertising();
-      Bluetooth.advertise();
     }
 
     @Override

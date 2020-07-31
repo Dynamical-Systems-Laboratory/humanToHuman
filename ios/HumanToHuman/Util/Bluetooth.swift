@@ -22,34 +22,32 @@ protocol BTDelegate {
     func discoveredDevice(_: Device)
 }
 
-
 // The class that handles the bluetooth communication. Its two main methods are start() and stop()
 class Bluetooth: NSObject {
-    
-    private static var scanCounter : UInt64 = 0
+    private static var scanCounter: UInt64 = 0
     static let beacon = Bluetooth()
     static var delegate: BTDelegate!
     static var peripheral: CBPeripheralManager!
     static var central: CBCentralManager!
     static var running: Bool = false
-    
+
     // Start scanning for peripherals, using the global service UUID
     private static func scan() {
         central.scanForPeripherals(
             withServices: OverflowAreaUtils.allOverflowServiceUuids(),
-            options: [ //CBCentralManagerScanOptionAllowDuplicatesKey: true,
-                      CBCentralManagerScanOptionSolicitedServiceUUIDsKey: OverflowAreaUtils.allOverflowServiceUuids()]
+            options: [ CBCentralManagerScanOptionAllowDuplicatesKey: true,
+                CBCentralManagerScanOptionSolicitedServiceUUIDsKey: OverflowAreaUtils.allOverflowServiceUuids(),
+            ]
         )
     }
 
     // start advertising, using the service uuid combination that cooresponds to our id.
     private static func advertise() {
-        let noise = AppLogic.getNoise()
         peripheral.startAdvertising([
-            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: AppLogic.getBluetoothId(), noise: noise),
+            CBAdvertisementDataServiceUUIDsKey: uint64ToOverflowServiceUuids(uint64: AppLogic.getBluetoothId()),
         ])
     }
-    
+
     static func start() -> Bool {
         if running { return true }
         running = true
@@ -59,25 +57,25 @@ class Bluetooth: NSObject {
         if central == nil {
             central = CBCentralManager(delegate: beacon, queue: nil)
         }
-        
-        guard peripheral.state != .poweredOff && peripheral.state != .unsupported && peripheral.state != .unauthorized else {
+
+        guard peripheral.state != .poweredOff, peripheral.state != .unsupported, peripheral.state != .unauthorized else {
             return false
         }
-        
-        guard central.state != .poweredOff && central.state != .unsupported && central.state != .unauthorized else {
+
+        guard central.state != .poweredOff, central.state != .unsupported, central.state != .unauthorized else {
             return false
         }
-        
+
         if central.state == .poweredOn {
             scan()
         }
-        
+
         if peripheral.state == .poweredOn {
             advertise()
         }
         return true
     }
-    
+
     static func stop() {
         if !running { return }
         running = false
@@ -102,23 +100,18 @@ extension Bluetooth: CBCentralManagerDelegate {
     // Called whenever a new device is detected; service uuids are stored as CBAdvertisementDataServiceUUIDsKey, and then as
     // CBAdvertisementDataOverflowServiceUUIDsKey when more space is needed. We depend on this behavior to store a UUID for
     // each device as a collection of service UUIDs.
-    func centralManager(_ localCentral: CBCentralManager, didDiscover p: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
+    func centralManager(_: CBCentralManager, didDiscover _: CBPeripheral, advertisementData: [String: Any], rssi: NSNumber) {
         let serviceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let overflow = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-//                print(p)
-                Bluetooth.peripheral.stopAdvertising()
-                Bluetooth.advertise()
+                print(uuid)
                 Bluetooth.delegate.discoveredDevice(Device(
                     uuid: uuid,
                     rssi: rssi.floatValue,
                     measuredPower: measuredPower ?? -1
                 ))
-                
-                localCentral.stopScan()
-                Bluetooth.central = CBCentralManager(delegate: self, queue: nil)
             }
         }
     }
@@ -144,19 +137,13 @@ public func overflowServiceUuidsToUint64(cbUuids: [CBUUID]) -> UInt64? {
 
 // We convert our bitmap into a list of service uuids, and ensure the sentinel value is included.
 // The [index + 8] is because we skip the first byte of overflow space to store a sentinel value.
-public func uint64ToOverflowServiceUuids(uint64: UInt64, noise: UInt64) -> [CBUUID] {
+public func uint64ToOverflowServiceUuids(uint64: UInt64) -> [CBUUID] {
     var cbUuids = [OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[0]]
     for index in 0 ..< 64 {
         if (1 << index) & uint64 != 0 {
             cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index + 8])
         }
     }
-    
-    for index in 0 ..< 56 {
-        if (1 << index) & noise != 0 {
-            cbUuids.append(OverflowAreaUtils.TableOfOverflowServiceUuidsByBitPosition[index + 72])
-        }
-    }
-    
+
     return cbUuids
 }
