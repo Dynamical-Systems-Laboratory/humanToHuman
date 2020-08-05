@@ -2,26 +2,31 @@
 The code is laid out as follows:
 
 ```
+
 HumanToHuman
 ├── AppDelegate.swift
+├── AppLogic.swift
 ├── Assets
 ├── Assets.xcassets
 │  ├── AppIcon.appiconset
-│  │  └── Contents.json
+│  │  └── ...
 │  └── Contents.json
 ├── Bridging.h
 ├── FMDB
 │  └── ...
 ├── Info.plist
 ├── LaunchScreen.storyboard
-├── Main.storyboard
-├── Util
-│  ├── Bluetooth.swift
-│  ├── Database.swift
-│  ├── OverflowAreaUtils.swift
-│  ├── Server.swift
-│  └── Wifi.swift
-└── ViewController.swift
+├── UI
+│  ├── Main.storyboard
+│  ├── MainController.swift
+│  ├── PrivacyPolicyController.swift
+│  └── SettingsController.swift
+└── Util
+   ├── Bluetooth.swift
+   ├── Database.swift
+   ├── OverflowAreaUtils.swift
+   ├── Server.swift
+   └── Wifi.swift
 ```
 
 ## FMDB
