@@ -32,9 +32,16 @@ FMDB is a library we use for SQLite database interaction. This code is **read on
 rest of the codebase, which is written in Swift.
 
 ## Util
-This is where all the utility code lives. It's all the stuff that isn't UI code.
+This is where all the utility code lives. It's stuff like sending/receiving Bluetooth
+data (`Bluetooth.swift`), reading and writing to the SQLite Database (`Database.swift`),
+and sending and receiving data from the server (`Server.swift`). It also includes
+other utilities related to wifi and the Overflow Area.
 
-## ViewController.swift
-This is where the application logic is.
+## UI
+This is where the user interface is managed.
+
+## AppLogic.swift
+This is where the application's state is managed. Almost all of the state is handled
+here.
 
 
