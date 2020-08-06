@@ -2,6 +2,7 @@ package com.polito.humantohuman;
 
 import static com.polito.humantohuman.utils.OverflowAreaUtils.*;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -9,10 +10,12 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.polito.humantohuman.utils.Polyfill;
@@ -24,16 +27,17 @@ public final class Bluetooth extends Service {
   }
 
   public static BluetoothDelegate delegate = null;
+  public static Activity scanActivity = null;
 
   public static final String SCAN_CHANNEL_ID = "HumanToHumanScanning";
   public static final String SCAN_CHANNEL_NAME = "HumanToHuman Scanning";
   public static final int SCAN_FOREGROUND_ID = 1;
 
-  private static BluetoothLeScanner scanner;
-  private static BluetoothLeAdvertiser advertiser;
+  private static BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
   private static final ScanCallback scanCallback = new ScanCallback();
   private static final AdvertiseCallback advertiseCallback = new AdvertiseCallback();
   private static boolean running = false;
+  private static boolean serviceOn = false;
 
   @Nullable
   @Override
@@ -45,6 +49,7 @@ public final class Bluetooth extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
     System.err.println("bluetooth advertiser service started");
     running = true;
+    serviceOn = true;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       Polyfill.startForeground(this, SCAN_FOREGROUND_ID, SCAN_CHANNEL_ID,
@@ -69,8 +74,58 @@ public final class Bluetooth extends Service {
               .build();
     }
 
+    ScanFilter.Builder builder = new ScanFilter.Builder();
+    builder.setManufacturerData(0x004c, new byte[] {});
+    ScanFilter filter = builder.build();
+    ArrayList<ScanFilter> filters = new ArrayList<>();
+    filters.add(filter);
+
     Bluetooth.advertise();
-    scanner.startScan(null, scanSettings, scanCallback);
+    adapter.getBluetoothLeScanner().startScan(filters, scanSettings, scanCallback);
+
+    Handler handler = new Handler();
+    Runnable checker = new Runnable() {
+      @Override
+      public void run() {
+        if (serviceOn)
+          handler.postDelayed(this, 5000);
+
+        System.err.println("hello");
+        if (running && adapter.isEnabled())
+          return;
+
+        running = false;
+        adapter.enable();
+
+        ScanSettings scanSettings;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+          scanSettings = new ScanSettings.Builder()
+                  .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                  .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                  .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                  .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
+                  .build();
+        } else {
+          scanSettings = new ScanSettings.Builder()
+                  .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                  .build();
+        }
+
+        ScanFilter.Builder builder = new ScanFilter.Builder();
+        builder.setManufacturerData(0x004c, new byte[] {});
+        ScanFilter filter = builder.build();
+        ArrayList<ScanFilter> filters = new ArrayList<>();
+        filters.add(filter);
+        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
+        if (scanner == null)
+          return;
+        scanner.startScan(filters, scanSettings, scanCallback);
+        Bluetooth.advertise();
+        running = true;
+      }
+    };
+    handler.post(checker);
+
 
     return Service.START_NOT_STICKY;
   }
@@ -78,32 +133,20 @@ public final class Bluetooth extends Service {
   @Override
   public void onDestroy() {
     running = false;
+    serviceOn = false;
     try {
-      scanner.stopScan(scanCallback);
+      adapter.getBluetoothLeScanner().stopScan(scanCallback);
       stopAdvertising();
     } catch (IllegalStateException e) // BT Adapter is not turned on
     { }
   }
 
   public static boolean isEnabled() {
-    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-    if (adapter == null)
-      return false;
-
-    if (!adapter.isEnabled())
-      return false;
-
-    advertiser = adapter.getBluetoothLeAdvertiser();
-    scanner = adapter.getBluetoothLeScanner();
-    return advertiser != null && scanner != null;
+    return adapter.isEnabled();
   }
 
   static void stopAdvertising() {
-    advertiser.stopAdvertising(advertiseCallback);
-    advertiser.stopAdvertising(advertiseCallback);
-    advertiser.stopAdvertising(advertiseCallback);
-    advertiser.stopAdvertising(advertiseCallback);
-    advertiser.stopAdvertising(advertiseCallback);
+    adapter.getBluetoothLeAdvertiser().stopAdvertising(advertiseCallback);
   }
 
   static void advertise() {
@@ -125,7 +168,7 @@ public final class Bluetooth extends Service {
             .addManufacturerData(0x4C, overflowData)
             .build();
 
-    advertiser.startAdvertising(advertiseSettings, data, advertiseCallback);
+    adapter.getBluetoothLeAdvertiser().startAdvertising(advertiseSettings, data, advertiseCallback);
   }
 
   static ArrayList<UUID> getUUIDs(byte[] bytes) {
@@ -242,18 +285,19 @@ public final class Bluetooth extends Service {
 
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
-      if (!running) {
+      if (!serviceOn) {
           stopAdvertising();
           return;
       }
 
       byte[] scanRecord = result.getScanRecord().getBytes();
-        Long id = getID(getUUIDs(scanRecord));
+      Long id = getID(getUUIDs(scanRecord));
 
-        Integer powerLevel = getTxPowerLevel(scanRecord);
-        if (id != null && powerLevel != null) {
-          delegate.foundDevice(id, powerLevel, result.getRssi());
-        }
+      Integer powerLevel = getTxPowerLevel(scanRecord);
+      if (id != null && powerLevel != null) {
+        System.err.println("got device: " + id);
+        delegate.foundDevice(id, powerLevel, result.getRssi());
+      }
     }
 
     @Override

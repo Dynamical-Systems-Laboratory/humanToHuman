@@ -43,6 +43,8 @@ public final class ScanActivity extends AppCompatActivity {
     onlyWifiSwitch = findViewById(R.id.wifi);
     anonymousId = findViewById(R.id.scanAnonymousId);
 
+    Bluetooth.scanActivity = this;
+
     ScanActivity self = this;
     scanSwitchListener = new CompoundButton.OnCheckedChangeListener() {
       @Override
