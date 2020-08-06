@@ -8,7 +8,6 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
@@ -27,7 +26,6 @@ public final class Bluetooth extends Service {
   }
 
   public static BluetoothDelegate delegate = null;
-  public static Activity scanActivity = null;
 
   public static final String SCAN_CHANNEL_ID = "HumanToHumanScanning";
   public static final String SCAN_CHANNEL_NAME = "HumanToHuman Scanning";
