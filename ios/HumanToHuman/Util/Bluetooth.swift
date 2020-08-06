@@ -106,7 +106,6 @@ extension Bluetooth: CBCentralManagerDelegate {
         if let overflowIds = overflow as? [CBUUID] {
             if let uuid = overflowServiceUuidsToUint64(cbUuids: serviceIds + overflowIds) {
                 let measuredPower = advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int
-                print(uuid)
                 Bluetooth.delegate.discoveredDevice(Device(
                     uuid: uuid,
                     rssi: rssi.floatValue,

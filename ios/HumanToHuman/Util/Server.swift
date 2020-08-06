@@ -26,9 +26,14 @@ struct Server {
         var request = URLRequest(url: URL(string: "\(AppLogic.getServerURL())/addUser")!)
         request.httpMethod = "POST"
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 callback(nil, "Server error: \(error?.localizedDescription ?? "No data")")
+                return
+            }
+            
+            guard let resp = response as? HTTPURLResponse, resp.statusCode == 200 else {
+                callback(nil, "Server error: \(response)")
                 return
             }
 
@@ -134,7 +139,11 @@ struct Server {
                 return
             }
             
-            callback(String(decoding: data, as: UTF8.self))
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                callback(String(decoding: data, as: UTF8.self))
+            } else {
+                callback(nil)
+            }
         }.resume()
     }
     
@@ -148,7 +157,11 @@ struct Server {
                 return
             }
             
-            callback(String(decoding: data, as: UTF8.self))
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                callback(String(decoding: data, as: UTF8.self))
+            } else {
+                callback(nil)
+            }
         }.resume()
     }
 }

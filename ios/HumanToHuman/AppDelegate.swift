@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         print("application launch")
+        UIApplication.shared.isIdleTimerDisabled = true
         AppLogic.startup()
         
         // Override point for customization after application launch.
